@@ -1,1 +1,25 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+:root {
+  /* Brand Colors */
+  --primary: #427AB5;      /* Main Blue */
+  --secondary: #406AAF;    /* Darker Blue */
+  --accent: #ecc63a;       /* Soft Yellow */
+
+  /* Status Colors */
+  --success: #22C55E;
+  --warning: #F7DD7D;
+  --error: #EF4444;
+
+  /* Text Colors */
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+
+  /* Neutral Colors */
+  --white: #FFFFFF;
+  --background: #FFE8BE;   /* Light Cream */
+  --border: #E5E7EB;
+
+  /* Interactive States */
+  --hover: #365D99;        /* Darker shade of primary */
+}

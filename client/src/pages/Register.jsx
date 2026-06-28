@@ -1,267 +1,189 @@
-import React, { useState, useEffect } from "react";
-import { FaUserCircle, FaLock, FaEnvelope, FaPhone } from "react-icons/fa";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import registerbg from "../assets/images/foodTable.webp";
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [errors, setErrors] = useState({});
-  const [isFormValid, setIsFormValid] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  useEffect(() => {
-    const newErrors = {};
-
-    // Username Validation
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (formData.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
-    }
-
-    // Email Validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)
-    ) {
-      newErrors.email = "Please enter a valid email";
-    }
-
-    // Phone Validation
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ""))) {
-      newErrors.phone = "Please enter a valid 10-digit phone number";
-    }
-
-    // Password Validation
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    // Confirm Password Validation
-    if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Confirm password is required";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    setIsFormValid(Object.keys(newErrors).length === 0);
-  }, [formData]);
+function Register() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agree, setAgree] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!isFormValid) return;
-
-    console.log("Register Data:", formData);
-
-    // API Call Here
+    console.log({
+      fullName,
+      email,
+      phone,
+      gender,
+      password,
+      confirmPassword,
+      agree,
+    });
   };
 
   return (
-    <div className="max-w-6xl mx-auto h-[90vh] flex items-center">
-      <div className="grid md:grid-cols-2 gap-10 w-full">
-        {/* Left Side */}
-        <div className="bg-(--background) flex justify-center shadow-xl items-center rounded-2xl p-6 hidden md:flex">
-          <div className="text-center">
-            <FaUserCircle className="text-8xl text-(--primary) mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Join Us Today</h3>
-            <p className="text-gray-600">Create your account and start exploring amazing food experiences</p>
-          </div>
-        </div>
+    <section className="relative h-[91vh] w-full overflow-hidden">
+      {/* Background */}
+      <img
+        src={registerbg}
+        alt="Food Table"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
 
-        {/* Right Side */}
-        <div className="flex justify-center items-center">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-md shadow-xl rounded-2xl p-8 bg-white"
-          >
-            {/* Icon */}
-            <div className="flex justify-center mb-4">
-              <FaUserCircle className="text-7xl text-(--primary)" />
-            </div>
+      {/* Register Card */}
+      <div className="absolute right-[8%] top-1/2 -translate-y-1/2">
+        <div className="card w-[480px] bg-base-100 shadow-2xl">
+          <div className="card-body p-8">
 
-            <h2 className="text-3xl font-bold text-center mb-2">
+            <h2 className="text-center text-4xl font-bold text-primary">
               Create Account
             </h2>
-            <p className="text-center text-gray-500 mb-6 text-sm">
-              Fill in the details below to register
+
+            <p className="text-center text-secondary">
+              Join us and start your food journey.
             </p>
 
-            {/* Username */}
-            <div className="mb-4">
-              <label className="block mb-2 font-medium">
-                Username
-              </label>
-
-              <div className="relative">
-                <FaUserCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="Choose a username"
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 outline-none focus:border-(--primary)"
-                />
-              </div>
-
-              {errors.username && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.username}
-                </p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div className="mb-4">
-              <label className="block mb-2 font-medium">
-                Email Address
-              </label>
-
-              <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 outline-none focus:border-(--primary)"
-                />
-              </div>
-
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email}
-                </p>
-              )}
-            </div>
-
-            {/* Phone */}
-            <div className="mb-4">
-              <label className="block mb-2 font-medium">
-                Phone Number
-              </label>
-
-              <div className="relative">
-                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your phone number"
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 outline-none focus:border-(--primary)"
-                />
-              </div>
-
-              {errors.phone && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.phone}
-                </p>
-              )}
-            </div>
-
-            {/* Password */}
-            <div className="mb-4">
-              <label className="block mb-2 font-medium">
-                Password
-              </label>
-
-              <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 outline-none focus:border-(--primary)"
-                />
-              </div>
-
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-            {/* Confirm Password */}
-            <div className="mb-6">
-              <label className="block mb-2 font-medium">
-                Confirm Password
-              </label>
-
-              <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 outline-none focus:border-(--primary)"
-                />
-              </div>
-
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={!isFormValid}
-              className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-300 ${
-                isFormValid
-                  ? "bg-(--primary) hover:opacity-90"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
+            <form
+              onSubmit={handleSubmit}
+              className="mt-6 space-y-4"
             >
-              Register
-            </button>
+              {/* Full Name */}
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
 
-            <p className="text-center mt-6 text-gray-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-(--primary) font-semibold hover:underline"
+              {/* Email */}
+              <input
+                type="email"
+                className="input input-bordered w-full"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              {/* Phone */}
+              <input
+                type="tel"
+                className="input input-bordered w-full"
+                placeholder="Enter your phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+
+              {/* Gender */}
+              <select
+                className="select select-bordered w-full"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
               >
-                Login
-              </Link>
-            </p>
-          </form>
+                <option value="">Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+
+              {/* Password */}
+              <div className="input input-bordered flex items-center">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  className="grow"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="input input-bordered flex items-center">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  className="grow"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(e.target.value)
+                  }
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
+              </div>
+
+              {/* Terms */}
+              <label className="flex cursor-pointer justify-start gap-2 items-center">
+                <input
+                  type="checkbox"
+                  className=" checkbox-primary"
+                  checked={agree}
+                  onChange={(e) =>
+                    setAgree(e.target.checked)
+                  }
+                />
+
+                <span className="label-text mb-0.5">
+                  I agree to the
+                  <span className="text-primary font-medium">
+                    Terms & Conditions
+                  </span>
+                </span>
+              </label>
+
+              {/* Register Button */}
+              <button
+                className="btn  btn-primary w-full"
+                type="submit"
+              >
+                Register
+              </button>
+
+              <div className="divider"></div>
+
+              <p className="text-center text-secondary">
+                Already registered?{" "}
+                <Link
+                  to="/login"
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Login here
+                </Link>
+              </p>
+
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
-};
+}
 
 export default Register;

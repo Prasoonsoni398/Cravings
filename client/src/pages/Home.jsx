@@ -1,118 +1,89 @@
 import { useNavigate } from "react-router-dom";
 import bgimg1 from "../assets/images/bgImage1-BgVBBcls.jpg";
-import bgimg2 from "../assets/images/bgImage2-CSvQeVNX.jpg";
-import bgimg3 from "../assets/images/bgImage3-BTY6Sz_K.jpg";
 
-const Home = () => {
+function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="herosection">
-      <div
-        id="carouselExampleAutoplaying"
-        className="carousel slide"
-        data-bs-ride="carousel"
-      >
-        <div className="carousel-inner">
-          <div className="carousel-item active">
-            <img
-              src={bgimg1}
-              className="d-block w-100 carousel-img dull-img"
-              alt="Food Banner 1"
-            />
-          </div>
+    <div
+      data-carousel='{
+        "loadingClasses": "opacity-0",
+        "isAutoPlay": true,
+        "interval": 3000,
+        "dotsItemClasses": "carousel-box carousel-active:bg-primary"
+      }'
+      className="relative w-full"
+    >
+      {/* Carousel */}
+      <div className=" h-[90vh]">
+        {/* Slide 1 */}
 
-          <div className="carousel-item">
-            <img
-              src={bgimg2}
-              className="d-block w-100 carousel-img dull-img"
-              alt="Food Banner 2"
-            />
-          </div>
-
-          <div className="carousel-item">
-            <img
-              src={bgimg3}
-              className="d-block w-100 carousel-img dull-img"
-              alt="Food Banner 3"
-            />
-          </div>
-        </div>
-
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselExampleAutoplaying"
-          data-bs-slide="prev"
-        >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselExampleAutoplaying"
-          data-bs-slide="next"
-        >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Next</span>
-        </button>
+        <img
+          src={bgimg1}
+          alt="Food Banner 1"
+          className="h-full w-full object-cover brightness-60"
+        />
       </div>
 
-      <div className="w-100 herocontent d-grid justify-content-center">
-        <div className="text-center text-white d-grid gap-1 vw-100">
-          <h1 className="fw-bold display-5">
-            Your Favourite Food, <br />
+      {/* Hero Content */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center">
+        <div className="w-full max-w-5xl px-6 text-center text-white">
+          <h1 className="text-5xl font-bold lg:text-6xl">
+            Your Favourite Food
+            <br />
             Delivered Fast
           </h1>
 
-          <p className="fw-bold fs-6">
+          <p className="mt-4 text-lg text-white/90">
             Order from thousands of restaurants and get it delivered to your
-            doorstep
+            doorstep.
           </p>
 
-          <div className="herolinks d-flex flex-wrap gap-2 justify-content-center">
+          <div className="mt-8 flex justify-center gap-4">
             <button
-              className="btn px-4 py-2 mx-4"
-              id="signUp"
               onClick={() => navigate("/register")}
+              className="btn btn-primary px-8"
             >
               Sign Up
             </button>
 
             <button
-              className="btn px-4 py-2"
-              id="orderNow"
               onClick={() => navigate("/order-now")}
+              className="btn bg-white text-primary hover:bg-primary hover:text-white"
             >
               Order Now
             </button>
           </div>
-        </div>
 
-        <div className="d-flex justify-content-center">
-          <div className="search d-flex border rounded align-items-center p-1 mt-5">
-            <i className="bi bi-search fw-bold ps-2"></i>
+          {/* Search */}
+          <div className="mx-auto mt-10 max-w-2xl">
+            <label className="input input-bordered flex items-center bg-white shadow-xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="mr-2 h-5 w-5 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-4.3-4.3m1.3-5.2a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"
+                />
+              </svg>
 
-            <input
-              type="text"
-              name="menuSearch"
-              id="menuSearch"
-              className="menuSearch form-control bg-transparent border-0 shadow-none"
-              placeholder="Search restaurants or dishes..."
-            />
+              <input
+                type="text"
+                className="grow text-black"
+                placeholder="Search restaurants or dishes..."
+              />
+            </label>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Home;

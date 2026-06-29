@@ -1,21 +1,71 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginBg from "../assets/images/foodTable.webp";
+import api from "../config/api.config.js";
 
 function Login() {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [validateError, setValidateError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setLoginData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email :", userName);
-    console.log("Password :", password);
+
+    if (!loginData.email || !loginData.password) {
+      setValidateError("Please fill all fields.");
+      return;
+    }
+
+    setValidateError("");
+
+    const payload = {
+      email: loginData.email.toLowerCase(),
+      password: loginData.password,
+    };
+
+    try {
+      const res = await api.post("/auth/login", payload);
+
+      alert(res.data.message);
+
+      // Save token
+      localStorage.setItem("token", res.data.token);
+
+      // Save logged in user (optional)
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // Clear form
+      setLoginData({
+        email: "",
+        password: "",
+      });
+
+      navigate("/");
+    } catch (error) {
+      setValidateError(
+        error.response?.data?.message || "Login Failed"
+      );
+    }
   };
 
   return (
-    <section className="relative h-[91vh] w-full">
+    <section className="relative h-[91vh] w-full overflow-hidden">
       {/* Background */}
       <img
         src={loginBg}
@@ -26,7 +76,7 @@ function Login() {
       {/* Login Card */}
       <div className="absolute left-[8%] top-1/2 -translate-y-1/2">
         <div className="card w-[430px] bg-base-100 shadow-2xl">
-          <div className="card-body">
+          <div className="card-body p-8">
             <h2 className="text-center text-3xl font-bold text-primary">
               Welcome Back
             </h2>
@@ -35,55 +85,74 @@ function Login() {
               Login to your Cravings account
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5"
+            >
               {/* Email */}
               <div>
-                <label className="label-text mb-2 block font-semibold">
-                  Email
+                <label className="label mb-2">
+                  <span className="label-text font-semibold">
+                    Email
+                  </span>
                 </label>
 
                 <input
                   type="email"
-                  className="input w-full"
+                  name="email"
+                  className="input input-bordered w-full"
                   placeholder="Enter your Email"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
+                  value={loginData.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="label-text mb-2 block font-semibold">
-                  Password
+                <label className="label mb-2">
+                  <span className="label-text font-semibold">
+                    Password
+                  </span>
                 </label>
 
-                <div className="input flex items-center">
+                <div className="input input-bordered flex items-center">
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="w-full outline-none"
+                    name="password"
+                    className="grow"
                     placeholder="Enter your Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={loginData.password}
+                    onChange={handleChange}
+                    required
                   />
 
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() =>
+                      setShowPassword(!showPassword)
+                    }
                     className="cursor-pointer"
                   >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
                   </button>
                 </div>
               </div>
 
-              {/* Remember */}
+              {/* Remember Me */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     className="checkbox checkbox-primary checkbox-sm"
                   />
-                  <span className="label-text">Remember me</span>
+                  <span className="label-text">
+                    Remember me
+                  </span>
                 </label>
 
                 <Link
@@ -94,8 +163,18 @@ function Login() {
                 </Link>
               </div>
 
-              {/* Login */}
-              <button className="btn btn-primary w-full">
+              {/* Validation Error */}
+              {validateError && (
+                <p className="text-center text-sm text-error">
+                  {validateError}
+                </p>
+              )}
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                className="btn btn-primary w-full"
+              >
                 Login
               </button>
             </form>
@@ -104,12 +183,15 @@ function Login() {
               Don't have an account?
             </div>
 
-            <Link
-              to="/register"
-              className="link link-primary text-center font-semibold"
-            >
-              Create an account
-            </Link>
+            {/* Register */}
+            <p className="text-center">
+              <Link
+                to="/register"
+                className="font-semibold text-primary hover:underline"
+              >
+                Create an account
+              </Link>
+            </p>
           </div>
         </div>
       </div>

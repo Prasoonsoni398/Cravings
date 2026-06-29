@@ -1,26 +1,47 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import contactBg from "../assets/images/foodTable.webp";
+import api from "../config/api.config.js";
 
 function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
+  const navigate = useNavigate();
+
+  const [contactData, setContactData] = useState({
+    fullName: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
   });
 
+  const [validateError, setValidateError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setContactData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    const payload = {
+      fullName: contactData.fullName,
+      email: contactData.email.toLowerCase(),
+      phone: contactData.phone,
+      subject: contactData.subject,
+      message: contactData.message,
+    };
+
+    try {
+      const res =await api.post("/public/contact", payload);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -44,57 +65,89 @@ function Contact() {
               Have a question? We'd love to hear from you.
             </p>
 
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input
-                className="input input-bordered w-full"
+                type="text"
+                name="fullName"
                 placeholder="Enter your full name"
-                name="name"
-                value={formData.name}
+                className="input input-bordered w-full"
+                value={contactData.fullName}
                 onChange={handleChange}
               />
 
               <input
                 type="email"
-                className="input input-bordered w-full"
-                placeholder="Enter your email"
                 name="email"
-                value={formData.email}
+                placeholder="Enter your email"
+                className="input input-bordered w-full"
+                value={contactData.email}
                 onChange={handleChange}
               />
 
               <input
                 type="tel"
-                className="input input-bordered w-full"
-                placeholder="Enter your phone number"
                 name="phone"
-                value={formData.phone}
+                placeholder="Enter your phone number"
+                className="input input-bordered w-full"
+                value={contactData.phone}
                 onChange={handleChange}
               />
 
               <input
-                className="input input-bordered w-full"
-                placeholder="What is this about?"
+                type="text"
                 name="subject"
-                value={formData.subject}
+                placeholder="Subject"
+                className="input input-bordered w-full"
+                value={contactData.subject}
                 onChange={handleChange}
               />
 
               <textarea
-                rows="5"
-                className="textarea h-10 resize-none textarea-bordered h-fixed w-full"
-                placeholder="Write your message here..."
+                rows={5}
                 name="message"
-                value={formData.message}
+                placeholder="Write your message here..."
+                className="textarea h-25 resize-none textarea-bordered w-full"
+                value={contactData.message}
                 onChange={handleChange}
               />
 
-              <button className="btn btn-primary w-full">
+              {validateError && (
+                <p className="text-sm text-error text-center">
+                  {validateError}
+                </p>
+              )}
+
+              {successMessage && (
+                <p className="text-sm text-success text-center">
+                  {successMessage}
+                </p>
+              )}
+
+              <button type="submit" className="btn btn-primary w-full">
                 Send Message
               </button>
             </form>
+
+            <div className="divider"></div>
+
+            <p className="text-center text-secondary">
+              Want to order delicious food?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="font-semibold text-primary hover:underline"
+              >
+                Login
+              </button>
+              {" | "}
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="font-semibold text-primary hover:underline"
+              >
+                Register
+              </button>
+            </p>
           </div>
         </div>
       </div>

@@ -50,8 +50,8 @@ function Login() {
         email: "",
         password: "",
       });
-
-      navigate("/");
+      sessionStorage.setItem("UserData",JSON.stringify(res.data.data))
+      navigate("/user/dashboard");
     } catch (error) {
       setValidateError(
         toast.error(error.response?.data?.message || "Login Failed"),

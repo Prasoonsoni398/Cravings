@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginBg from "../assets/images/foodTable.webp";
 import api from "../config/api.config.js";
+import toast from "react-hot-toast";
 
 function Login() {
   const navigate = useNavigate();
@@ -42,13 +43,7 @@ function Login() {
     try {
       const res = await api.post("/auth/login", payload);
 
-      alert(res.data.message);
-
-      // Save token
-      localStorage.setItem("token", res.data.token);
-
-      // Save logged in user (optional)
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      toast.success(res.data.message);
 
       // Clear form
       setLoginData({
@@ -59,7 +54,7 @@ function Login() {
       navigate("/");
     } catch (error) {
       setValidateError(
-        error.response?.data?.message || "Login Failed"
+        toast.error(error.response?.data?.message || "Login Failed"),
       );
     }
   };
@@ -85,16 +80,11 @@ function Login() {
               Login to your Cravings account
             </p>
 
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-5"
-            >
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>
                 <label className="label mb-2">
-                  <span className="label-text font-semibold">
-                    Email
-                  </span>
+                  <span className="label-text font-semibold">Email</span>
                 </label>
 
                 <input
@@ -111,9 +101,7 @@ function Login() {
               {/* Password */}
               <div>
                 <label className="label mb-2">
-                  <span className="label-text font-semibold">
-                    Password
-                  </span>
+                  <span className="label-text font-semibold">Password</span>
                 </label>
 
                 <div className="input input-bordered flex items-center">
@@ -129,16 +117,10 @@ function Login() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowPassword(!showPassword)
-                    }
+                    onClick={() => setShowPassword(!showPassword)}
                     className="cursor-pointer"
                   >
-                    {showPassword ? (
-                      <FaEyeSlash />
-                    ) : (
-                      <FaEye />
-                    )}
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
@@ -150,9 +132,7 @@ function Login() {
                     type="checkbox"
                     className="checkbox checkbox-primary checkbox-sm"
                   />
-                  <span className="label-text">
-                    Remember me
-                  </span>
+                  <span className="label-text">Remember me</span>
                 </label>
 
                 <Link
@@ -163,25 +143,13 @@ function Login() {
                 </Link>
               </div>
 
-              {/* Validation Error */}
-              {validateError && (
-                <p className="text-center text-sm text-error">
-                  {validateError}
-                </p>
-              )}
-
               {/* Login Button */}
-              <button
-                type="submit"
-                className="btn btn-primary w-full"
-              >
+              <button type="submit" className="btn btn-primary w-full">
                 Login
               </button>
             </form>
 
-            <div className="divider">
-              Don't have an account?
-            </div>
+            <div className="divider">Don't have an account?</div>
 
             {/* Register */}
             <p className="text-center">

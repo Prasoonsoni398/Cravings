@@ -8,7 +8,6 @@ export const ContactUsForm = async (req, res, next) => {
       error.statusCode = 400;
       return next(error);
     }
-
     const NewContactMessage = await Contact.create({
       fullName,
       email,

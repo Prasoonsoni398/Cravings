@@ -6,11 +6,13 @@ import ContactUs from "./pages/Contact";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {Toaster} from "react-hot-toast"
 
 function App() {
   return ( 
     <>
       <BrowserRouter>
+      <Toaster />
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />        

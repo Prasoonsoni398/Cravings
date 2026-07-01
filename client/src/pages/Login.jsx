@@ -4,8 +4,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginBg from "../assets/images/foodTable.webp";
 import api from "../config/api.config.js";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
+
+  const {setUser,setIsLogin} = useAuth()
+
   const navigate = useNavigate();
 
   const [loginData, setLoginData] = useState({
@@ -46,11 +50,10 @@ function Login() {
       toast.success(res.data.message);
 
       // Clear form
-      setLoginData({
-        email: "",
-        password: "",
-      });
+     
       sessionStorage.setItem("UserData",JSON.stringify(res.data.data))
+      setUser(res.data.data)
+      setIsLogin(true)
       navigate("/user/dashboard");
     } catch (error) {
       setValidateError(

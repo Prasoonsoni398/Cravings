@@ -1,9 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, } from "react";
 import { Link } from "react-router-dom";
 import { FaMoon, FaSun } from "react-icons/fa";
 import HeaderLogo from "../assets/images/HeaderLogo.png";
+import { AiOutlineLogout } from "react-icons/ai";
+import { useAuth } from "../context/AuthContext";
+
 
 function Header() {
+    const { user, setUser, isLogin, setIsLogin } = useAuth();
+
+     const handleLogout = () => {
+    sessionStorage.removeItem("UserData");
+    setIsLogin(false);
+    setUser(false);
+    navigate("/");
+     }
+  
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
@@ -25,6 +37,8 @@ function Header() {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+
+  
 
   return (
     <header className="h-16 bg-primary">
@@ -57,19 +71,7 @@ function Header() {
           {/* Theme Button */}
          
 
-          <Link
-            to="/login"
-            className="rounded-sm px-2 py-1 text-primary-content border border-transparent hover:border hover:border-primary-content"
-          >
-            Login
-          </Link>
-
-          <Link
-            to="/register"
-            className="rounded-sm border border-transparent bg-primary-content px-2 py-1 text-primary transition hover:bg-primary hover:text-primary-content hover:border hover:border-primary-content"
-          >
-            Register
-          </Link>
+          
 
             <Link
             to="/contact"
@@ -77,6 +79,42 @@ function Header() {
           >
             Contact Us
           </Link>
+
+          {isLogin ? (
+            <div className="border-s-2 flex justify-center items-center gap-4 px-4">
+              <div className="w-8 h-8 rounded-full overflow-hidden">
+                <img
+                  src={user.photo}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Link
+                to={"/user/dashboard"}
+                className="hover:underline hover:text-(--accent)"
+              >
+                {user.fullName}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-red-300 hover:text-red-600"
+              >
+                <AiOutlineLogout />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                to={"/login"}
+                className="hover:underline hover:text-(--accent)"
+              >
+                Login
+              </Link>
+              <Link to={"/register"} className="hover:underline">
+                Register
+              </Link>
+            </>
+          )}
 
         </div>
       </div>

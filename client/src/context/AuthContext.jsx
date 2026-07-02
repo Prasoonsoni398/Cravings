@@ -3,8 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState();
-  const [isLogin, setisLogin] = useState(false);
+  const [user, setUser] = useState("");
+  
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     // if(user){
@@ -14,14 +15,14 @@ export const AuthProvider = ({ children }) => {
     //     setisLogin(false)
     // }
 
-    setisLogin(!!user);
+    setIsLogin(!!user);
   }, [user]);
 
   const value = {
     user,
     setUser,
     isLogin,
-    setisLogin,
+    setIsLogin,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

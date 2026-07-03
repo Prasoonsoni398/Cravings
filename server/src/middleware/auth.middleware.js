@@ -8,7 +8,7 @@ export const AuthProtect = async (req, res, next) => {
     if (!token) {
       const error = new Error("Session Expired");
       error.statusCode = 404;
-      next(error);
+      return next(error);
     }
 
     console.log("Token from Middleware", token);
@@ -18,7 +18,7 @@ export const AuthProtect = async (req, res, next) => {
     if (!decode) {
       const error = new Error("Session Expired");
       error.statusCode = 401;
-      next(error);
+      return next(error);
     }
 
     const verifiedUser = await User.findById(decode._id)
@@ -26,7 +26,7 @@ export const AuthProtect = async (req, res, next) => {
     if (!verifiedUser) {
       const error = new Error("Session Expired");
       error.statusCode = 401;
-      next(error);
+      return  next(error);
     }
 
     req.user = verifiedUser;

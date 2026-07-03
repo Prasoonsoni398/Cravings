@@ -7,10 +7,12 @@ import AuthRouter from "./src/router/auth.route.js";
 import PublicRouter from "./src/router/public.route.js";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "http://localhost:5173", }));
+app.use(cookieParser)
 
 app.use(express.json());
 

@@ -1,21 +1,31 @@
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaMoon, FaSun } from "react-icons/fa";
 import HeaderLogo from "../assets/images/HeaderLogo.png";
 import { AiOutlineLogout } from "react-icons/ai";
 import { useAuth } from "../context/AuthContext";
-
+import api from "../config/api.config.js";
+import toast from "react-hot-toast";
 
 function Header() {
-    const { user, setUser, isLogin, setIsLogin } = useAuth();
+  const { user, setUser, isLogin, setIsLogin } = useAuth();
 
-     const handleLogout = () => {
-    sessionStorage.removeItem("UserData");
-    setIsLogin(false);
-    setUser(false);
-    navigate("/");
-     }
-  
+   const handleLogout = async () => {
+    try {
+      const res = await api.get("/auth/logout");
+      sessionStorage.removeItem("UserData");
+      setIsLogin(false);
+      setUser(false);
+      navigate("/");
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.error(
+        error.response.status + " | " + error.response?.data?.message ||
+          error.message,
+      );
+    }
+  };
+
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
@@ -38,42 +48,27 @@ function Header() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  
-
   return (
     <header className="h-16 bg-primary">
       <div className="flex h-full items-center justify-between px-6">
-
         {/* Logo */}
-      <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center">
           <Link to="/">
-          <img
-            src={HeaderLogo}
-            alt="Logo"
-            className="h-14"
-          />
-        </Link>
+            <img src={HeaderLogo} alt="Logo" className="h-14" />
+          </Link>
 
-         <button
+          <button
             onClick={toggleTheme}
             className="btn btn-circle btn-ghost text-primary-content"
           >
-            {theme === "dark" ? (
-              <FaSun size={18} />
-            ) : (
-              <FaMoon size={18} />
-            )}
+            {theme === "dark" ? <FaSun size={18} /> : <FaMoon size={18} />}
           </button>
-      </div>
+        </div>
 
         <div className="flex items-center gap-3">
-
           {/* Theme Button */}
-         
 
-          
-
-            <Link
+          <Link
             to="/contact"
             className="rounded-sm px-2 py-1 text-primary-content bg-warning/80 hover:bg-warning"
           >
@@ -115,7 +110,6 @@ function Header() {
               </Link>
             </>
           )}
-
         </div>
       </div>
     </header>

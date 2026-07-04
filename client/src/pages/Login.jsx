@@ -23,6 +23,7 @@ function Login() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    setValidateError("");
     setLoginData((prev) => ({
       ...prev,
       [name]: value,
@@ -56,9 +57,9 @@ function Login() {
       setIsLogin(true)
       navigate("/user/dashboard");
     } catch (error) {
-      setValidateError(
-        toast.error(error.response?.data?.message || "Login Failed"),
-      );
+      const message = error.response?.data?.message || "Login Failed";
+      setValidateError(message);
+      toast.error(message);
     }
   };
 
@@ -145,6 +146,10 @@ function Login() {
                   Forgot Password?
                 </Link>
               </div>
+
+              {validateError ? (
+                <p className="text-sm text-red-500">{validateError}</p>
+              ) : null}
 
               {/* Login Button */}
               <button type="submit" className="btn btn-primary w-full">

@@ -16,14 +16,15 @@ function App() {
       <Toaster />
         <Header />
         <Routes>
-          <Route path="/" element={<Home />} />        
+          <Route path="/" element={<Home />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
           {/* Dashboard Routes */}
-          <Route path="/user/dashboard" element={<UserDashboard/>}/>
+          <Route path="/user/dashboard" element={<UserDashboard />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </>
   );

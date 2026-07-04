@@ -5,7 +5,7 @@ export const EditUserProfile = async (req, res, next) => {
     const { email, fullName, phone } = req.body;
     const currentUserId = req.user?._id || req.body.userId;
 
-    if (!email || !fullName || !phone) {
+    if (!fullName || !phone) {
       const error = new Error("All fields Required");
       error.statusCode = 400;
       return next(error);
@@ -18,7 +18,7 @@ export const EditUserProfile = async (req, res, next) => {
       return next(error);
     }
 
-    if (existingUser.email !== email) {
+    if (email && existingUser.email !== email) {
       const error = new Error("You can only update your own profile");
       error.statusCode = 403;
       return next(error);

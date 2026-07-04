@@ -1,158 +1,97 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import contactBg from "../assets/images/foodTable.webp";
 import api from "../config/api.config.js";
 
-function Contact() {
-  const navigate = useNavigate();
+const initialForm = {
+  fullName: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
-  const [contactData, setContactData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
+const Contact = () => {
+  const [form, setForm] = useState(initialForm);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
-  const [validateError, setValidateError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setContactData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     const payload = {
-      fullName: contactData.fullName,
-      email: contactData.email.toLowerCase(),
-      phone: contactData.phone,
-      subject: contactData.subject,
-      message: contactData.message,
+      fullName: form.fullName.trim(),
+      email: form.email.toLowerCase().trim(),
+      phone: form.phone.trim(),
+      subject: form.subject,
+      message: form.message,
     };
 
+
     try {
-      const res =await api.post("/public/contact", payload);
-    } catch (error) {
-      console.log(error.message);
+      const res = await api.post("/public/contactUs", payload);
+
+      alert(res.data.message);
+
+      setSent(true);
+      setForm(initialForm);
+      console.log(res.data.data);
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong");
     }
   };
 
+
+
   return (
-    <section className="relative h-[91vh] w-full overflow-hidden">
-      {/* Background */}
-      <img
-        src={contactBg}
-        alt="Contact Background"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
-      {/* Contact Card */}
-      <div className="absolute left-[6%] top-1/2 -translate-y-1/2">
-        <div className="card w-[480px] bg-base-100 shadow-2xl">
-          <div className="card-body p-8">
-            <h1 className="text-center text-4xl font-bold text-primary">
-              Contact Us
-            </h1>
-
-            <p className="mb-6 text-center text-secondary">
-              Have a question? We'd love to hear from you.
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+    <main className="flex h-[90vh] items-center justify-start bg-[url('/contactPage.jpg')] bg-cover bg-center p-6 md:p-10 md:ps-30">
+      <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-lg bg-base-100 px-8 py-6 shadow-md md:px-10">
+        <h1 className="mb-2 text-center text-3xl font-bold text-primary">Contact Us</h1>
+        <p className="mb-5 text-center text-secondary">Have a question? We'd love to hear from you.</p>
+        {sent && (
+          <p className="mb-4 rounded-md bg-(--color-success) px-3 py-2 text-sm font-semibold text-white">
+            Message sent. We'll get back to you soon.
+          </p>
+        )}
+        <form onSubmit={handleSubmit}>
+          {[
+            ["fullName", "text", "Enter your full name"],
+            ["email", "email", "Enter your email"],
+            ["phone", "tel", "Enter your phone number"],
+            ["subject", "text", "What is this about?"],
+          ].map(([name, type, placeholder]) => (
+            <div key={name} className="mb-4">
               <input
-                type="text"
-                name="fullName"
-                placeholder="Enter your full name"
-                className="input input-bordered w-full"
-                value={contactData.fullName}
+                type={type}
+                name={name}
+                value={form[name]}
                 onChange={handleChange}
+                placeholder={placeholder}
+                className="w-full rounded-md border border-(--color-base-300) px-3 py-2 text-sm text-(--color-neutral) placeholder-gray-500 outline-none focus:ring-2 focus:ring-primary"
+                required={name !== "phone"}
               />
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                className="input input-bordered w-full"
-                value={contactData.email}
-                onChange={handleChange}
-              />
-
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Enter your phone number"
-                className="input input-bordered w-full"
-                value={contactData.phone}
-                onChange={handleChange}
-              />
-
-              <input
-                type="text"
-                name="subject"
-                placeholder="Subject"
-                className="input input-bordered w-full"
-                value={contactData.subject}
-                onChange={handleChange}
-              />
-
-              <textarea
-                rows={5}
-                name="message"
-                placeholder="Write your message here..."
-                className="textarea h-25 resize-none textarea-bordered w-full"
-                value={contactData.message}
-                onChange={handleChange}
-              />
-
-              {validateError && (
-                <p className="text-sm text-error text-center">
-                  {validateError}
-                </p>
-              )}
-
-              {successMessage && (
-                <p className="text-sm text-success text-center">
-                  {successMessage}
-                </p>
-              )}
-
-              <button type="submit" className="btn btn-primary w-full">
-                Send Message
-              </button>
-            </form>
-
-            <div className="divider"></div>
-
-            <p className="text-center text-secondary">
-              Want to order delicious food?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="font-semibold text-primary hover:underline"
-              >
-                Login
-              </button>
-              {" | "}
-              <button
-                type="button"
-                onClick={() => navigate("/register")}
-                className="font-semibold text-primary hover:underline"
-              >
-                Register
-              </button>
-            </p>
-          </div>
-        </div>
+            </div>
+          ))}
+          <textarea
+            name="message"
+            value={form.message}
+            onChange={handleChange}
+            placeholder="Write your message here..."
+            rows={4}
+            className="mb-6 w-full resize-none rounded-md border border-(--color-base-300) px-3 py-2 text-sm text-(--color-neutral) placeholder-gray-500 outline-none focus:ring-2 focus:ring-primary"
+            required
+          />
+          <button type="submit" className="w-full rounded-md bg-primary py-3 font-semibold text-white transition hover:bg-orange-700">
+            Send Message
+          </button>
+        </form>
       </div>
-    </section>
+    </main>
   );
-}
+};
 
 export default Contact;

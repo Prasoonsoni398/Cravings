@@ -37,7 +37,7 @@ export const RegisterUser = async (req, res, next) => {
     res.status(201).json({ message: "User Created Successfully" });
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -85,6 +85,6 @@ export const LogoutUser = async (req, res, next) => {
     res.status(200).json({message:"Logout Successfully"})
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };

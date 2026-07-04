@@ -1,11 +1,14 @@
-@import "tailwindcss";  
-
+@import "tailwindcss";
 @plugin "flyonui" {
-  themes: light --default, dark --prefersdark;
+  themes: all;
 }
 
-@custom-variant dark (&:where(.dark, .dark *));
+html,
+body,
+#root {
+  min-height: 100%;
+}
 
-@import "flyonui/variants.css";
-
-@source "../node_modules/flyonui/dist/index.js";
+button {
+  cursor: pointer   ;
+}

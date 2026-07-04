@@ -1,44 +1,28 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import loginBg from "../assets/images/foodTable.webp";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../config/api.config.js";
-import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
+import toast from 'react-hot-toast';
+import { useAuth } from "../context/AuthContext.jsx";
 
-function Login() {
-
-  const {setUser,setIsLogin} = useAuth()
-
-  const navigate = useNavigate();
-
+const Login = () => {
+  const { setUser, setIsLogin } = useAuth();
+  const navigate = useNavigate("");
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [validateError, setValidateError] = useState("");
+  const [validateError, setValidateError] = useState();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const name = e.target.name;
+    const value = e.target.value;
 
-    setValidateError("");
-    setLoginData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setLoginData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!loginData.email || !loginData.password) {
-      setValidateError("Please fill all fields.");
-      return;
-    }
-
-    setValidateError("");
 
     const payload = {
       email: loginData.email.toLowerCase(),
@@ -49,130 +33,79 @@ function Login() {
       const res = await api.post("/auth/login", payload);
 
       toast.success(res.data.message);
-
-      // Clear form
-     
-      sessionStorage.setItem("UserData",JSON.stringify(res.data.data))
-      setUser(res.data.data)
-      setIsLogin(true)
+      sessionStorage.setItem("UserData", JSON.stringify(res.data.data));
+      setUser(res.data.data);
+      setIsLogin(true);
       navigate("/user/dashboard");
     } catch (error) {
-      const message = error.response?.data?.message || "Login Failed";
-      setValidateError(message);
-      toast.error(message);
+      toast.error("This didn't work.");
+      alert("Login Failed", error.message);
     }
   };
 
   return (
-    <section className="relative h-[91vh] w-full overflow-hidden">
-      {/* Background */}
-      <img
-        src={loginBg}
-        alt="Food Table"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
-      {/* Login Card */}
-      <div className="absolute left-[8%] top-1/2 -translate-y-1/2">
-        <div className="card w-[430px] bg-base-100 shadow-2xl">
-          <div className="card-body p-8">
-            <h2 className="text-center text-3xl font-bold text-primary">
+    <>
+      <div className='h-[90vh] bg-[url("/foodTable.webp")] bg-yellow-400 grid items-center justify-start bg-cover bg-center md:ps-30 '>
+        <div className="bg-base-100 p-10 grid gap-8 rounded-md w-100">
+          <div className="grid gap-3">
+            <h1 className="text-4xl text-center font-semibold text-primary ">
               Welcome Back
-            </h2>
-
-            <p className="mb-4 text-center text-secondary">
-              Login to your Cravings account
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
-              <div>
-                <label className="label mb-2">
-                  <span className="label-text font-semibold">Email</span>
-                </label>
-
-                <input
-                  type="email"
-                  name="email"
-                  className="input input-bordered w-full"
-                  placeholder="Enter your Email"
-                  value={loginData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="label mb-2">
-                  <span className="label-text font-semibold">Password</span>
-                </label>
-
-                <div className="input input-bordered flex items-center">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    className="grow"
-                    placeholder="Enter your Password"
-                    value={loginData.password}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="cursor-pointer"
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Remember Me */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-primary checkbox-sm"
-                  />
-                  <span className="label-text">Remember me</span>
-                </label>
-
-                <Link
-                  to="/forgot-password"
-                  className="link link-primary text-sm"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-
-              {validateError ? (
-                <p className="text-sm text-red-500">{validateError}</p>
-              ) : null}
-
-              {/* Login Button */}
-              <button type="submit" className="btn btn-primary w-full">
-                Login
-              </button>
-            </form>
-
-            <div className="divider">Don't have an account?</div>
-
-            {/* Register */}
-            <p className="text-center">
+            </h1>
+            <p className="text-center">Login to your Cravings account</p>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="grid mb-4">
+              <label htmlFor="email" className="mb-2 text-1xl">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Enter your email"
+                value={loginData.email}
+                onChange={handleChange}
+                className="border text-primary focus:outline focus:outline-primary p-1 rounded focus:outline-2"
+              />
+            </div>
+            <div className="grid mb-4">
+              <label htmlFor="password" className="mb-2 text-1xl">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                value={loginData.password}
+                onChange={handleChange}
+                className="border border-primary focus:outline focus:outline-primary p-1 rounded focus:outline-2"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2 mb-4 rounded-md bg-primary text-white text-lg"
+            >
+              Login
+            </button>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="w-17 border" />
+              <p className="">Don't have an account?</p>
+              <div className="w-17 border" />
+            </div>
+            <p className="text-center ">
               <Link
-                to="/register"
-                className="font-semibold text-primary hover:underline"
+                to='/register'
+                className="text-primary cursor-pointer"
               >
                 Create an account
               </Link>
             </p>
-          </div>
+          </form>
         </div>
       </div>
-    </section>
+    </>
   );
-}
+};
 
 export default Login;

@@ -1,53 +1,44 @@
-import React from "react";
-import {
-  MdOutlineDashboard,
-  MdOutlineBorderColor,
-  MdFavoriteBorder,
-} from "react-icons/md";
-import { PiListHeart } from "react-icons/pi";
-import { BsPersonGear } from "react-icons/bs";
-import { useAuth } from "../../context/AuthContext";
+import React from 'react'
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FaBorderAll } from "react-icons/fa6";
+import { MdOutlineDashboard, MdOutlineFavorite, MdSettingsSuggest } from "react-icons/md";
 
 const MenuItems = [
-  { name: "Overview", icon: <MdOutlineDashboard /> },
-  { name: "Orders", icon: <MdOutlineBorderColor /> },
-  { name: "WishList", icon: <PiListHeart /> },
-  { name: "Setting", icon: <BsPersonGear /> },
-];
+    { name: "Overview", path: "overview", icon: <MdOutlineDashboard /> },
+    { name: "Order", path: "order", icon: <FaBorderAll /> },
+    { name: "Wishlist", path: "wishlist", icon: <MdOutlineFavorite /> },
+    { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
+]
 
-const Sidebar = ({ active, setActive }) => {
-  const { user } = useAuth();
-  return (
-    <>
-      <div className=" p-2">
-        <div className="flex gap-3 items-center border-b-2 border-primary p-2 pb-4 ">
-          <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer">
-            <img
-              src={user.photo}
-              alt=""
-              className="w-full h-full object-cover "
-            />
-          </div>
-          <h1 className="text-xl font-semibold flex flex-col cursor-pointer">
-            <span className="text-warning">{user.fullName}</span>
-          </h1>
-        </div>
+const Sidebar = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const currentPath = location.pathname.split('/').pop();
 
-        <div className="space-y-2 mt-4 p-3">
-          {MenuItems.map((item, idx) => (
-            <button
-              key={idx}
-              className={`flex gap-3 px-4 font-semibold items-center  rounded-lg w-full p-2 ${active === item.name ? "bg-primary text-primary-content" : "hover:bg-primary/10"}`}
-              onClick={() => setActive(item.name)}
-            >
-              {item.icon}
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-};
+    const handleNavigation = (path) => {
+        navigate(`/user/dashboard/${path}`);
+    }
 
-export default Sidebar;
+    return (
+        <>
+            <div className='w-full max-w-[250px] fixed border border-base-200 bg-base-200 shadow-md h-[91vh]'>
+                <div className='border-b-2 text-center  text-primary font-bold border-primary text-2xl p-3'>
+                    User Dashboard
+                </div>
+                <div className='p-2 flex flex-col gap-3 items-center '>
+                    {MenuItems.map((item, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => handleNavigation(item.path)}
+                            className={`flex items-center hover:border-primary w-full gap-2 text-xl p-2 rounded-sm border ${currentPath === item.path && "bg-primary text-primary-content"}`}>
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </>
+    )
+}
+
+export default Sidebar

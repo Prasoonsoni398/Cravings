@@ -20,8 +20,14 @@ const UserSchema = mongoose.Schema(
       required: true,
     },
     photo: {
-      type:String,
-      required: true,
+      url: {
+        type: String,
+        required: true,
+      },
+      publicId: {
+        type: String,
+        required: true,
+      },
     },
     password: {
       type: String,
@@ -37,7 +43,6 @@ const UserSchema = mongoose.Schema(
   },
 );
 
-
-const User = mongoose.model("User",UserSchema)
+const User = mongoose.model("User", UserSchema);
 
 export default User;

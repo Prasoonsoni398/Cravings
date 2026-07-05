@@ -8,6 +8,7 @@ const Setting = () => {
   const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -33,11 +34,10 @@ const Setting = () => {
   const handleProfilePicChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setProfilePicPreview(URL.createObjectURL(file));
+    setProfilePic(file);
 
-    const fileURL = URL.createObjectURL(file);
-    setProfilePicPreview(fileURL);
-
-    const updatedUser = user ? { ...user, photo: fileURL } : { photo: fileURL };
+    const updatedUser = user ? { ...user, photo: URL.createObjectURL(file) } : { photo: URL.createObjectURL(file) };
     setUser(updatedUser);
     sessionStorage.setItem("UserData", JSON.stringify(updatedUser));
     toast.success("Profile photo updated locally.");
@@ -87,7 +87,7 @@ const Setting = () => {
   return (
     <div className="max-w-2xl rounded-xl border border-base-200 bg-primary-content p-6 shadow-md">
       <div className="mb-6 flex items-center gap-4">
-        <div className="relative h-16 w-16 overflow-hidden rounded-full">
+        <div className="relative h-28 w-28 overflow-hidden rounded-full">
           <img
             src={profilePicPreview || user.photo || "https://placehold.co/600x400?text=U"}
             alt={user.fullName || "User"}
@@ -95,10 +95,10 @@ const Setting = () => {
           />
           <label
             htmlFor="profilePic"
-            className="absolute bottom-1 right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-white bg-base-200 shadow-md"
+            className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-base-200 shadow-md"
             title="Change Photo"
           >
-            <MdOutlineAddPhotoAlternate className="text-sm" />
+            <MdOutlineAddPhotoAlternate className="text-xl" />
           </label>
           <input
             type="file"

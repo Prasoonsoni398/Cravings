@@ -1,9 +1,11 @@
 import User from "../models/user.model.js";
+import cloudinary from "../config/cloudinary.config.js";
 
 export const EditUserProfile = async (req, res, next) => {
   try {
     const { email, fullName, phone } = req.body;
     const currentUserId = req.user?._id || req.body.userId;
+    const newPhoto = req.file
 
     if (!fullName || !phone) {
       const error = new Error("All fields Required");
@@ -16,6 +18,11 @@ export const EditUserProfile = async (req, res, next) => {
       const error = new Error("User not found");
       error.statusCode = 404;
       return next(error);
+    }
+
+    if(newPhoto){
+      const b64 = Buffer.from('image',"base64").toString("base64")
+      const dataURI = `data:${newPhoto.mimetype};base64:,{b64}`
     }
 
     if (email && existingUser.email !== email) {

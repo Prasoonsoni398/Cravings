@@ -22,8 +22,8 @@ export const RegisterUser = async (req, res, next) => {
     const photoURL = `https://placehold.co/600x400?text=${fullName.charAt(0).toUpperCase()}`;
 
     const photo = {
-      url = photo,
-      publicURL = null
+      url : photo,
+      publicURL : null
     }
 
     const SALT = await bcrypt.genSalt(10);

@@ -23,8 +23,9 @@ export const EditUserProfile = async (req, res, next) => {
     if(newPhoto){
       const b64 = Buffer.from('image',"base64").toString("base64")
       const dataURI = `data:${newPhoto.mimetype};base64:,{b64}`
+      console.log(dataURI);
     }
-
+    
     if (email && existingUser.email !== email) {
       const error = new Error("You can only update your own profile");
       error.statusCode = 403;

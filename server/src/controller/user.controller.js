@@ -1,14 +1,31 @@
 import User from "../models/user.model.js";
 import cloudinary from "../config/cloudinary.config.js";
 
+const uploadPhotoToCloudinary = async (file) => {
+  if (!file) return null;
+
+  const base64 = Buffer.from(file.buffer).toString("base64");
+  const dataURI = `data:${file.mimetype};base64,${base64}`;
+
+  const result = await cloudinary.uploader.upload(dataURI, {
+    folder: "cravings/users",
+    resource_type: "image",
+  });
+
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
+};
+
 export const EditUserProfile = async (req, res, next) => {
   try {
     const { email, fullName, phone } = req.body;
     const currentUserId = req.user?._id || req.body.userId;
-    const newPhoto = req.file
+    const newPhoto = req.file;
 
-    if (!fullName || !phone) {
-      const error = new Error("All fields Required");
+    if (!fullName && !phone && !email && !newPhoto) {
+      const error = new Error("Please provide at least one field to update");
       error.statusCode = 400;
       return next(error);
     }
@@ -20,25 +37,45 @@ export const EditUserProfile = async (req, res, next) => {
       return next(error);
     }
 
-    if(newPhoto){
-      const b64 = Buffer.from('image',"base64").toString("base64")
-      const dataURI = `data:${newPhoto.mimetype};base64:,{b64}`
-      console.log(dataURI);
-    }
-    
-    if (email && existingUser.email !== email) {
-      const error = new Error("You can only update your own profile");
-      error.statusCode = 403;
-      return next(error);
+    if (email?.trim()) {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (normalizedEmail !== existingUser.email.toLowerCase()) {
+        const emailExists = await User.findOne({
+          email: normalizedEmail,
+          _id: { $ne: currentUserId },
+        });
+
+        if (emailExists) {
+          const error = new Error("Email already registered");
+          error.statusCode = 409;
+          return next(error);
+        }
+      }
+
+      existingUser.email = normalizedEmail;
     }
 
-    existingUser.fullName = fullName.trim();
-    existingUser.phone = phone.trim();
+    if (newPhoto) {
+      if (existingUser.photo?.publicId) {
+        await cloudinary.uploader.destroy(existingUser.photo.publicId).catch(() => {});
+      }
+
+      const uploadedPhoto = await uploadPhotoToCloudinary(newPhoto);
+      existingUser.photo = uploadedPhoto;
+    }
+
+    if (fullName?.trim()) {
+      existingUser.fullName = fullName.trim();
+    }
+
+    if (phone?.trim()) {
+      existingUser.phone = phone.trim();
+    }
 
     await existingUser.save();
 
     res.status(200).json({
-      message: "User Updated Sucessfully",
+      message: "User Updated Successfully",
       data: existingUser,
     });
   } catch (error) {

@@ -80,7 +80,7 @@ const Header = () => {
                   Dashboard
                 </Link>
                 <img
-                  src={Logo}
+                  src={user.photo?.url || user?.photo || "https://placehold.co/600x400?text=U"}
                   alt={user.fullName}
                   className="w-12 h-12 rounded-full object-cover "
                 />

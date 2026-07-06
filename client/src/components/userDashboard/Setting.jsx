@@ -8,10 +8,11 @@ const Setting = () => {
   const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
+  const [selectedProfilePic, setSelectedProfilePic] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
+    email: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,7 +25,9 @@ const Setting = () => {
       });
     }
 
-    if (user?.photo) {
+    if (user?.photo?.url) {
+      setProfilePicPreview(user.photo.url);
+    } else if (user?.photo) {
       setProfilePicPreview(user.photo);
     } else {
       setProfilePicPreview(null);
@@ -34,13 +37,9 @@ const Setting = () => {
   const handleProfilePicChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setProfilePicPreview(URL.createObjectURL(file));
-    setProfilePic(file);
 
-    const updatedUser = user ? { ...user, photo: URL.createObjectURL(file) } : { photo: URL.createObjectURL(file) };
-    setUser(updatedUser);
-    sessionStorage.setItem("UserData", JSON.stringify(updatedUser));
-    toast.success("Profile photo updated locally.");
+    setSelectedProfilePic(file);
+    setProfilePicPreview(URL.createObjectURL(file));
     e.target.value = "";
   };
 
@@ -57,15 +56,23 @@ const Setting = () => {
     setIsLoading(true);
 
     try {
-      const res = await api.put("/auth/profile", {
-        userId: user._id,
-        fullName: formData.fullName.trim(),
-        phone: formData.phone.trim(),
+      const uploadData = new FormData();
+      uploadData.append("fullName", formData.fullName.trim());
+      uploadData.append("phone", formData.phone.trim());
+      uploadData.append("email", formData.email.trim());
+
+      if (selectedProfilePic) {
+        uploadData.append("displayPic", selectedProfilePic);
+      }
+
+      const res = await api.put("/auth/profile", uploadData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success(res.data.message);
+      toast.success(res.data.message || "Profile updated successfully.");
       sessionStorage.setItem("UserData", JSON.stringify(res.data.data));
       setUser(res.data.data);
+      setSelectedProfilePic(null);
       setIsEditing(false);
     } catch (error) {
       toast.error(
@@ -73,6 +80,23 @@ const Setting = () => {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setSelectedProfilePic(null);
+    setFormData({
+      fullName: user.fullName || "",
+      phone: user.phone || "",
+      email: user.email || "",
+    });
+    if (user?.photo?.url) {
+      setProfilePicPreview(user.photo.url);
+    } else if (user?.photo) {
+      setProfilePicPreview(user.photo);
+    } else {
+      setProfilePicPreview(null);
     }
   };
 
@@ -89,92 +113,98 @@ const Setting = () => {
       <div className="mb-6 flex items-center gap-4">
         <div className="relative h-28 w-28 overflow-hidden rounded-full">
           <img
-            src={profilePicPreview || user.photo || "https://placehold.co/600x400?text=U"}
+            src={profilePicPreview || user?.photo?.url || user?.photo || "https://placehold.co/600x400?text=U"}
             alt={user.fullName || "User"}
             className="h-full w-full object-cover bg-amber-300"
           />
-          <label
-            htmlFor="profilePic"
-            className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-base-200 shadow-md"
-            title="Change Photo"
-          >
-            <MdOutlineAddPhotoAlternate className="text-xl" />
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            name="profilePic"
-            id="profilePic"
-            className="hidden"
-            onChange={handleProfilePicChange}
-          />
+          {isEditing && (
+            <>
+              <label
+                htmlFor="profilePic"
+                className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-base-200 shadow-md"
+                title="Change Photo"
+              >
+                <MdOutlineAddPhotoAlternate className="text-xl" />
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                name="displayPic"
+                id="profilePic"
+                className="hidden"
+                onChange={handleProfilePicChange}
+              />
+            </>
+          )}
         </div>
         <div>
           <h2 className="text-xl font-semibold">Profile Settings</h2>
           <p className="text-sm text-gray-500">
-            Update your name and phone number.
+            {isEditing
+              ? "Choose a new photo to upload and save to your account."
+              : "Update your profile photo from here."}
           </p>
         </div>
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <input
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="w-full rounded-md border px-3 py-2"
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
+
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <input
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full rounded-md border px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full rounded-md border px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <input
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full rounded-md border px-3 py-2"
+                required
+              />
+            </div>
+            
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
-            <input
-              name="phone"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-md border px-3 py-2 disabled:bg-gray-200 text-base-content"
-              disabled
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
-            <input
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full rounded-md border px-3 py-2"
-              required
-            />
-          </div>
-          <div className="flex gap-3">
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="rounded-md bg-amber-500 px-4 py-2 text-white disabled:opacity-60"
+              className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
             >
-              {isLoading ? "Saving..." : "Save Changes"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsEditing(false);
-                setFormData({
-                  fullName: user.fullName || "",
-                  phone: user.phone || "",
-                });
-              }}
-              className="rounded-md border px-4 py-2"
-            >
-              Cancel
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

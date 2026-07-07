@@ -111,7 +111,8 @@ const Setting = () => {
   return (
     <div className="max-w-2xl rounded-xl border border-base-200 bg-primary-content p-6 shadow-md">
       <div className="mb-6 flex items-center gap-4">
-        <div className="relative h-28 w-28 overflow-hidden rounded-full">
+        <div className="relative">
+          <div className=" h-53 w-45 overflow-hidden rounded-xl ">
           <img
             src={profilePicPreview || user?.photo?.url || user?.photo || "https://placehold.co/600x400?text=U"}
             alt={user.fullName || "User"}
@@ -121,7 +122,7 @@ const Setting = () => {
             <>
               <label
                 htmlFor="profilePic"
-                className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-base-200 shadow-md"
+                className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border  bg-base-200 shadow-md"
                 title="Change Photo"
               >
                 <MdOutlineAddPhotoAlternate className="text-xl" />
@@ -137,48 +138,48 @@ const Setting = () => {
             </>
           )}
         </div>
-        <div>
-          <h2 className="text-xl font-semibold">Profile Settings</h2>
+        </div>
+        <div className="flex flex-col gap-5 w-full">
+          <div className="border-b border-primary pb-4">
+            <h2 className="text-xl font-semibold">Profile Settings</h2>
           <p className="text-sm text-gray-500">
             {isEditing
               ? "Choose a new photo to upload and save to your account."
               : "Update your profile photo from here."}
           </p>
-        </div>
-      </div>
-
-      {isEditing ? (
+          </div>
+           {isEditing ? (
         <form onSubmit={handleSubmit} className="space-y-4 ">
 
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Full Name
+          <div className="grid gap-4">
+            <div className="flex gap-2 items-center">
+              <label className="mb-1 block text-sm font-medium">
+                Name:
               </label>
               <input
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                className="w-full rounded-md border px-3 py-2"
+                className=" flex flex-1 rounded-md border px-3 py-2 "
                 required
               />
-            </div>
-            <div>
+            </div >
+            <div className="flex gap-2 items-center">
               <label className="mb-1 block text-sm font-medium text-gray-700">
-                Email
+                Email:
               </label>
               <input
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-md border px-3 py-2 cursor-not-allowed bg-gray-300"
+                className="flex flex-1 rounded-md border px-3 py-2 cursor-not-allowed bg-gray-300"
                 disabled
               />
             </div>
-            <div>
+            <div className="flex gap-2 items-center">
               <label className="mb-1 block text-sm font-medium text-gray-700">
-                Phone Number
+                Phone:
               </label>
               <input
                 name="phone"
@@ -191,15 +192,7 @@ const Setting = () => {
             
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
-            >
-              {isLoading ? "Saving..." : "Save"}
-            </button>
+          <div className="flex flex-wrap justify-end items-center gap-3">
             <button
               type="button"
               onClick={handleCancel}
@@ -207,6 +200,14 @@ const Setting = () => {
             >
               Cancel
             </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
+            >
+              {isLoading ? "Saving..." : "Save"}
+            </button>
+            
           </div>
         </form>
       ) : (
@@ -222,12 +223,17 @@ const Setting = () => {
           </div>
           <button
             onClick={() => setIsEditing(true)}
-            className="rounded-md bg-primary px-4 py-2 text-white"
+            className="rounded-md bg-primary px-4 py-1 justify-self-end flex text-white"
           >
             Edit
           </button>
         </div>
       )}
+        </div>
+        
+      </div>
+
+     
     </div>
   );
 };

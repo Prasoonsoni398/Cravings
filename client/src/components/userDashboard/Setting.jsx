@@ -148,7 +148,7 @@ const Setting = () => {
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
+        <form onSubmit={handleSubmit} className="space-y-4 ">
 
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -172,8 +172,8 @@ const Setting = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-md border px-3 py-2"
-                required
+                className="w-full rounded-md border px-3 py-2 cursor-not-allowed bg-gray-300"
+                disabled
               />
             </div>
             <div>
@@ -192,19 +192,20 @@ const Setting = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700"
-            >
-              Cancel
-            </button>
+            
             <button
               type="submit"
               disabled={isLoading}
               className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
             >
               {isLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700"
+            >
+              Cancel
             </button>
           </div>
         </form>

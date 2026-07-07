@@ -56,12 +56,12 @@ export const EditUserProfile = async (req, res, next) => {
     }
 
     if (newPhoto) {
-      if (existingUser.photo?.publicId) {
-        await cloudinary.uploader.destroy(existingUser.photo.publicId).catch(() => {});
-      }
+      existingUser.photo?.publicId &&
+        (await cloudinary.uploader
+          .destroy(existingUser.photo.publicId)
+          .catch(() => {}));
 
-      const uploadedPhoto = await uploadPhotoToCloudinary(newPhoto);
-      existingUser.photo = uploadedPhoto;
+      existingUser.photo = await uploadPhotoToCloudinary(newPhoto);
     }
 
     if (fullName?.trim()) {

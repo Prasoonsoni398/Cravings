@@ -7,6 +7,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
+    
     fullName: "",
     email: "",
     phone: "",
@@ -178,7 +179,7 @@ const Register = () => {
           </div>
 
           {error && (
-            <p className="col-span-2 text-red-600 text-sm">
+            <p className="col-span-2 text-error text-sm">
               {error}
             </p>
           )}

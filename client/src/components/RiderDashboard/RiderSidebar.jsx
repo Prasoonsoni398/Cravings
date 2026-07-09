@@ -10,7 +10,7 @@ const MenuItems = [
     { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
 ]
 
-const Sidebar = () => {
+const RiderSidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname.split('/').pop();
@@ -41,4 +41,4 @@ const Sidebar = () => {
     )
 }
 
-export default Sidebar
+export default RiderSidebar

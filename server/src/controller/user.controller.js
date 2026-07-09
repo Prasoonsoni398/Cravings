@@ -19,6 +19,7 @@ const uploadPhotoToCloudinary = async (file) => {
 };
 
 export const EditUserProfile = async (req, res, next) => {
+
   try {
     const { email, fullName, phone } = req.body;
     const currentUserId = req.user?._id || req.body.userId;

@@ -38,8 +38,7 @@ const Login = () => {
       setIsLogin(true);
       navigate("/user/dashboard");
     } catch (error) {
-      toast.error("This didn't work.");
-      alert("Login Failed", error.message);
+      toast.error(error.message);
     }
   };
 

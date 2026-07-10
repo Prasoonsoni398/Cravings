@@ -223,10 +223,11 @@ const Setting = () => {
           </div>
           <button
             onClick={() => setIsEditing(true)}
-            className="rounded-md bg-primary px-4 py-1 justify-self-end flex text-white"
+            cblassName="rounded-md bg-primary px-4 py-1 justify-self-end flex text-white"
           >
             Edit
           </button>
+          
         </div>
       )}
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, useNavigate,useLocation } from "react-router-dom";
 import Sidebar from "../../components/restaurantDashboard/RestaurantSidebar.jsx";
 
 const RestaurantDashboard = () => {

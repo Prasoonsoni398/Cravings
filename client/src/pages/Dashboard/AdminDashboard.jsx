@@ -1,9 +1,9 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { Outlet, Navigate } from "react-router-dom";
-import AdminSidebar from "../../components/adminDashboard/AdminSidebar.jsx";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import AdminSidebar from "../../components/adminDashboard/AdminSidebar";
 import AdminSetting from "../../components/adminDashboard/AdminSetting";
-import AdminOverview from "../../components/adminDashboard/AdminOverView.jsx";
+import AdminOverview from "../../components/adminDashboard/AdminOverView";
 import AdminOrders from "../../components/adminDashboard/AdminOrder.jsx";
 
 const AdminDashboard = () => {
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
       {/* create a sidebar and main content area */}
       <div className="flex h-full">
         <div className="w-1/6 border border-base-300">
-          <Sidebar />
+          <AdminSidebar />
         </div>
         <div className="w-5/6 h-full border border-base-300 p-4">
           <Outlet />

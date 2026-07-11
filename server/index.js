@@ -7,7 +7,7 @@ import PublicRouter from "./src/router/public.route.js";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import UserRouter from "./src/router/user.route.js";
+import UserRouter from "./src/router/common.route.js";
 import OrderRouter from "./src/router/order.route.js";
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 app.use("/auth", AuthRouter);
 app.use("/public", PublicRouter);
-app.use("/user", UserRouter);
+app.use("/common", UserRouter);
 app.use("/orders", OrderRouter);
 
 // Default API

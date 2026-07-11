@@ -1,43 +1,109 @@
 import mongoose from "mongoose";
 
-const OrderSchema = new mongoose.Schema(
+const OrderSchema = mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
     restaurantId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "restaurant",
       required: true,
     },
-    restaurantName: {
-      type: String,
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "customer",
       required: true,
     },
-    items: [
-      {
-        name: { type: String, required: true },
-        qty: { type: Number, required: true },
-        price: { type: Number, required: true },
-      },
-    ],
-    totalPrice: {
+    riderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "rider",
+      required: false,
+    },
+    orderItems: {
+      type: [
+        {
+          itemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "menuItem",
+            required: true,
+          },
+          quantity: { type: Number, required: true },
+        },
+      ],
+    },
+    orderStatus: {
+      type: String,
+      enum: [
+        "pending",
+        "accepted",
+        "preparing",
+        "ready",
+        "pickedUp",
+        "onTheWay",
+        "outForDelivery",
+        "undeliverable",
+        "delivered",
+        "cancelled",
+        "failed",
+        "rejected",
+      ],
+      default: "pending",
+    },
+    rating: {
       type: Number,
-      required: true,
+      min: 1,
+      max: 5,
+    },
+    billDetails: {
+      type: {
+        totalAmount: { type: Number, required: true },
+        platformFee: { type: Number, required: true },
+        convenienceFee: { type: Number, required: true },
+        taxAmount: { type: Number, required: true },
+        deliveryCharge: { type: Number, required: true },
+        discountAmount: { type: Number, required: true },
+        finalAmount: { type: Number, required: true },
+      },
     },
     deliveryAddress: {
-      type: String,
-      required: true,
+      type: {
+        name: { type: String, required: true },
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        pinCode: { type: String, required: true },
+        country: { type: String, required: true },
+        geoLocation: {
+          type: {
+            lat: {
+              type: String,
+            },
+            lon: {
+              type: String,
+            },
+          },
+        },
+      },
     },
-    status: {
-      type: String,
-      default: "Pending",
+
+    paymentDetails: {
+      type: {
+        paymentMethod: {
+          type: String,
+          enum: ["card", "upi"],
+          required: true,
+        },
+        paymentStatus: {
+          type: String,
+          enum: ["pending", "completed", "failed"],
+          default: "pending",
+        },
+      },
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-const Order = mongoose.model("Order", OrderSchema);
+const Order = mongoose.model("order", OrderSchema);
 
 export default Order;

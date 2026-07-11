@@ -1,19 +1,22 @@
 import express from "express";
-import multer from "multer";
 import {
   LoginUser,
   LogoutUser,
   RegisterUser,
+  SendOtp,
+  VerifyOtp,
+  ResetPassword,
 } from "../controller/auth.controller.js";
-import { EditUserProfile } from "../controller/user.controller.js";
-import { AuthProtect } from "../middleware/auth.middleware.js";
+import { OTPAuthProtect } from "../middleware/auth.middelware.js";
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/register", RegisterUser);
 router.post("/login", LoginUser);
 router.get("/logout", LogoutUser);
-router.put("/profile", AuthProtect, upload.single("displayPic"), EditUserProfile);
+
+router.post("/send-otp", SendOtp);
+router.post("/verify-otp", VerifyOtp);
+router.post("/reset-password", OTPAuthProtect, ResetPassword);
 
 export default router;

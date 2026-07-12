@@ -41,8 +41,18 @@ const UserSchema = mongoose.Schema(
       enum:["admin","customer","rider","restaurant"],
       required:true,
       default:"customer",
-    }
+    },
+       isActive: {
+      type: Boolean,
+      default: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "verified", "suspended"],
+      default: "pending",
+    },
   },
+  
   {
     timestamps: true,
   },

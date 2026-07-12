@@ -9,6 +9,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import UserRouter from "./src/router/common.route.js";
 import OrderRouter from "./src/router/order.route.js";
+import RestaurantRouter from "./src/router/restaurant.route.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/auth", AuthRouter);
 app.use("/public", PublicRouter);
 app.use("/common", UserRouter);
 app.use("/orders", OrderRouter);
+app.use("/restaurant", RestaurantRouter);
 
 // Default API
 app.get("/", (req, res) => {

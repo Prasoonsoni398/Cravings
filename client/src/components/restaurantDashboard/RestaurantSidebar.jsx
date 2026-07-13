@@ -9,25 +9,25 @@ import {
 
 const MenuItems = [
   { name: "Overview", path: "overview", icon: <MdOutlineDashboard /> },
-  { name: "Order", path: "order", icon: <FaBorderAll /> },
+  { name: "Order", path: "orders", icon: <FaBorderAll /> },
   { name: "Wishlist", path: "wishlist", icon: <MdOutlineFavorite /> },
   { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
 ];
 
-const RestaurantSidebar = () => {
+const RestaurantSidebar = ({ activeTab, setActiveTab }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname.split("/").pop();
+  const currentPath = activeTab || "overview";
 
   const handleNavigation = (path) => {
-    navigate(`/user/dashboard/${path}`);
+    setActiveTab(path);
+    navigate(`/restaurant-dashboard/${path}`);
   };
 
   return (
     <>
-      <div className="w-full max-w-[250px] fixed border border-base-200 bg-base-200 shadow-md h-[91vh]">
-        <div className="border-b-2 text-center  text-primary font-bold border-primary text-2xl p-3">
-          User Dashboard
+      <div className="w-full max-w-65 fixed border bg-base-200 shadow-md h-[91vh]">
+        <div className="border-b-2 text-center  text-primary font-bold border-primary text-xl p-3">
+          Restaurant Dashboard
         </div>
         <div className="p-2 flex flex-col gap-3 items-center ">
           {MenuItems.map((item, idx) => (

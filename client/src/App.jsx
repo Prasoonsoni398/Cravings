@@ -18,10 +18,8 @@ import TermsOfService from "./pages/TermsOfService";
 import SiteMap from "./pages/SiteMap";
 import { Toaster } from "react-hot-toast";
 import UserDashboard from "./pages/dashboard/UserDashboard";
-import OverView from "./components/userDashboard/OverView";
-import Order from "./components/userDashboard/Order";
-import Wishlist from "./components/userDashboard/Wishlist";
-import Setting from "./components/userDashboard/Setting";
+import OverView from "./components/userDashboard/UserOverView";
+
 import RestaurantDashboard from "./pages/dashboard/RestaurantDashboard";
 import RiderDashboard from "./pages/dashboard/RiderDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
@@ -46,23 +44,16 @@ const App = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/partner-with-us" element={<PartnerWithUs />} />
-        <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
+        <Route path="/restaurant-dashboard/*" element={<RestaurantDashboard />} />
         <Route path="/become-a-rider" element={<BecomeARider />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/site-map" element={<SiteMap />} />
-        <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
         <Route path="/rider-dashboard" element={<RiderDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
         {/* Dashboard routes  */}
-        <Route path="/user/dashboard" element={<UserDashboard />}>
-          <Route index element={<Navigate to="overview" replace />} />
-          <Route path="overview" element={<OverView />} />
-          <Route path="order" element={<Order />} />
-          <Route path="wishlist" element={<Wishlist />} />
-          <Route path="setting" element={<Setting />} />
-        </Route>
+        <Route path="/user/dashboard/*" element={<UserDashboard />} />
       </Routes>
       <Footer />
     </BrowserRouter>

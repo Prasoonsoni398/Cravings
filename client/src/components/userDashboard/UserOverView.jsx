@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { FiClock, FiHeart, FiShoppingCart, FiUser, FiArrowRight, FiMapPin, FiStar } from 'react-icons/fi'
-import { restaurants } from '../../data/siteData'
+import { restaurants } from '../../data/siteData.js'
 
 const stats = [
   { label: 'Orders', value: '24', icon: <FiShoppingCart size={18} />, color: 'bg-orange-50 text-orange-600' },

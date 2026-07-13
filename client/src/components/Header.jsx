@@ -19,7 +19,15 @@ const themeOptions = [
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, setIsLogin, isLogin, setUser } = useAuth();
+  const { user, setIsLogin, isLogin, setUser, role } = useAuth();
+
+  const dashboardRoute = role === "restaurant"
+    ? "/restaurant-dashboard"
+    : role === "rider"
+      ? "/rider-dashboard"
+      : role === "admin"
+        ? "/admin-dashboard"
+        : "/user/dashboard";
 
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("cravings-theme") || "light";
@@ -74,7 +82,7 @@ const Header = () => {
               <div className="flex items-center gap-4 ">
                 <span className=" text-white">{user.fullName}</span>
                 <Link
-                  to="/user/dashboard"
+                  to={dashboardRoute}
                   className="p-2 bg-base-100 rounded-md text-primary text-decoration-none flex items-center hover:outline "
                 >
                   Dashboard

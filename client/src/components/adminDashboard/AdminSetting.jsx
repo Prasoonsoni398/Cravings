@@ -69,7 +69,7 @@ const AdminSetting = () => {
         uploadData.append("displayPic", selectedProfilePic);
       }
 
-      const res = await api.put("/common/profile", uploadData, {
+      const res = await api.put("/common/edit-profile", uploadData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -116,7 +116,7 @@ const AdminSetting = () => {
     <>
       <div className="overflow-y-auto h-full p-6 space-y-6">
         {/* User Profile Section */}
-        <div className="bg-(--color-base-200) rounded-lg p-6">
+        <div className="bg-amber-300 rounded-lg p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Profile Information</h3>
             {!editingProfile ? (

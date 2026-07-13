@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../config/api.config.js";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { MdOutlineAddPhotoAlternate } from "react-icons/md";
+import { MdOutlineAddPhotoAlternate, MdEdit, MdOutlineAddAPhoto , MdOutlineLockReset } from "react-icons/md";
+import PasswordChangeModal from "../commonModal/PasswordChangeModal";
 
 const RestaurantSetting = () => {
   const { user, setUser } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [selectedProfilePic, setSelectedProfilePic] = useState(null);
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const RestaurantSetting = () => {
     email: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
+    useState(false);
 
   useEffect(() => {
     if (user) {
@@ -65,7 +68,7 @@ const RestaurantSetting = () => {
         uploadData.append("displayPic", selectedProfilePic);
       }
 
-      const res = await api.put("/auth/profile", uploadData, {
+      const res = await api.put("/common/edit-profile", uploadData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -73,7 +76,7 @@ const RestaurantSetting = () => {
       sessionStorage.setItem("UserData", JSON.stringify(res.data.data));
       setUser(res.data.data);
       setSelectedProfilePic(null);
-      setIsEditing(false);
+      setEditingProfile(false);
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Unable to update your profile.",
@@ -84,7 +87,7 @@ const RestaurantSetting = () => {
   };
 
   const handleCancel = () => {
-    setIsEditing(false);
+    setEditingProfile(false);
     setSelectedProfilePic(null);
     setFormData({
       fullName: user.fullName || "",
@@ -109,130 +112,129 @@ const RestaurantSetting = () => {
   }
 
   return (
-    <div className="max-w-2xl rounded-xl border border-base-200 bg-primary-content p-6 shadow-md">
-      <div className="mb-6 flex items-center gap-4">
-        <div className="relative">
-          <div className=" h-53 w-45 overflow-hidden rounded-xl ">
-            <img
-              src={
-                profilePicPreview ||
-                user?.photo?.url ||
-                user?.photo ||
-                "https://placehold.co/600x400?text=U"
-              }
-              alt={user.fullName || "User"}
-              className="h-full w-full object-cover bg-amber-300"
-            />
-            {isEditing && (
-              <>
-                <label
-                  htmlFor="profilePic"
-                  className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border  bg-base-200 shadow-md"
-                  title="Change Photo"
-                >
-                  <MdOutlineAddPhotoAlternate className="text-xl" />
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="displayPic"
-                  id="profilePic"
-                  className="hidden"
-                  onChange={handleProfilePicChange}
-                />
-              </>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col gap-5 w-full">
-          <div className="border-b border-primary pb-4">
-            <h2 className="text-xl font-semibold">Profile Settings</h2>
-            <p className="text-sm text-gray-500">
-              {isEditing
-                ? "Choose a new photo to upload and save to your account."
-                : "Update your profile photo from here."}
-            </p>
-          </div>
-          {isEditing ? (
-            <form onSubmit={handleSubmit} className="space-y-4 ">
-              <div className="grid gap-4">
-                <div className="flex gap-2 items-center">
-                  <label className="mb-1 block text-sm font-medium">
-                    Name:
-                  </label>
-                  <input
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className=" flex flex-1 rounded-md border px-3 py-2 "
-                    required
-                  />
-                </div>
-                <div className="flex gap-2 items-center">
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Email:
-                  </label>
-                  <input
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="flex flex-1 rounded-md border px-3 py-2 cursor-not-allowed bg-gray-300"
-                    disabled
-                  />
-                </div>
-                <div className="flex gap-2 items-center">
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Phone:
-                  </label>
-                  <input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full rounded-md border px-3 py-2"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-wrap justify-end items-center gap-3">
+    <>
+      <div className="overflow-y-auto h-full p-6 space-y-6">
+        {/* User Profile Section */}
+        <div className="bg-amber-50 p-5 rounded-2xl ">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Profile Information</h3>
+            {!editingProfile ? (
+              <div className="flex gap-3">
                 <button
-                  type="button"
+                  onClick={() => setEditingProfile(true)}
+                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
+                >
+                  <MdEdit /> Edit
+                </button>
+                <button
+                  onClick={() => setIsPasswordChangeModalOpen(true)}
+                  className="flex items-center gap-2 border border-(--color-primary) text-(--color-primary) px-3 py-1 rounded text-sm hover:bg-(--color-primary) hover:text-(--color-primary-content)"
+                >
+                  <MdOutlineLockReset /> Change Password
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={handleSubmit}
+                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Saving..." : "Save Changes"}
+                </button>
+                <button
                   onClick={handleCancel}
-                  className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700"
+                  className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-3 py-1 rounded text-sm"
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
-                >
-                  {isLoading ? "Saving..." : "Save"}
-                </button>
               </div>
-            </form>
-          ) : (
-            <div className="space-y-3">
-              <div>
-                <span className="font-medium">Name:</span> {user.fullName}
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <div className="w-36 h-36">
+                  <img
+                    src={profilePicPreview || user.photo.url}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover border-2 border-(--color-primary)"
+                  />
+                </div>
+
+                {editingProfile && (
+                  <div
+                    className="absolute cursor-pointer bottom-1 right-1 border p-2 rounded-full w-fit bg-(--color-base-200)"
+                    title="Change Photo"
+                  >
+                    <label htmlFor="profilePic" className="cursor-pointer">
+                      <MdOutlineAddAPhoto className="text-xl" />
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      name="profilePic"
+                      id="profilePic"
+                      className="hidden"
+                      onChange={handleProfilePicChange}
+                    />
+                  </div>
+                )}
               </div>
-              <div>
-                <span className="font-medium">Email:</span> {user.email}
+
+              <div className="space-y-4 w-full">
+                <div className="grid grid-cols-5 gap-2 justify-center items-center">
+                  <label className="block text-sm font-semibold mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border ${editingProfile ? "border-(--color-secondary)" : "border-transparent"} rounded col-span-4`}
+                    disabled={!editingProfile}
+                  />
+
+                  <label className="block text-sm font-semibold mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border ${editingProfile ? "border-(--color-secondary) text-(--color-secondary) disabled:bg-(--color-secondary)/50 cursor-not-allowed" : "border-transparent"} rounded col-span-4`}
+                    disabled
+                  />
+
+                  <label className="block text-sm font-semibold mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border ${editingProfile ? "border-(--color-secondary)" : "border-transparent"} rounded col-span-4`}
+                    disabled={!editingProfile}
+                  />
+                </div>
               </div>
-              <div>
-                <span className="font-medium">Phone:</span> {user.phone}
-              </div>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="rounded-md bg-primary px-4 py-1 justify-self-end flex text-white"
-              >
-                Edit
-              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {isPasswordChangeModalOpen && (
+        <PasswordChangeModal
+          open={isPasswordChangeModalOpen}
+          onClose={() => setIsPasswordChangeModalOpen(false)}
+        />
+      )}
+    </>
   );
 };
 

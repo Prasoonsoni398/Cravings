@@ -1,7 +1,10 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { Outlet, Navigate } from "react-router-dom";
-import Sidebar from "../../components/riderDashboard/RiderSidebar.jsx";
+import RiderSidebar from "../../components/riderDashboard/RiderSidebar.jsx";
+import RiderOverview from "../../components/riderDashboard/RiderOverview.jsx";
+import RiderOrder from "../../components/riderDashboard/RiderOrder.jsx";
+import RiderSetting from "../../components/riderDashboard/RiderSetting.jsx";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const RiderDashboard = () => {
   const { isLogin, role } = useAuth();
@@ -30,12 +33,14 @@ const RiderDashboard = () => {
   return (
     <>
       {/* create a sidebar and main content area */}
-      <div className="flex h-full">
-        <div className="w-1/6 border border-base-300">
-          <Sidebar />
+      <div className="h-[91vh] flex gap-2 p-2">
+        <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full">
+          <RiderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <div className="w-5/6 h-full border border-base-300 p-4">
-          <Outlet />
+        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
+          {activeTab === "overview" && <RiderOverview />}
+          {activeTab === "orders" && <RiderOrder />}
+          {activeTab === "settings" && <RiderSetting />}
         </div>
       </div>
     </>

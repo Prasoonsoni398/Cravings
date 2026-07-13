@@ -32,6 +32,9 @@ export const EditUserProfile = async (req, res, next) => {
       return next(error);
     }
 
+    console.log(fullName);
+    
+
     const existingUser = await User.findById(currentUserId);
     if (!existingUser) {
       const error = new Error("User not found");

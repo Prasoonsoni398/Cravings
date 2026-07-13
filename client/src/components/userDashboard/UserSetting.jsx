@@ -38,7 +38,7 @@ const CustomerSetting = () => {
 
       payload.append("displayPic", profilePic);
 
-      const response = await api.put(`/user/edit-profile`, payload);
+      const response = await api.put(`/common/edit-profile`, payload);
 
       setUser(response.data.data);
       sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));
@@ -72,7 +72,7 @@ const CustomerSetting = () => {
     <>
       <div className="overflow-y-auto h-full p-6 space-y-6">
         {/* User Profile Section */}
-        <div className="bg-(--color-base-200) rounded-lg p-6">
+        <div className="bg-amber-50 rounded-xl shadow-xl hover:shadow-2xl transition-shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Profile Information</h3>
             {!editingProfile ? (

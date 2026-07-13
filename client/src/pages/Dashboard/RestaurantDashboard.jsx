@@ -1,13 +1,26 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { Outlet, useNavigate,useLocation } from "react-router-dom";
-import Sidebar from "../../components/restaurantDashboard/RestaurantSidebar.jsx";
+import {  useNavigate,useLocation } from "react-router-dom";
+import RestaurantSidebar from "../../components/restaurantDashboard/RestaurantSidebar.jsx";
+import RestaurantOverview from "../../components/restaurantDashboard/RestaurantOverView.jsx"
+import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrder.jsx"
+import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting.jsx"
 
 const RestaurantDashboard = () => {
   const { isLogin, role } = useAuth();
   const navigate = useNavigate();
-  const active = useLocation().state?.activeTab;
-  const [activeTab, setActiveTab] = React.useState(active || "overview");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState(() => {
+    const pathTab = location.pathname.split('/').filter(Boolean).pop();
+    return ['overview', 'orders', 'wishlist', 'setting'].includes(pathTab) ? pathTab : 'overview';
+  });
+
+  React.useEffect(() => {
+    const pathTab = location.pathname.split('/').filter(Boolean).pop();
+    if (['overview', 'orders', 'wishlist', 'setting'].includes(pathTab)) {
+      setActiveTab(pathTab);
+    }
+  }, [location.pathname]);
 
   if (!isLogin || role !== "restaurant") {
     return (
@@ -30,12 +43,14 @@ const RestaurantDashboard = () => {
   return (
     <>
       {/* create a sidebar and main content area */}
-      <div className="flex h-full">
-        <div className="w-1/6 border border-base-300">
-          <Sidebar />
+      <div className="h-[91vh] flex gap-2 ">
+        <div className="w-55 bg-(--color-base-200)  rounded-lg shadow-md h-full">
+          <RestaurantSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <div className="w-5/6 h-full border border-base-300 p-4">
-          <Outlet />
+        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
+          {activeTab === "overview" && <RestaurantOverview />}
+          {activeTab === "orders" && <RestaurantOrders />}
+          {activeTab === "setting" && <RestaurantSetting />}
         </div>
       </div>
     </>

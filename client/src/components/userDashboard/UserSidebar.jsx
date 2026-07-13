@@ -10,12 +10,12 @@ const MenuItems = [
     { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
 ]
 
-const Sidebar = () => {
+const Sidebar = ({ activeTab, setActiveTab }) => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentPath = location.pathname.split('/').pop();
+    const currentPath = activeTab || 'overview';
 
     const handleNavigation = (path) => {
+        setActiveTab(path);
         navigate(`/user/dashboard/${path}`);
     }
 

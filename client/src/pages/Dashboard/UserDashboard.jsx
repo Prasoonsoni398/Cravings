@@ -1,14 +1,26 @@
 import React from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx'
-import { Outlet, Navigate } from 'react-router-dom';
-import Sidebar from '../../components/userDashboard/Sidebar.jsx';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
+import Sidebar from '../../components/userDashboard/UserSidebar.jsx';
+import Overview from '../../components/userDashboard/UserOverView.jsx';
+import Orders from '../../components/userDashboard/UserOrder.jsx';
+import Setting from '../../components/userDashboard/UserSetting.jsx';
 
 const UserDashboard = () => {
-    const { isLogin,role } = useAuth();
+  const { isLogin, role } = useAuth();
   const navigate = useNavigate();
-  const active = useLocation().state?.activeTab;
-  const [activeTab, setActiveTab] = React.useState(active || "overview");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState(() => {
+    const pathTab = location.pathname.split('/').filter(Boolean).pop();
+    return ['overview', 'order', 'wishlist', 'setting'].includes(pathTab) ? pathTab : 'overview';
+  });
+
+  React.useEffect(() => {
+    const pathTab = location.pathname.split('/').filter(Boolean).pop();
+    if (['overview', 'order', 'wishlist', 'setting'].includes(pathTab)) {
+      setActiveTab(pathTab);
+    }
+  }, [location.pathname]);
 
   // if (!isLogin || role !== "customer") {
   //   return (
@@ -31,14 +43,16 @@ const UserDashboard = () => {
     return (
         <>
             {/* create a sidebar and main content area */}
-            <div className='flex h-full'>
-                <div className='w-1/6 border border-base-300'>
-                    <Sidebar />
-                </div>
-                <div className='w-5/6 h-full border border-base-300 p-4'>
-                    <Outlet />
-                </div>
-            </div>
+           <div className="h-[91vh] flex gap-2 ">
+        <div className="w-55 bg-(--color-base-200)  rounded-lg shadow-md h-full">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
+          {activeTab === "overview" && <Overview />}
+          {activeTab === "order" && <Orders />}
+          {activeTab === "setting" && <Setting />}
+        </div>
+      </div>
         </>
     )
 }

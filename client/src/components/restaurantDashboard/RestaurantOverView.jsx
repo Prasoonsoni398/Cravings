@@ -178,14 +178,14 @@ const RestaurantOverView = () => {
                 <FiArrowRight />
               </Link>
               <Link
-                to="/user/dashboard/wishlist"
+                to="/restaurant-dashboard/wishlist"
                 className="flex items-center justify-between rounded-2xl bg-base-100/15 px-4 py-3"
               >
                 <span>View wishlist</span>
                 <FiHeart />
               </Link>
               <Link
-                to="/user/dashboard/setting"
+                to="/restaurant-dashboard/setting"
                 className="flex items-center justify-between rounded-2xl bg-base-100/15 px-4 py-3"
               >
                 <span>Update profile</span>

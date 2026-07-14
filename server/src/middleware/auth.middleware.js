@@ -79,7 +79,7 @@ export const OTPAuthProtect = async (req, res, next) => {
 
 export const RestaurantAuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies.Oreo;
+    const token = req.cookies.Oreo || req.cookies.Cravings;
     if (!token) {
       const error = new Error("Session Expired");
       error.statusCode = 401;

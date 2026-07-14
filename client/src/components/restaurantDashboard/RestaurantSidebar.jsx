@@ -25,7 +25,7 @@ const RestaurantSidebar = ({ activeTab, setActiveTab }) => {
 
   return (
     <>
-      <div className="w-full max-w-65 fixed border bg-base-200 shadow-md h-[91vh]">
+      <div className="w-full max-w-65 fixed border-r border-base-300 bg-base-200 shadow-md h-[91vh]">
         <div className="border-b-2 text-center  text-primary font-bold border-primary text-xl p-3">
           Restaurant Dashboard
         </div>

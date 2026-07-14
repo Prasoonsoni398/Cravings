@@ -98,6 +98,8 @@ export const LoginUser = async (req, res, next) => {
 export const LogoutUser = async (req, res, next) => {
   try {
     res.clearCookie("Oreo", { maxAge: 0 });
+    res.clearCookie("Cravings", { maxAge: 0 });
+    res.clearCookie("kitkat", { maxAge: 0 });
 
     res.status(200).json({ message: "Logout Sucessfully" });
   } catch (error) {

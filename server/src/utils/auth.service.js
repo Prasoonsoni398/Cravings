@@ -9,17 +9,21 @@ export const genToken = async (user, res) => {
     });
 
     if (res) {
-      res.cookie("Cravings", token, {
+      const cookieOptions = {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
         secure: false,
         sameSite: "lax",
-      });
-    }
+      };
 
-     console.log(token);
+      res.cookie("Cravings", token, cookieOptions);
+
+      if (user.userType === "restaurant") {
+        res.cookie("Oreo", token, cookieOptions);
+      }
+    }
   } catch (error) {
-    throw next(error);
+    throw error;
   }
 };
 

@@ -43,11 +43,11 @@ const RestaurantDashboard = () => {
   return (
     <>
       {/* create a sidebar and main content area */}
-      <div className="h-[91vh] flex gap-2 ">
-        <div className="w-55 bg-(--color-base-200)  rounded-lg shadow-md h-full">
+      <div className="flex gap-2 ">
+        <div className="w-3/17  bg-(--color-base-200)  rounded-lg shadow-md h-full">
           <RestaurantSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
+        <div className="w-14/17 bg-(--color-base-100) rounded-lg shadow-md h-full">
           {activeTab === "overview" && <RestaurantOverview />}
           {activeTab === "orders" && <RestaurantOrders />}
           {activeTab === "setting" && <RestaurantSetting />}

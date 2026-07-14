@@ -3,8 +3,8 @@ import bcrypt from "bcrypt";
 
 const UserData = [
     {
-  fullName: "Manager1",
-  email: "manager1@gmail.com",
+  fullName: "Manager",
+  email: "manager@gmail.com",
   password: await bcrypt.hash("Manager1@123", 10),
   dob: "2004-01-19",
   gender: "male",
@@ -13,8 +13,8 @@ const UserData = [
   photo: { url: "https://placehold.co/600x400?text=Admin", publicId: null },
 },
     {
-  fullName: "Customer1",
-  email: "customer1@gmail.com",
+  fullName: "Customer",
+  email: "customer@gmail.com",
   password: await bcrypt.hash("Customer1@123", 10),
   dob: "2004-01-19",
   gender: "male",
@@ -23,8 +23,8 @@ const UserData = [
   photo: { url: "https://placehold.co/600x400?text=Admin", publicId: null },
 },
     {
-  fullName: "Rider1",
-  email: "rider1@gmail.com",
+  fullName: "Rider",
+  email: "rider@gmail.com",
   password: await bcrypt.hash("Rider1@123", 10),
   dob: "2004-01-19",
   gender: "male",

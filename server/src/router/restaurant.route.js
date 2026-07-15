@@ -21,7 +21,7 @@ router.put(
   "/update-profile",
   RestaurantAuthProtect,
   upload.single("coverImage"),
-  upload.array("restaurantImage", 10),
+  upload.array("restaurantImage", 8),
   restaurantUpdateProfile,
 );
 

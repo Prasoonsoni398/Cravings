@@ -55,7 +55,7 @@ const App = () => {
         {/* Dashboard routes  */}
         <Route path="/user/dashboard/*" element={<UserDashboard />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </BrowserRouter>
   );
 };

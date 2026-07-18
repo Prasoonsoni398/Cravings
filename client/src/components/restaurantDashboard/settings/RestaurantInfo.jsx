@@ -77,6 +77,7 @@ const RestaurantInformation = () => {
   const [loadingRestaurantError, setLoadingRestaurantError] = useState(null);
   const [restaurantData, setRestaurantData] = useState();
   const [editingRestaurant, setEditingRestaurant] = useState(false);
+  const [editingLegal, setEditingLegal] = useState(false);
   const [restaurantFormData, setRestaurantFormData] = useState({
     restaurantName: restaurantData?.restaurantName || "",
     description: restaurantData?.description || "",
@@ -126,6 +127,7 @@ const RestaurantInformation = () => {
       closingTime: restaurantData?.servingHours?.closingTime || "",
     });
     setEditingRestaurant(false);
+    setEditingLegal(false)
   };
 
   const fetchRestaurantData = async () => {
@@ -444,10 +446,10 @@ const RestaurantInformation = () => {
               </h3>
             </div>
 
-            {!editingRestaurant ? (
+            {!editingLegal ? (
               <div className="flex gap-3">
                 <button
-                  onClick={() => setEditingRestaurant(true)}
+                  onClick={() => setEditingLegal(true)}
                   className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
                 >
                   <MdEdit /> Edit
@@ -479,7 +481,7 @@ const RestaurantInformation = () => {
               <input
                 type="tel"
                 name="legalName"
-                value={restaurantFormData?.contactPhone || ""}
+                value={restaurantFormData?.legalName || ""}
                 onChange={handleRestaurantChange}
                 className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurant ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                 disabled={!editingRestaurant}
@@ -490,7 +492,7 @@ const RestaurantInformation = () => {
               <input
                 type="tel"
                 name="companyType"
-                value={restaurantFormData?.contactPhone || ""}
+                value={restaurantFormData?.companyType || ""}
                 onChange={handleRestaurantChange}
                 className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurant ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                 disabled={!editingRestaurant}

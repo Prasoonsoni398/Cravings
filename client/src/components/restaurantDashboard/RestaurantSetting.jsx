@@ -5,7 +5,7 @@ import ResturantCoreDetails from "./settings/RestaurantCoreDetails"
 
 
 const RestaurantSetting = () => {
-  const [activeTab, setActiveTab] = React.useState("setting");
+  const [activeTab, setActiveTab] = React.useState("information");
    const Tabs = [
     { id: "information", label: "Information" },
     { id: "coreDetails", label: "Core Details" },

@@ -167,19 +167,19 @@ const RestaurantPhotos = () => {
               <div className="rounded-xl border border-dashed border-(--color-secondary) bg-linear-to-br from-white to-(--color-base-100) px-4 py-8 text-center">
                 <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary)/10 text-(--color-primary)">
                   <label
-                htmlFor="galleryImages"
+                htmlFor="coverImage"
                 className={`cursor-pointer ${galleryImages.length >= MAX_GALLERY_IMAGES ? "" : ""}`}
               >
                 <MdOutlineAddAPhoto className="text-2xl" />
                 
               </label>
               <input
-                id="galleryImages"
+                id="coverImage"
                 type="file"
                 accept="image/*"
                 multiple
-                onChange={handleGalleryImagesChange}
-                disabled={galleryImages.length >= MAX_GALLERY_IMAGES}
+                onChange={handleCoverImageChange}
+                disabled={coverImage}
                 className="hidden"
               />
                 </div>

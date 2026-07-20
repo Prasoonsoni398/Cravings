@@ -10,7 +10,7 @@ export const genToken = async (user, res) => {
 
     if (res) {
       const cookieOptions = {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60  * 60 * 24,
         httpOnly: true,
         secure: false,
         sameSite: "lax",

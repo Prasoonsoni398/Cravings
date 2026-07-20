@@ -167,21 +167,20 @@ const RestaurantPhotos = () => {
               <div className="rounded-xl border border-dashed border-(--color-secondary) bg-linear-to-br from-white to-(--color-base-100) px-4 py-8 text-center">
                 <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary)/10 text-(--color-primary)">
                   <label
-                htmlFor="coverImage"
-                className={`cursor-pointer ${galleryImages.length >= MAX_GALLERY_IMAGES ? "" : ""}`}
-              >
-                <MdOutlineAddAPhoto className="text-2xl" />
-                
-              </label>
-              <input
-                id="coverImage"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleCoverImageChange}
-                disabled={coverImage}
-                className="hidden"
-              />
+                    htmlFor="coverImage"
+                    className={`cursor-pointer ${galleryImages.length >= MAX_GALLERY_IMAGES ? "" : ""}`}
+                  >
+                    <MdOutlineAddAPhoto className="text-2xl" />
+                  </label>
+                  <input
+                    id="coverImage"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleCoverImageChange}
+                    disabled={coverImage}
+                    className="hidden"
+                  />
                 </div>
                 <p className="text-sm font-semibold text-(--color-primary)">
                   No cover selected
@@ -273,22 +272,21 @@ const RestaurantPhotos = () => {
           ) : (
             <div className="rounded-xl border border-dashed border-(--color-secondary) bg-linear-to-br from-white to-(--color-base-100) px-4 py-10 text-center">
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary)/10 text-(--color-primary)">
-               <label
-                htmlFor="galleryImages"
-                className={`cursor-pointer ${galleryImages.length >= MAX_GALLERY_IMAGES ? "" : ""}`}
-              >
-                <MdOutlineAddAPhoto className="text-2xl" />
-                
-              </label>
-              <input
-                id="galleryImages"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleGalleryImagesChange}
-                disabled={galleryImages.length >= MAX_GALLERY_IMAGES}
-                className="hidden"
-              />
+                <label
+                  htmlFor="galleryImages"
+                  className={`cursor-pointer ${galleryImages.length >= MAX_GALLERY_IMAGES ? "" : ""}`}
+                >
+                  <MdOutlineAddAPhoto className="text-2xl" />
+                </label>
+                <input
+                  id="galleryImages"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryImagesChange}
+                  disabled={galleryImages.length >= MAX_GALLERY_IMAGES}
+                  className="hidden"
+                />
               </div>
               <p className="text-sm font-semibold text-(--color-primary)">
                 No restaurant images yet

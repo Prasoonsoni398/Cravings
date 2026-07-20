@@ -15,6 +15,8 @@ const RestaurantDashboard = () => {
     return ['overview', 'orders', 'wishlist', 'setting'].includes(pathTab) ? pathTab : 'overview';
   });
 
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+
   React.useEffect(() => {
     const pathTab = location.pathname.split('/').filter(Boolean).pop();
     if (['overview', 'orders', 'wishlist', 'setting'].includes(pathTab)) {
@@ -43,11 +45,16 @@ const RestaurantDashboard = () => {
   return (
     <>
       {/* create a sidebar and main content area */}
-      <div className="flex gap-2 ">
-        <div className="w-80  bg-(--color-base-200)  rounded-lg shadow-md h-full">
-          <RestaurantSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="flex gap-2">
+        <div className={`shrink-0 rounded-lg shadow-md bg-(--color-base-200) h-full ${isSidebarCollapsed ? "w-20" : "w-72"}`}>
+          <RestaurantSidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isCollapsed={isSidebarCollapsed}
+            setIsCollapsed={setIsSidebarCollapsed}
+          />
         </div>
-        <div className="w-full bg-(--color-base-100) rounded-lg h-full">
+        <div className="flex-1 bg-(--color-base-100) rounded-lg h-full">
           {activeTab === "overview" && <RestaurantOverview />}
           {activeTab === "orders" && <RestaurantOrders />}
           {activeTab === "setting" && <RestaurantSetting />}

@@ -46,7 +46,7 @@ const RestaurantDashboard = () => {
     <>
       {/* create a sidebar and main content area */}
       <div className="flex gap-2">
-        <div className={`shrink-0 rounded-lg shadow-md bg-(--color-base-200) h-full ${isSidebarCollapsed ? "w-20" : "w-72"}`}>
+        <div className={`shrink-0 rounded-lg shadow-md bg-(--color-base-200) h-full transition-all duration-500 ${isSidebarCollapsed ? "w-20" : "w-72"}`}>
           <RestaurantSidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}

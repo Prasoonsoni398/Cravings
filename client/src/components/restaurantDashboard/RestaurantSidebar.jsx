@@ -28,7 +28,7 @@ const RestaurantSidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapse
   return (
     <div className={`w-full border-r border-base-300 bg-base-200 shadow-md h-[91vh] transition-all duration-300 ${isCollapsed ? "max-w-20" : "max-w-72"}`}>
       <div className="border-b border-primary/30 text-primary font-bold p-3 flex items-center justify-between">
-        {!isCollapsed && <span className="text-lg">Restaurant Dashboard</span>}
+        {!isCollapsed && <span className="text-lg transition-all duration-500">Restaurant Dashboard</span>}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="ml-auto rounded-full p-2 hover:bg-primary/10 text-primary"

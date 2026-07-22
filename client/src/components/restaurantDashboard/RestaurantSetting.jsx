@@ -93,17 +93,25 @@ const RestaurantSetting = () => {
   return (
     <>
       <div className=" h-full flex flex-col">
-        <div className="border-b border-(--color-secondary)/50 flex justify-between mb-2 w-full">
-          <div className="flex gap-3 ">
-            {Tabs.map((tab, idx) => (
+        <div className="border-b border-(--color-secondary)/50 flex justify-between w-full">
+          <div className="flex p-2">
+            <div className="relative flex bg-(--color-base-200) rounded-lg p-1 border border-(--color-secondary)/30 shadow-inner">
               <div
-                key={idx}
-                className={`p-2 uppercase cursor-pointer ${activeTab === tab.id ? "text-(--color-primary) border-b-3 border-(--color-primary)" : ""}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </div>
-            ))}
+                className="absolute top-1 bottom-1 w-32 bg-(--color-primary) rounded-md shadow-sm transition-transform duration-300 ease-out"
+                style={{
+                  transform: `translateX(${Tabs.findIndex((t) => t.id === activeTab) * 100}%)`,
+                }}
+              />
+              {Tabs.map((tab, idx) => (
+                <div
+                  key={idx}
+                  className={`relative z-10 w-32 text-center py-2 px-3 uppercase text-xs font-semibold cursor-pointer transition-colors duration-300 flex items-center justify-center ${activeTab === tab.id ? "text-(--color-primary-content)" : "text-(--color-secondary) hover:text-(--color-primary)"}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 w-44">

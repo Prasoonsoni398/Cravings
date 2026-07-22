@@ -21,7 +21,7 @@ const LegalInformation = () => {
 
   return (
     <>
-      <div className="bg-(--color-base-100) rounded-lg p-3">
+      <div className="bg-(--color-base-100) rounded-lg p-3 border border-primary/40">
         <div className="flex justify-between items-center border-b border-(--color-secondary) pb-2 mb-2">
           <div className="flex items-center gap-3">
             <h3 className="text-sm font-semibold text-(--color-primary)">

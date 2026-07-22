@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import api from "../../config/ApiConfig";
+import api from "../../config/api.config";
 import toast from "react-hot-toast";
 import { RiLoader4Fill } from "react-icons/ri";
 import { useAuth } from "../../context/AuthContext";
-import ResturantCoreDetails from "./settings/ResturantCoreDetails";
+import ResturantCoreDetails from "./settings/RestaurantCoreDetails";
 import Information from "./settings/restaurantInformation/Index";
 import RestaurantPhotos from "./settings/RestaurantPhotos";
 import Loader from "../../assets/runningLoader.gif";
@@ -20,7 +20,7 @@ const RestaurantSetting = () => {
 
   const [isLoadingResturantOpen, setIsLoadingResturantOpen] = useState(true);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(
-    sessionStorage.getItem("RestaurantOpen") || false,
+    sessionStorage.getItem("RestaurantOpen") === "true" || false,
   );  
 
   //Load Restaurant Data
@@ -34,7 +34,7 @@ const RestaurantSetting = () => {
       setIsLoadingResturantOpen(true);
 
       const res = await api.get(
-        `/restaurant/get-resturant-data?id=${user._id}`,
+        `/restaurant/get-restaurant-data?id=${user._id}`,
       );
       setRestaurantData(res.data.data);
       sessionStorage.setItem(
@@ -106,19 +106,25 @@ const RestaurantSetting = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <label className="w-22 text-xs font-semibold">Currently Open</label>
-            {isLoadingResturantOpen || isLoadingRestaurant ? (
-              <RiLoader4Fill className="animate-spin" />
-            ) : (
+          <div className="flex items-center justify-end gap-3 w-44">
+            <label className={`w-24 text-right text-xs font-semibold ${isRestaurantOpen ? 'text-(--color-primary)' : 'text-(--color-secondary)'}`}>
+              {isRestaurantOpen ? "Currently Open" : "Currently Offline"}
+            </label>
+            <div className="flex items-center relative">
               <input
                 type="checkbox"
                 name="isOpen"
                 checked={isRestaurantOpen}
-                onClick={handleRestaurantOpen}
-                className=" w-4 h-4 accent-(--color-primary)"
+                onChange={handleRestaurantOpen}
+                disabled={isLoadingResturantOpen || isLoadingRestaurant}
+                className="switch switch-primary"
               />
-            )}
+              <div className="w-5 ml-2 flex justify-center items-center">
+                {(isLoadingResturantOpen || isLoadingRestaurant) && (
+                  <RiLoader4Fill className="animate-spin text-(--color-primary) text-lg" />
+                )}
+              </div>
+            </div>
           </div>
         </div>
 

@@ -135,7 +135,7 @@ const RestaurantInformation = () => {
       setIsLoadingRestaurant(true);
 
       const res = await api.get(
-        `/restaurant/get-resturant-data?id=${user._id}`,
+        `/restaurant/get-restaurant-data?id=${user._id}`,
       );
       setRestaurantData(res.data.data);
     } catch (error) {

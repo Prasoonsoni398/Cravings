@@ -1,8 +1,10 @@
 import express from "express";
 import multer from "multer";
 import {
-  restaurantUpdateProfile,
+  RestaurantUpdateProfile,
   RestaurantGetData,
+  RestaurantUpdateInfo,
+  OpenRestaurant
 } from "../controller/restaurant.controller.js";
 import { RestaurantAuthProtect } from "../middleware/auth.middleware.js";
 
@@ -12,20 +14,34 @@ const router = express.Router();
 router.post(
   "/update-profile",
   RestaurantAuthProtect,
-  upload.single("coverImage"),
-  upload.array("restaurantImage", 10),
-  restaurantUpdateProfile,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "restaurantImage", maxCount: 10 }
+  ]),
+  RestaurantUpdateProfile,
 );
 
 router.put(
   "/update-profile",
   RestaurantAuthProtect,
-  upload.single("coverImage"),
-  upload.array("restaurantImage", 8),
-  restaurantUpdateProfile,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "restaurantImage", maxCount: 8 }
+  ]),
+  RestaurantUpdateProfile,
 );
 
 router.get("/get-restaurant-data", RestaurantAuthProtect, RestaurantGetData);
-router.get("/get-resturant-data", RestaurantAuthProtect, RestaurantGetData);
+router.put(
+  "/update-restaurant-info",
+  RestaurantAuthProtect,
+  RestaurantUpdateInfo,
+);
+
+router.patch(
+  "/change-open-status/:openStatus",
+  RestaurantAuthProtect,
+  OpenRestaurant,
+);
 
 export default router;

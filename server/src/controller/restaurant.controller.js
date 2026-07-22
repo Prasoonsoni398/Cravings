@@ -6,11 +6,13 @@ import {
   deleteSingleImage,
 } from "../utils/image.service.js";
 
-
 export const RestaurantGetData = async (req, res, next) => {
   try {
     const currentUser = req.user;
     const managerId = req.query.id;
+
+    console.log("Current User:", currentUser);
+    console.log("Manager ID:", managerId);
 
     if (currentUser._id.toString() !== managerId) {
       const error = new Error("Unauthorized Access");
@@ -33,63 +35,39 @@ export const RestaurantGetData = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error.message);
-    next(error);
+    next();
   }
 };
 
-export const restaurantUpdateProfile = async (req, res, next) => {
+export const RestaurantUpdateProfile = async (req, res, next) => {
   try {
     const currentUser = req.user;
-    const formData = { ...req.body };
-    const normalizedData = {};
-
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value === undefined || value === null) return;
-
-      if (typeof value === "string") {
-        const trimmedValue = value.trim();
-
-        if (!trimmedValue) return;
-
-        if (["geoLocation", "documents", "financialDetails", "contactDetails", "servingHours", "socialMediaLinks"].includes(key)) {
-          try {
-            normalizedData[key] = JSON.parse(trimmedValue);
-          } catch {
-            normalizedData[key] = trimmedValue;
-          }
-        } else if (key === "cuisineTypes") {
-          try {
-            normalizedData[key] = JSON.parse(trimmedValue);
-          } catch {
-            normalizedData[key] = trimmedValue
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean);
-          }
-        } else if (key === "isOpen") {
-          normalizedData[key] = trimmedValue === "true";
-        } else {
-          normalizedData[key] = trimmedValue;
-        }
-      } else {
-        normalizedData[key] = value;
-      }
-    });
-
+    const restaurantDataFromFE = req.body;
     const coverImageFromFE = req.files?.coverImage;
     const restaurantImageFromFE = req.files?.restaurantImage;
+
+    const dataKeys = Object.keys(restaurantDataFromFE);
+
+    dataKeys.forEach((key) => {
+      if (!restaurantDataFromFE[key]) {
+        const error = new Error(`Missing required field: ${key}`);
+        error.statusCode = 400;
+        return next(error);
+      }
+    });
 
     const existingRestaurant = await Restaurant.findOne({
       managerId: currentUser._id,
     });
 
     if (!existingRestaurant) {
-      if (coverImageFromFE) {
+      if (coverImageFromFE && coverImageFromFE.length > 0) {
         const coverImage = await UploadSingleImage(
-          coverImageFromFE,
+          coverImageFromFE[0],
           `restaurant/${currentUser.phone}/coverPhoto`,
         );
-        normalizedData.coverImage = coverImage;
+        dataKeys.push("coverImage");
+        restaurantDataFromFE.coverImage = coverImage;
       }
 
       if (restaurantImageFromFE && restaurantImageFromFE.length > 0) {
@@ -97,58 +75,159 @@ export const restaurantUpdateProfile = async (req, res, next) => {
           restaurantImageFromFE,
           `restaurant/${currentUser.phone}/restaurantPhotos`,
         );
-        normalizedData.restaurantImage = restaurantImage;
+        dataKeys.push("restaurantImage");
+        restaurantDataFromFE.restaurantImage = restaurantImage;
       }
 
       const newRestaurant = await Restaurant.create({
         managerId: currentUser._id,
-        ...normalizedData,
+        ...restaurantDataFromFE,
       });
-
       return res.status(201).json({
         message: "Restaurant profile created successfully",
         data: newRestaurant,
       });
-    }
-
-    if (coverImageFromFE) {
-      if (existingRestaurant.coverImage) {
+    } else {
+      if (coverImageFromFE && coverImageFromFE.length > 0) {
         await deleteSingleImage(existingRestaurant.coverImage);
+
+        const coverImage = await UploadSingleImage(
+          coverImageFromFE[0],
+          `restaurant/${currentUser.phone}/coverPhoto`,
+        );
+        dataKeys.push("coverImage");
+        restaurantDataFromFE.coverImage = coverImage;
       }
-
-      const coverImage = await UploadSingleImage(
-        coverImageFromFE,
-        `restaurant/${currentUser.phone}/coverPhoto`,
-      );
-      normalizedData.coverImage = coverImage;
-    }
-
-    if (restaurantImageFromFE && restaurantImageFromFE.length > 0) {
-      if (existingRestaurant.restaurantImage?.length) {
+      if (restaurantImageFromFE && restaurantImageFromFE.length > 0) {
         await deleteMultipleImages(existingRestaurant.restaurantImage);
-      }
 
-      const restaurantImage = await uploadMultipleImages(
-        restaurantImageFromFE,
-        `restaurant/${currentUser.phone}/restaurantPhotos`,
-      );
-      normalizedData.restaurantImage = restaurantImage;
+        const restaurantImage = await uploadMultipleImages(
+          restaurantImageFromFE,
+          `restaurant/${currentUser.phone}/restaurantPhotos`,
+        );
+        dataKeys.push("restaurantImage");
+        restaurantDataFromFE.restaurantImage = restaurantImage;
+      }
+      dataKeys.forEach((key) => {
+        existingRestaurant[key] =
+          restaurantDataFromFE[key] || existingRestaurant[key];
+      });
+      await existingRestaurant.save();
+      return res.status(200).json({
+        message: "Restaurant profile updated successfully",
+        data: existingRestaurant,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    next();
+  }
+};
+
+export const RestaurantUpdateInfo = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const {
+      restaurantName,
+      description,
+      restaurantType,
+      cuisineTypes,
+      contactEmail,
+      contactPhone,
+      openingTime,
+      closingTime,
+    } = req.body;
+
+    if (
+      !restaurantName ||
+      !description ||
+      !restaurantType ||
+      !cuisineTypes ||
+      !contactEmail ||
+      !contactPhone ||
+      !openingTime ||
+      !closingTime
+    ) {
+      const error = new Error("All fields are required");
+      error.statusCode = 400;
+      return next(error);
     }
 
-    Object.entries(normalizedData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        existingRestaurant[key] = value;
-      }
+    const cuisineTypesArray = cuisineTypes
+      .split(",")
+      .map((type) => type.trim());
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
     });
+    if (!existingRestaurant) {
+      const newRestaurant = await Restaurant.create({
+        managerId: currentUser._id,
+        restaurantName,
+        description,
+        restaurantType,
+        cuisineTypes: cuisineTypesArray,
+        contactDetails: {
+          email: contactEmail,
+          phone: contactPhone,
+        },
+        servingHours: {
+          openingTime,
+          closingTime,
+        },
+      });
+      return res.status(201).json({
+        message: "Restaurant profile created successfully",
+        data: newRestaurant,
+      });
+    } else {
+      existingRestaurant.restaurantName = restaurantName;
+      existingRestaurant.description = description;
+      existingRestaurant.restaurantType = restaurantType;
+      existingRestaurant.cuisineTypes = cuisineTypesArray;
+      existingRestaurant.contactDetails.email = contactEmail;
+      existingRestaurant.contactDetails.phone = contactPhone;
+      existingRestaurant.servingHours.openingTime = openingTime;
+      existingRestaurant.servingHours.closingTime = closingTime;
+      await existingRestaurant.save();
+      return res.status(200).json({
+        message: "Restaurant profile updated successfully",
+        data: existingRestaurant,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    next();
+  }
+};
+
+export const OpenRestaurant = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    const OpenStatus = req.params.openStatus;
+
+    console.log("Open Status is", OpenStatus);
+
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
+    });
+
+    if (!existingRestaurant) {
+      const error = new Error("Restaurant Not Found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    existingRestaurant.isOpen = OpenStatus;
 
     await existingRestaurant.save();
 
     return res.status(200).json({
-      message: "Restaurant profile updated successfully",
+      message: `${OpenStatus === "true" ? "Restaurant is Live Now" : "Restaurant is Offline"}`,
       data: existingRestaurant,
     });
   } catch (error) {
     console.log(error.message);
-    next(error);
+    next();
   }
 };

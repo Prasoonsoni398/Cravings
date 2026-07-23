@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../config/api.config.js";
-import toast from 'react-hot-toast';
+import api from "../config/ApiConfig";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
-    
     fullName: "",
     email: "",
     phone: "",
@@ -21,16 +20,16 @@ const Register = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setRegisterData((prev) => ({ ...prev, [name]: value,}));
+    setRegisterData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();   
+    e.preventDefault();
 
     if (registerData.password !== registerData.confirmPassword) {
       setError("Passwords do not match");
       return;
-    } 
+    }
 
     setError("");
 
@@ -47,7 +46,7 @@ const Register = () => {
       const res = await api.post("/auth/register", payload);
 
       // alert(res.data.message);
-      toast.success('Register Successfully  !');
+      toast.success("Register Successfully  !");
 
       setRegisterData({
         fullName: "",
@@ -72,17 +71,13 @@ const Register = () => {
   return (
     <main className="min-h-[90vh] flex items-center justify-end bg-[url('/commonBG.avif')] bg-cover bg-center p-6">
       <div className="w-full max-w-lg bg-base-100 rounded-lg shadow-lg p-6 me-3">
-
         <h1 className="text-3xl font-bold text-center text-primary">
           Create Account
         </h1>
 
-        <p className="text-center mb-6 text-secondary">
-          Register to continue
-        </p>
+        <p className="text-center mb-6 text-secondary">Register to continue</p>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-
           {/* Full Name */}
           <div className="col-span-2 flex flex-col gap-1">
             <label>Full Name</label>
@@ -178,21 +173,14 @@ const Register = () => {
             />
           </div>
 
-          {error && (
-            <p className="col-span-2 text-error text-sm">
-              {error}
-            </p>
-          )}
+          {error && <p className="col-span-2 text-error text-sm">{error}</p>}
 
           {/* Terms */}
           <div className="col-span-2 flex items-center gap-2">
             <input type="checkbox" required />
             <span className="text-sm">
               I agree to the{" "}
-              <Link
-                to="/terms-of-service"
-                className="text-primary"
-              >
+              <Link to="/terms-of-service" className="text-primary">
                 Terms & Conditions
               </Link>
             </span>
@@ -218,7 +206,6 @@ const Register = () => {
             </button>
           </p>
         </div>
-
       </div>
     </main>
   );

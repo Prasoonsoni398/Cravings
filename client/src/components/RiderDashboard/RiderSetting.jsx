@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import api from "../../config/api.config.js";
+import api from "../../config/ApiConfig";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 import { MdOutlineLockReset } from "react-icons/md";

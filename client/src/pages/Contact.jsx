@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../config/api.config.js";
+import api from "../config/ApiConfig";
 
 const initialForm = {
   fullName: "",
@@ -30,7 +30,6 @@ const Contact = () => {
       message: form.message,
     };
 
-
     try {
       const res = await api.post("/public/contactUs", payload);
 
@@ -39,19 +38,20 @@ const Contact = () => {
       setSent(true);
       setForm(initialForm);
       console.log(res.data.data);
-
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }
   };
 
-
-
   return (
     <main className="flex h-[90vh] items-center justify-start bg-[url('/contactPage.jpg')] bg-cover bg-center p-6 md:p-10 md:ps-30">
       <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-lg bg-base-100 px-8 py-6 shadow-md md:px-10">
-        <h1 className="mb-2 text-center text-3xl font-bold text-primary">Contact Us</h1>
-        <p className="mb-5 text-center text-secondary">Have a question? We'd love to hear from you.</p>
+        <h1 className="mb-2 text-center text-3xl font-bold text-primary">
+          Contact Us
+        </h1>
+        <p className="mb-5 text-center text-secondary">
+          Have a question? We'd love to hear from you.
+        </p>
         {sent && (
           <p className="mb-4 rounded-md bg-(--color-success) px-3 py-2 text-sm font-semibold text-white">
             Message sent. We'll get back to you soon.
@@ -85,7 +85,10 @@ const Contact = () => {
             className="mb-6 w-full resize-none rounded-md border border-(--color-base-300) px-3 py-2 text-sm text-(--color-neutral) placeholder-gray-500 outline-none focus:ring-2 focus:ring-primary"
             required
           />
-          <button type="submit" className="w-full rounded-md bg-primary py-3 font-semibold text-white transition hover:bg-orange-700">
+          <button
+            type="submit"
+            className="w-full rounded-md bg-primary py-3 font-semibold text-white transition hover:bg-orange-700"
+          >
             Send Message
           </button>
         </form>

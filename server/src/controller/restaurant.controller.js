@@ -359,3 +359,147 @@ export const RestaurantAddMenuItem = async (req, res, next) => {
     next();
   }
 };
+
+export const RestaurantGetMenuItems = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
+    });
+
+    if (!existingRestaurant) {
+      const error = new Error("Restaurant Not Found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const menu = await Menu.findOne({
+      restaurantId: existingRestaurant._id,
+    });
+
+    if (menu) {
+      res.status(200).json({
+        message: "Menu items fetched successfully",
+        data: menu.menuItems,
+      });
+    } else {
+      res.status(200).json({
+        message: "No menu items found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    console.log("RestaurantGetMenuItems error:", error);
+    next(error);
+  }
+};
+
+export const RestaurantEditMenuItem = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const itemId = req.params.itemId;
+    const { itemName, description, price, category, foodType, status } = req.body;
+    const itemImageFromFE = req.file;
+
+    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    if (!existingRestaurant) {
+      const error = new Error("Restaurant Not Found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const menu = await Menu.findOne({ restaurantId: existingRestaurant._id });
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" });
+    }
+
+    const menuItemIndex = menu.menuItems.findIndex(item => item._id.toString() === itemId);
+    if (menuItemIndex === -1) {
+      return res.status(404).json({ message: "Menu item not found" });
+    }
+
+    const menuItem = menu.menuItems[menuItemIndex];
+    menuItem.itemName = itemName || menuItem.itemName;
+    menuItem.description = description || menuItem.description;
+    menuItem.price = price || menuItem.price;
+    menuItem.category = category || menuItem.category;
+    menuItem.foodType = foodType || menuItem.foodType;
+    menuItem.status = status || menuItem.status;
+
+    if (itemImageFromFE) {
+      const newImage = await UploadSingleImage(itemImageFromFE, `restaurant/${currentUser.phone}/menuItems`);
+      menuItem.image = newImage;
+    }
+
+    await menu.save();
+    return res.status(200).json({ message: "Menu item updated successfully", data: menu.menuItems });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+export const RestaurantDeleteMenuItem = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const itemId = req.params.itemId;
+
+    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    if (!existingRestaurant) {
+      const error = new Error("Restaurant Not Found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const menu = await Menu.findOne({ restaurantId: existingRestaurant._id });
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" });
+    }
+
+    menu.menuItems = menu.menuItems.filter(item => item._id.toString() !== itemId);
+
+    await menu.save();
+    return res.status(200).json({ message: "Menu item deleted successfully", data: menu.menuItems });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+export const RestaurantUpdateMenuItemFlags = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const itemId = req.params.itemId;
+    const { isTopRated, isRecommended, isNew, status } = req.body;
+
+    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    if (!existingRestaurant) {
+      const error = new Error("Restaurant Not Found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const menu = await Menu.findOne({ restaurantId: existingRestaurant._id });
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" });
+    }
+
+    const menuItemIndex = menu.menuItems.findIndex(item => item._id.toString() === itemId);
+    if (menuItemIndex === -1) {
+      return res.status(404).json({ message: "Menu item not found" });
+    }
+
+    const menuItem = menu.menuItems[menuItemIndex];
+    if (isTopRated !== undefined) menuItem.isTopRated = isTopRated;
+    if (isRecommended !== undefined) menuItem.isRecommended = isRecommended;
+    if (isNew !== undefined) menuItem.isNew = isNew;
+    if (status !== undefined) menuItem.status = status;
+
+    await menu.save();
+    return res.status(200).json({ message: "Menu item flags updated successfully", data: menu.menuItems });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};

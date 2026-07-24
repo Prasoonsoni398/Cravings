@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../../config/ApiConfig";
+import toast from "react-hot-toast";
 import { FaAward, FaRegGrinStars } from "react-icons/fa";
 import { BiSolidDish } from "react-icons/bi";
 import { LuPencilLine, LuTrash2, LuEye, LuChevronDown } from "react-icons/lu";
@@ -6,6 +8,7 @@ import { AiTwotoneLike } from "react-icons/ai";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import ConfirmModal from "./menuItems/ConfirmModal";
 import AddNewItemModal from "./menuItems/AddNewItemModal";
+import EditOrViewItem from "./menuItems/EditOrViewItem";
 
 const dummyMenu = [
   {
@@ -239,7 +242,23 @@ const statusLabels = {
 };
 
 const RestaurantMenu = () => {
-  const [menuItems, setMenuItems] = useState(dummyMenu);
+  const [menuItems, setMenuItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await api.get("/restaurant/get-menu-items");
+      setMenuItems(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch menu items", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
 
   const [isAddNewItemModalOpen, setIsAddNewItemModalOpen] = useState(false);
   const [isEditViewItemModalOpen, setIsEditViewItemModalOpen] = useState(false);
@@ -269,7 +288,7 @@ const RestaurantMenu = () => {
             />
           </div>
         </div>
-        <div className="px-4">
+        <div className=" pe-4 ps-2">
             <div className="bg-(--color-base-200) p-4 rounded-lg border border-primary/30">
           <div className="text-(--color-primary) grid grid-cols-7 gap-4 font-bold border-b border-(--color-secondary) py-2">
             <div className="col-span-2">Item Name & Description</div>
@@ -279,7 +298,7 @@ const RestaurantMenu = () => {
             <div>Controls</div>
             <div>Actions</div>
           </div>
-          <div className="overflow-y-auto max-h-[65vh]">
+          <div className="overflow-y-auto max-h-[65vh] min-h-[65vh]">
             {menuItems.map((item, index) => (
               <div
                 key={index}
@@ -290,7 +309,7 @@ const RestaurantMenu = () => {
                     <img
                       src={item.image.url}
                       alt={item.itemName}
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-20 h-16 object-cover rounded"
                     />
                   </div>
                   <div className="w-full">
@@ -312,8 +331,15 @@ const RestaurantMenu = () => {
                       className={`appearance-none rounded-md pl-3 pr-8 py-1.5 text-xs font-semibold tracking-wide transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
                         statusChipStyles[item.status]
                       }`}
-                      onChange={(e) => {
-                        // Handle status change logic here
+                      onChange={async (e) => {
+                        const newStatus = e.target.value;
+                        try {
+                          await api.patch(`/restaurant/update-menu-item-flags/${item._id}`, { status: newStatus });
+                          toast.success("Status updated");
+                          fetchMenuItems();
+                        } catch (error) {
+                          toast.error("Failed to update status");
+                        }
                       }}
                     >
                       <option value="available">
@@ -427,6 +453,7 @@ const RestaurantMenu = () => {
           modalMode={modalMode}
           isOpen={isControlsModalOpen}
           onClose={() => setIsControlsModalOpen(false)}
+          onSuccess={fetchMenuItems}
         />
       )}
 
@@ -434,6 +461,17 @@ const RestaurantMenu = () => {
         <AddNewItemModal
           isOpen={isAddNewItemModalOpen}
           onClose={() => setIsAddNewItemModalOpen(false)}
+          onSuccess={fetchMenuItems}
+        />
+      )}
+
+      {isEditViewItemModalOpen && (
+        <EditOrViewItem
+          isOpen={isEditViewItemModalOpen}
+          onClose={() => setIsEditViewItemModalOpen(false)}
+          selectedItem={selectedItem}
+          modalMode={modalMode}
+          onSuccess={fetchMenuItems}
         />
       )}
     </>

@@ -103,7 +103,7 @@ const AddNewItemModal = ({ isOpen, onClose }) => {
   return (
     <>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg w-5xl">
+        <div className="bg-white p-6 rounded-lg w-4xl">
           <header className="flex justify-between items-center border-b border-(--color-secondary) pb-2 mb-4">
             <h2 className="text-lg font-semibold">Add New Item</h2>
             <button
@@ -121,26 +121,52 @@ const AddNewItemModal = ({ isOpen, onClose }) => {
                   <label className="block mb-1 font-medium" htmlFor="itemImage">
                     Item Image
                   </label>
-                  {previewImage && (
-                    <div className="col-span-1">
-                      <img
-                        src={previewImage}
-                        alt="Preview"
-                        className="w-full h-auto rounded"
+                  <div className="flex flex-col items-center justify-center w-full">
+                    <label
+                      htmlFor="itemImage"
+                      className="flex flex-col items-center justify-center w-full h-52.5 border-2 border-dashed border-(--color-primary)/30 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 relative overflow-hidden"
+                    >
+                      {previewImage ? (
+                        <>
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                            <span className="text-white font-medium">Change Image</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span></p>
+                          <p className="text-xs text-gray-500">PNG, JPG up to 1MB</p>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        id="itemImage"
+                        name="itemImage"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            if (file.size > 5 * 1024 * 1024) {
+                              toast.error("Image size must be less than 5MB");
+                              e.target.value = "";
+                              return;
+                            }
+                            setItemImage(file);
+                            setPreviewImage(URL.createObjectURL(file));
+                          }
+                        }}
                       />
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    id="itemImage"
-                    name="itemImage"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      setItemImage(file);
-                      setPreviewImage(URL.createObjectURL(file));
-                    }}
-                    className="w-full border border-(--color-primary) text-(--color-primary) rounded px-3 py-2"
-                  />
+                    </label>
+                  </div>
                 </div>
                 <div className="space-y-4 col-span-2">
                   <div>
@@ -189,7 +215,7 @@ const AddNewItemModal = ({ isOpen, onClose }) => {
                         name="category"
                         value={newItemFormData.category}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded px-3 py-2"
+                        className="w-full border border-gray-300 rounded px-3 py-2  "
                       >
                         <option value="" className="capitalize">
                           Select Category
@@ -243,7 +269,7 @@ const AddNewItemModal = ({ isOpen, onClose }) => {
                     name="description"
                     value={newItemFormData.description}
                     onChange={handleInputChange}
-                    className=" w-full border border-gray-300 rounded px-3 py-2"
+                    className=" w-full border h-20 resize-none focus:outline focus:outline-primary border-gray-300 rounded px-3 py-2"
                   />
                 </div>
               </div>

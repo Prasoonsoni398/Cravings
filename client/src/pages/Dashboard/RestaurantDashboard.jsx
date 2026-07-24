@@ -5,6 +5,7 @@ import RestaurantSidebar from "../../components/restaurantDashboard/RestaurantSi
 import RestaurantOverview from "../../components/restaurantDashboard/RestaurantOverView.jsx";
 import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrder.jsx";
 import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting.jsx";
+import RestaurantMenu from "../../components/restaurantDashboard/RestaurantMenu";
 
 const RestaurantDashboard = () => {
   const { isLogin, role } = useAuth();
@@ -58,10 +59,11 @@ const RestaurantDashboard = () => {
             setIsCollapsed={setIsSidebarCollapsed}
           />
         </div>
-        <div className="flex-1 bg-(--color-base-100) rounded-lg h-full">
+        <div className="flex-1 bg-(--color-base-100) rounded-lg h-full ">
           {activeTab === "overview" && <RestaurantOverview />}
           {activeTab === "orders" && <RestaurantOrders />}
           {activeTab === "setting" && <RestaurantSetting />}
+          {activeTab === "menu" && <RestaurantMenu />}
         </div>
       </div>
     </>

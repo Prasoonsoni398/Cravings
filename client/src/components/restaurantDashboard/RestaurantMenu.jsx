@@ -250,8 +250,8 @@ const RestaurantMenu = () => {
   return (
     <>
       <div className="overflow-y-auto h-full">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-2xl font-bold mb-6">Menu Management</h2>
+        <div className="flex justify-between items-center p-4 pb-2 mb-4 border-b border-gray-300">
+          <h2 className="text-2xl font-bold">Menu Management</h2>
           <div className="flex gap-4 items-center">
             <button
               className="hover:bg-(--color-primary) border border-(--color-primary) text-(--color-primary) hover:text-white px-4 py-2 rounded transition-colors flex items-center gap-2"
@@ -269,7 +269,8 @@ const RestaurantMenu = () => {
             />
           </div>
         </div>
-        <div className="bg-(--color-base-200) p-4 rounded-lg">
+        <div className="px-4">
+            <div className="bg-(--color-base-200) p-4 rounded-lg border border-primary/30">
           <div className="text-(--color-primary) grid grid-cols-7 gap-4 font-bold border-b border-(--color-secondary) py-2">
             <div className="col-span-2">Item Name & Description</div>
             <div className="text-center">Price</div>
@@ -416,6 +417,7 @@ const RestaurantMenu = () => {
               </div>
             ))}
           </div>
+        </div>
         </div>
       </div>
 

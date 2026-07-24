@@ -294,7 +294,7 @@ export const RestaurantAddMenuItem = async (req, res, next) => {
 
     console.log("Lets UploadImage");
 
-    const itemImage = await uploadSingleImage(
+    const itemImage = await UploadSingleImage(
       itemImageFromFE,
       `restaurant/${currentUser.phone}/menuItems`,
     );

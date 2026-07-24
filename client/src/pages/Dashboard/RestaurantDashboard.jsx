@@ -1,25 +1,27 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import {  useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import RestaurantSidebar from "../../components/restaurantDashboard/RestaurantSidebar.jsx";
-import RestaurantOverview from "../../components/restaurantDashboard/RestaurantOverView.jsx"
-import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrder.jsx"
-import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting.jsx"
+import RestaurantOverview from "../../components/restaurantDashboard/RestaurantOverView.jsx";
+import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrder.jsx";
+import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting.jsx";
 
 const RestaurantDashboard = () => {
   const { isLogin, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState(() => {
-    const pathTab = location.pathname.split('/').filter(Boolean).pop();
-    return ['overview', 'orders', 'wishlist', 'setting'].includes(pathTab) ? pathTab : 'overview';
+    const pathTab = location.pathname.split("/").filter(Boolean).pop();
+    return ["overview", "orders", "wishlist", "setting"].includes(pathTab)
+      ? pathTab
+      : "overview";
   });
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
 
   React.useEffect(() => {
-    const pathTab = location.pathname.split('/').filter(Boolean).pop();
-    if (['overview', 'orders', 'wishlist', 'setting'].includes(pathTab)) {
+    const pathTab = location.pathname.split("/").filter(Boolean).pop();
+    if (["overview", "orders", "wishlist", "setting"].includes(pathTab)) {
       setActiveTab(pathTab);
     }
   }, [location.pathname]);
@@ -46,7 +48,9 @@ const RestaurantDashboard = () => {
     <>
       {/* create a sidebar and main content area */}
       <div className="flex gap-2">
-        <div className={`shrink-0 rounded-lg shadow-md bg-(--color-base-200) h-full transition-all duration-500 ${isSidebarCollapsed ? "w-20" : "w-72"}`}>
+        <div
+          className={`shrink-0 rounded-lg shadow-md bg-(--color-base-200) sticky top-16 h-full transition-all duration-500 ${isSidebarCollapsed ? "w-20" : "w-72"}`}
+        >
           <RestaurantSidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}

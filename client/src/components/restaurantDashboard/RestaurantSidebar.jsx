@@ -7,12 +7,14 @@ import {
   MdSettingsSuggest,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
+  MdOutlineMenu
 } from "react-icons/md";
 
 const MenuItems = [
   { name: "Overview", path: "overview", icon: <MdOutlineDashboard /> },
   { name: "Order", path: "orders", icon: <FaBorderAll /> },
   { name: "Wishlist", path: "wishlist", icon: <MdOutlineFavorite /> },
+  { name: "menu", path: "menu", icon: <MdOutlineMenu /> },
   { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
 ];
 

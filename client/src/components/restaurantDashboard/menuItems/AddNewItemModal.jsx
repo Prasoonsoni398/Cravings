@@ -286,10 +286,11 @@ const AddNewItemModal = ({ isOpen, onClose, onSuccess }) => {
               Cancel
             </button>
             <button
-              className="bg-(--color-primary) text-(--color-primary-content) px-4 py-2 rounded"
+              className="bg-(--color-primary) text-(--color-primary-content) px-4 py-2 rounded disabled:opacity-70 disabled:cursor-not-allowed"
               onClick={handleAddNewItem}
+              disabled={isLoading}
             >
-              Add Item
+              {isLoading ? "Adding..." : "Add Item"}
             </button>
           </footer>
         </div>

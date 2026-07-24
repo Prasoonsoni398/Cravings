@@ -308,6 +308,16 @@ export const RestaurantAddMenuItem = async (req, res, next) => {
     console.log("Lets Add the Menu");
 
     if (existingMenuItem) {
+      const isDuplicate = existingMenuItem.menuItems.some(
+        (item) => item.itemName.toLowerCase() === itemName.toLowerCase()
+      );
+
+      if (isDuplicate) {
+        const error = new Error("An item with this name already exists on the menu.");
+        error.statusCode = 409;
+        return next(error);
+      }
+
       existingMenuItem.menuItems.push({
         itemName,
         description,
@@ -432,6 +442,7 @@ export const RestaurantEditMenuItem = async (req, res, next) => {
       menuItem.image = newImage;
     }
 
+    menu.markModified('menuItems');
     await menu.save();
     return res.status(200).json({ message: "Menu item updated successfully", data: menu.menuItems });
   } catch (error) {
@@ -496,6 +507,7 @@ export const RestaurantUpdateMenuItemFlags = async (req, res, next) => {
     if (isNew !== undefined) menuItem.isNew = isNew;
     if (status !== undefined) menuItem.status = status;
 
+    menu.markModified('menuItems');
     await menu.save();
     return res.status(200).json({ message: "Menu item flags updated successfully", data: menu.menuItems });
   } catch (error) {

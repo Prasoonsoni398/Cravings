@@ -22,7 +22,8 @@ const Home = () => {
               Delivered Fast
             </h1>
             <p className="mb-8 text-lg opacity-90 md:text-xl">
-              Order from thousands of restaurants and get it delivered to your doorstep
+              Order from thousands of restaurants and get it delivered to your
+              doorstep
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
@@ -167,9 +168,7 @@ const Home = () => {
                   "{item.text}"
                 </p>
                 <div>
-                  <h3 className="font-bold text-base-content">
-                    {item.name}
-                  </h3>
+                  <h3 className="font-bold text-base-content">{item.name}</h3>
                   <p className="text-sm text-secondary">{item.role}</p>
                 </div>
               </article>
@@ -183,7 +182,8 @@ const Home = () => {
           Ready to satisfy your cravings?
         </h2>
         <p className="mx-auto mb-6 max-w-md text-white/80">
-          Join thousands of happy customers ordering their favourite meals every day.
+          Join thousands of happy customers ordering their favourite meals every
+          day.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Link

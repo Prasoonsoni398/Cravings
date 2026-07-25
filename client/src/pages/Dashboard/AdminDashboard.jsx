@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const active = useLocation().state?.activeTab;
   const [activeTab, setActiveTab] = React.useState(active || "overview");
 
- if (!isLogin || role !== "admin") {
+  if (!isLogin || role !== "admin") {
     return (
       <div className="h-[92vh] bg-[url('/foodTable.webp')]  bg-cover bg-center">
         <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center ">
@@ -33,7 +33,7 @@ const AdminDashboard = () => {
   return (
     <>
       {/* create a sidebar and main content area */}
-     <div className="h-[91vh] flex gap-2 p-2">
+      <div className="h-[91vh] flex gap-2 p-2">
         <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full">
           <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>

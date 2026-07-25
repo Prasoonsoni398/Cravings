@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "seed": "node ./src/seeders/seed.js"
+    "seed": "node ./src/seeders/seed.js",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md}\""
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -24,5 +25,8 @@
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
   }
 }

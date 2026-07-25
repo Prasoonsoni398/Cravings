@@ -1,7 +1,5 @@
 const PartnerWithUs = () => {
-  return (
-    <div>Partner With Us</div>
-  )
-}
+  return <div>Partner With Us</div>;
+};
 
-export default PartnerWithUs
+export default PartnerWithUs;

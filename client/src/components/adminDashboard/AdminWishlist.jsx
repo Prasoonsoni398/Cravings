@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const AdminWishlist = () => {
-  return (
-    <div>Wishlist</div>
-  )
-}
+  return <div>Wishlist</div>;
+};
 
-export default AdminWishlist
+export default AdminWishlist;

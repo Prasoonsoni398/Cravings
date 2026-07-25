@@ -63,7 +63,6 @@ export const UploadSingleImage = async (image, storageLocation) => {
       url: result.secure_url,
       publicId: result.public_id,
     };
-    
   } catch (error) {
     console.log(error.message);
     throw error;

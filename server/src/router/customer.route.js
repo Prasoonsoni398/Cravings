@@ -1,10 +1,7 @@
-import express from "express"
+import express from "express";
 
-
-
-const router = express.Router()
+const router = express.Router();
 
 // Customer routes
 
-
-export default router
+export default router;

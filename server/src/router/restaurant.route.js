@@ -21,7 +21,7 @@ router.post(
   RestaurantAuthProtect,
   upload.fields([
     { name: "coverImage", maxCount: 1 },
-    { name: "restaurantImage", maxCount: 10 }
+    { name: "restaurantImage", maxCount: 10 },
   ]),
   RestaurantUpdateProfile,
 );
@@ -31,7 +31,7 @@ router.put(
   RestaurantAuthProtect,
   upload.fields([
     { name: "coverImage", maxCount: 1 },
-    { name: "restaurantImage", maxCount: 8 }
+    { name: "restaurantImage", maxCount: 8 },
   ]),
   RestaurantUpdateProfile,
 );
@@ -58,11 +58,7 @@ router.post(
   RestaurantAddMenuItem,
 );
 
-router.get(
-  "/get-menu-items",
-  RestaurantAuthProtect,
-  RestaurantGetMenuItems,
-);
+router.get("/get-menu-items", RestaurantAuthProtect, RestaurantGetMenuItems);
 
 router.put(
   "/edit-menu-item/:itemId",

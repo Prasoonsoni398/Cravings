@@ -10,9 +10,7 @@ const Seed = async () => {
 
     // CAll the function which we need to seed
     await adminSeed();
-    await userSeed()
-
-
+    await userSeed();
   } catch (error) {
     console.log(error.message);
   } finally {

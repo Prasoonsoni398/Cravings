@@ -10,5 +10,11 @@ body,
 }
 
 button {
-  cursor: pointer   ;
+  cursor: pointer;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-primary);
 }

@@ -4,16 +4,17 @@ import toast from "react-hot-toast";
 const SocialMediaLinks = () => {
   const [editingSocialMedia, setEditingSocialMedia] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
-  const initialData = JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
+
+  const initialData =
+    JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
 
   const [socialMediaLinks, setSocialMediaLinks] = useState(
-    initialData?.socialMediaLinks || []
+    initialData?.socialMediaLinks || [],
   );
 
   const handleSocialMediaChange = (index, field, value) => {
     const updated = socialMediaLinks.map((link, i) =>
-      i === index ? { ...link, [field]: value } : link
+      i === index ? { ...link, [field]: value } : link,
     );
     setSocialMediaLinks(updated);
   };
@@ -53,7 +54,7 @@ const SocialMediaLinks = () => {
         <label className="text-sm font-semibold text-(--color-primary)">
           Social Media Links
         </label>
-        
+
         {!editingSocialMedia ? (
           <div className="flex gap-2">
             <button
@@ -72,7 +73,7 @@ const SocialMediaLinks = () => {
           </div>
         ) : (
           <div className="flex gap-2">
-             <button
+            <button
               type="button"
               onClick={addSocialMediaLink}
               className="text-xs bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded"
@@ -99,10 +100,7 @@ const SocialMediaLinks = () => {
 
       <div className="flex flex-col gap-2 h-30 overflow-y-auto pr-1">
         {socialMediaLinks.map((link, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-2 gap-2 items-center"
-          >
+          <div key={index} className="grid grid-cols-2 gap-2 items-center">
             <input
               type="text"
               placeholder="Platform (e.g. Instagram)"

@@ -129,7 +129,6 @@ const RestaurantSetting = () => {
                 disabled={isLoadingResturantOpen || isLoadingRestaurant}
                 className="switch switch-primary"
               />
-             
             </div>
           </div>
         </div>

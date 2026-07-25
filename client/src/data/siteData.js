@@ -44,10 +44,18 @@ export const restaurants = [
 ];
 
 export const stats = [
-  ["2.5M+", "Successful Deliveries", "Orders delivered with care and precision"],
+  [
+    "2.5M+",
+    "Successful Deliveries",
+    "Orders delivered with care and precision",
+  ],
   ["500K+", "Happy Customers", "Satisfied users enjoying delicious food"],
   ["5K+", "Partner Restaurants", "Restaurants serving amazing cuisine"],
-  ["1K+", "Active Delivery Partners", "Riders ensuring quick and safe delivery"],
+  [
+    "1K+",
+    "Active Delivery Partners",
+    "Riders ensuring quick and safe delivery",
+  ],
 ];
 
 export const testimonials = [

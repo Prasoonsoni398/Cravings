@@ -21,13 +21,14 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, setIsLogin, isLogin, setUser, role } = useAuth();
 
-  const dashboardRoute = role === "restaurant"
-    ? "/restaurant-dashboard"
-    : role === "rider"
-      ? "/rider-dashboard"
-      : role === "admin"
-        ? "/admin-dashboard"
-        : "/user/dashboard";
+  const dashboardRoute =
+    role === "restaurant"
+      ? "/restaurant-dashboard"
+      : role === "rider"
+        ? "/rider-dashboard"
+        : role === "admin"
+          ? "/admin-dashboard"
+          : "/user/dashboard";
 
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("cravings-theme") || "light";
@@ -37,7 +38,7 @@ const Header = () => {
   });
 
   const handleLogout = async () => {
-    await fetch('/api/logout', { method: 'POST' });
+    await fetch("/api/logout", { method: "POST" });
     setIsLogin(false);
     sessionStorage.removeItem("UserData");
     setUser(null);
@@ -88,7 +89,11 @@ const Header = () => {
                   Dashboard
                 </Link>
                 <img
-                  src={user.photo?.url || user?.photo || "https://placehold.co/600x400?text=U"}
+                  src={
+                    user.photo?.url ||
+                    user?.photo ||
+                    "https://placehold.co/600x400?text=U"
+                  }
                   alt={user.fullName}
                   className="w-12 h-12 rounded-full object-cover "
                 />

@@ -1,5 +1,12 @@
 import { Link } from "react-router-dom";
-import { FaHeart, FaLeaf, FaShieldAlt, FaStar, FaStore, FaUsers } from "react-icons/fa";
+import {
+  FaHeart,
+  FaLeaf,
+  FaShieldAlt,
+  FaStar,
+  FaStore,
+  FaUsers,
+} from "react-icons/fa";
 
 const values = [
   {
@@ -32,7 +39,11 @@ const About = () => {
       <section className="relative flex h-[60vh] items-center justify-center bg-[url('/aboutPage.png')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/55"></div>
         <div className="relative z-10 px-6 text-center">
-          <img src="/assets/circleLogo-DpCri5UD.png" alt="Cravings" className="mx-auto mb-4 h-20 w-20" />
+          <img
+            src="/assets/circleLogo-DpCri5UD.png"
+            alt="Cravings"
+            className="mx-auto mb-4 h-20 w-20"
+          />
           <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">
             About <span className="text-primary">Cravings</span>
           </h1>
@@ -52,9 +63,14 @@ const About = () => {
           ].map(([value, label]) => (
             <div key={label}>
               <p className="text-3xl font-bold text-primary">
-                {label === "Average Rating" && <FaStar className="mb-1 inline bg-warningg" />} {value}
+                {label === "Average Rating" && (
+                  <FaStar className="mb-1 inline bg-warningg" />
+                )}{" "}
+                {value}
               </p>
-              <p className="mt-1 text-sm text-(--color-neutral-content)">{label}</p>
+              <p className="mt-1 text-sm text-(--color-neutral-content)">
+                {label}
+              </p>
             </div>
           ))}
         </div>
@@ -69,10 +85,14 @@ const About = () => {
             Born from a love of great food
           </h2>
           <p className="mb-4 leading-relaxed text-secondary">
-            Cravings started in 2022 when three food lovers realized that finding and ordering from local restaurants was harder than it needed to be.
+            Cravings started in 2022 when three food lovers realized that
+            finding and ordering from local restaurants was harder than it
+            needed to be.
           </p>
           <p className="leading-relaxed text-secondary">
-            Today, we help restaurants reach new customers, riders build flexible livelihoods, and customers get delicious meals straight to their door.
+            Today, we help restaurants reach new customers, riders build
+            flexible livelihoods, and customers get delicious meals straight to
+            their door.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -82,7 +102,10 @@ const About = () => {
             [<FaHeart />, "Partners", "Businesses that grow with us"],
             [<FaStar />, "Community", "People at the heart of everything"],
           ].map(([icon, label, desc]) => (
-            <div key={label} className="flex flex-col gap-2 rounded-xl border border-(--color-base-300) bg-base-100 p-5 shadow-sm">
+            <div
+              key={label}
+              className="flex flex-col gap-2 rounded-xl border border-(--color-base-300) bg-base-100 p-5 shadow-sm"
+            >
               <span className="text-2xl text-primary">{icon}</span>
               <p className="font-bold text-(--color-neutral)">{label}</p>
               <p className="text-xs text-secondary">{desc}</p>
@@ -96,14 +119,23 @@ const About = () => {
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-primary">
             What We Stand For
           </p>
-          <h2 className="text-3xl font-bold text-(--color-neutral)">Our Core Values</h2>
+          <h2 className="text-3xl font-bold text-(--color-neutral)">
+            Our Core Values
+          </h2>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
           {values.map((value) => (
-            <div key={value.title} className="rounded-xl border border-(--color-base-300) bg-base-100 p-8 text-center shadow-sm">
+            <div
+              key={value.title}
+              className="rounded-xl border border-(--color-base-300) bg-base-100 p-8 text-center shadow-sm"
+            >
               <div className="mb-4 flex justify-center">{value.icon}</div>
-              <h3 className="mb-2 text-lg font-bold text-(--color-neutral)">{value.title}</h3>
-              <p className="text-sm leading-relaxed text-secondary">{value.desc}</p>
+              <h3 className="mb-2 text-lg font-bold text-(--color-neutral)">
+                {value.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-secondary">
+                {value.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -114,7 +146,9 @@ const About = () => {
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-primary">
             The People Behind Cravings
           </p>
-          <h2 className="text-3xl font-bold text-(--color-neutral)">Meet the Team</h2>
+          <h2 className="text-3xl font-bold text-(--color-neutral)">
+            Meet the Team
+          </h2>
         </div>
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {team.map(([name, role, initials]) => (
@@ -130,15 +164,24 @@ const About = () => {
       </section>
 
       <section className="bg-primary px-6 py-14 text-center">
-        <h2 className="mb-3 text-3xl font-bold text-white">Ready to satisfy your cravings?</h2>
+        <h2 className="mb-3 text-3xl font-bold text-white">
+          Ready to satisfy your cravings?
+        </h2>
         <p className="mx-auto mb-6 max-w-md text-white/80">
-          Join thousands of happy customers ordering their favourite meals every day.
+          Join thousands of happy customers ordering their favourite meals every
+          day.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link to="/register/customer" className="rounded-md bg-base-100 px-8 py-3 font-semibold text-primary hover:bg-orange-100">
+          <Link
+            to="/register/customer"
+            className="rounded-md bg-base-100 px-8 py-3 font-semibold text-primary hover:bg-orange-100"
+          >
             Get Started
           </Link>
-          <Link to="/contact" className="rounded-md border-2 border-white px-8 py-3 font-semibold text-white hover:bg-base-100/10">
+          <Link
+            to="/contact"
+            className="rounded-md border-2 border-white px-8 py-3 font-semibold text-white hover:bg-base-100/10"
+          >
             Contact Us
           </Link>
         </div>

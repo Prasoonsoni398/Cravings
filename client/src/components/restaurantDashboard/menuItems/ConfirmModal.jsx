@@ -3,26 +3,39 @@ import { IoMdCloseCircleOutline } from "react-icons/io";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
 
-const ConfirmModal = ({ selectedItem, modalMode, isOpen, onClose, onSuccess }) => {
+const ConfirmModal = ({
+  selectedItem,
+  modalMode,
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
 
   const handleConfirm = async () => {
     if (!selectedItem) return;
-    
+
     try {
       setIsLoading(true);
       let res;
       if (modalMode === "delete") {
-        res = await api.delete(`/restaurant/delete-menu-item/${selectedItem._id}`);
+        res = await api.delete(
+          `/restaurant/delete-menu-item/${selectedItem._id}`,
+        );
       } else {
         const payload = {};
-        if (modalMode === "topRated") payload.isTopRated = !selectedItem.isTopRated;
-        if (modalMode === "recommended") payload.isRecommended = !selectedItem.isRecommended;
+        if (modalMode === "topRated")
+          payload.isTopRated = !selectedItem.isTopRated;
+        if (modalMode === "recommended")
+          payload.isRecommended = !selectedItem.isRecommended;
         if (modalMode === "new") payload.isNew = !selectedItem.isNew;
-        
-        res = await api.patch(`/restaurant/update-menu-item-flags/${selectedItem._id}`, payload);
+
+        res = await api.patch(
+          `/restaurant/update-menu-item-flags/${selectedItem._id}`,
+          payload,
+        );
       }
       toast.success(res.data.message);
       if (onSuccess) onSuccess();
@@ -50,10 +63,14 @@ const ConfirmModal = ({ selectedItem, modalMode, isOpen, onClose, onSuccess }) =
           </div>
           <div className="mb-6 text-gray-700">
             <p className="text-lg">
-              {modalMode === "delete" && `Delete "${selectedItem.itemName}" from the menu?`}
-              {modalMode === "topRated" && `Toggle Top Rated status for "${selectedItem.itemName}"?`}
-              {modalMode === "recommended" && `Toggle Recommended status for "${selectedItem.itemName}"?`}
-              {modalMode === "new" && `Toggle New status for "${selectedItem.itemName}"?`}
+              {modalMode === "delete" &&
+                `Delete "${selectedItem.itemName}" from the menu?`}
+              {modalMode === "topRated" &&
+                `Toggle Top Rated status for "${selectedItem.itemName}"?`}
+              {modalMode === "recommended" &&
+                `Toggle Recommended status for "${selectedItem.itemName}"?`}
+              {modalMode === "new" &&
+                `Toggle New status for "${selectedItem.itemName}"?`}
             </p>
           </div>
           <div className="flex justify-end gap-3">

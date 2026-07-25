@@ -41,7 +41,9 @@ const GalleryImages = () => {
     setGalleryImages((prevImages) => {
       const merged = [...prevImages, ...files];
       if (merged.length > MAX_GALLERY_IMAGES) {
-        setError(`You can upload up to ${MAX_GALLERY_IMAGES} restaurant images only.`);
+        setError(
+          `You can upload up to ${MAX_GALLERY_IMAGES} restaurant images only.`,
+        );
         return merged.slice(0, MAX_GALLERY_IMAGES);
       }
 
@@ -54,7 +56,7 @@ const GalleryImages = () => {
 
   const removeGalleryImage = (indexToRemove) => {
     setGalleryImages((prevImages) =>
-      prevImages.filter((_, index) => index !== indexToRemove)
+      prevImages.filter((_, index) => index !== indexToRemove),
     );
     setError("");
   };
@@ -150,8 +152,8 @@ const GalleryImages = () => {
             No restaurant images yet
           </p>
           <p className="mt-1 text-xs text-(--color-secondary)">
-            Add up to 10 supporting photos to show the dining space, food,
-            and kitchen.
+            Add up to 10 supporting photos to show the dining space, food, and
+            kitchen.
           </p>
         </div>
       )}

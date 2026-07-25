@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import cloudinary from "../config/cloudinary.config.js";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 const uploadPhotoToCloudinary = async (file) => {
   if (!file) return null;
@@ -20,7 +20,6 @@ const uploadPhotoToCloudinary = async (file) => {
 };
 
 export const EditUserProfile = async (req, res, next) => {
-
   try {
     const { email, fullName, phone } = req.body;
     const currentUserId = req.user?._id || req.body.userId;
@@ -33,7 +32,6 @@ export const EditUserProfile = async (req, res, next) => {
     }
 
     console.log(fullName);
-    
 
     const existingUser = await User.findById(currentUserId);
     if (!existingUser) {

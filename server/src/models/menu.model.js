@@ -57,7 +57,11 @@ const MenuSchema = mongoose.Schema(
             type: { url: { type: String }, publicId: { type: String } },
             required: true,
           },
-          status: { type: String, enum: ["available", "unavailable", "discontinued"], default: "available" },
+          status: {
+            type: String,
+            enum: ["available", "unavailable", "discontinued"],
+            default: "available",
+          },
           isTopRated: { type: Boolean, default: false },
           isRecommended: { type: Boolean, default: false },
           isNew: { type: Boolean, default: false },
@@ -68,7 +72,6 @@ const MenuSchema = mongoose.Schema(
   },
   { timestamps: true },
 );
-
 
 const Menu = mongoose.model("menu", MenuSchema);
 

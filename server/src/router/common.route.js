@@ -1,5 +1,8 @@
 import express from "express";
-import { EditUserProfile,UpdateUserPassword } from "../controller/common.controller.js";
+import {
+  EditUserProfile,
+  UpdateUserPassword,
+} from "../controller/common.controller.js";
 import { AuthProtect } from "../middleware/auth.middleware.js";
 import multer from "multer";
 
@@ -15,6 +18,5 @@ router.put(
 );
 
 router.patch("/change-password", AuthProtect, UpdateUserPassword);
-
 
 export default router;

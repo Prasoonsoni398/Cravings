@@ -1,7 +1,5 @@
 const BecomeARider = () => {
-  return (
-    <div>Become a Rider</div>
-  )
-}
+  return <div>Become a Rider</div>;
+};
 
-export default BecomeARider
+export default BecomeARider;

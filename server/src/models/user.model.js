@@ -36,13 +36,13 @@ const UserSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
-    userType:{
-      type:String,
-      enum:["admin","customer","rider","restaurant"],
-      required:true,
-      default:"customer",
+    userType: {
+      type: String,
+      enum: ["admin", "customer", "rider", "restaurant"],
+      required: true,
+      default: "customer",
     },
-       isActive: {
+    isActive: {
       type: Boolean,
       default: true,
     },
@@ -52,7 +52,7 @@ const UserSchema = mongoose.Schema(
       default: "pending",
     },
   },
-  
+
   {
     timestamps: true,
   },

@@ -2,10 +2,18 @@ import Order from "../models/order.model.js";
 
 export const CreateOrder = async (req, res, next) => {
   try {
-    const { restaurantId, restaurantName, items, totalPrice, deliveryAddress } = req.body;
+    const { restaurantId, restaurantName, items, totalPrice, deliveryAddress } =
+      req.body;
 
-    if (!restaurantId || !restaurantName || !items?.length || !deliveryAddress) {
-      const error = new Error("Please provide restaurant, items, and delivery address");
+    if (
+      !restaurantId ||
+      !restaurantName ||
+      !items?.length ||
+      !deliveryAddress
+    ) {
+      const error = new Error(
+        "Please provide restaurant, items, and delivery address",
+      );
       error.statusCode = 400;
       return next(error);
     }

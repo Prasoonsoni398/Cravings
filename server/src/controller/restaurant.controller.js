@@ -309,11 +309,13 @@ export const RestaurantAddMenuItem = async (req, res, next) => {
 
     if (existingMenuItem) {
       const isDuplicate = existingMenuItem.menuItems.some(
-        (item) => item.itemName.toLowerCase() === itemName.toLowerCase()
+        (item) => item.itemName.toLowerCase() === itemName.toLowerCase(),
       );
 
       if (isDuplicate) {
-        const error = new Error("An item with this name already exists on the menu.");
+        const error = new Error(
+          "An item with this name already exists on the menu.",
+        );
         error.statusCode = 409;
         return next(error);
       }
@@ -409,10 +411,13 @@ export const RestaurantEditMenuItem = async (req, res, next) => {
   try {
     const currentUser = req.user;
     const itemId = req.params.itemId;
-    const { itemName, description, price, category, foodType, status } = req.body;
+    const { itemName, description, price, category, foodType, status } =
+      req.body;
     const itemImageFromFE = req.file;
 
-    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
+    });
     if (!existingRestaurant) {
       const error = new Error("Restaurant Not Found");
       error.statusCode = 404;
@@ -424,7 +429,9 @@ export const RestaurantEditMenuItem = async (req, res, next) => {
       return res.status(404).json({ message: "Menu not found" });
     }
 
-    const menuItemIndex = menu.menuItems.findIndex(item => item._id.toString() === itemId);
+    const menuItemIndex = menu.menuItems.findIndex(
+      (item) => item._id.toString() === itemId,
+    );
     if (menuItemIndex === -1) {
       return res.status(404).json({ message: "Menu item not found" });
     }
@@ -438,13 +445,21 @@ export const RestaurantEditMenuItem = async (req, res, next) => {
     menuItem.status = status || menuItem.status;
 
     if (itemImageFromFE) {
-      const newImage = await UploadSingleImage(itemImageFromFE, `restaurant/${currentUser.phone}/menuItems`);
+      const newImage = await UploadSingleImage(
+        itemImageFromFE,
+        `restaurant/${currentUser.phone}/menuItems`,
+      );
       menuItem.image = newImage;
     }
 
-    menu.markModified('menuItems');
+    menu.markModified("menuItems");
     await menu.save();
-    return res.status(200).json({ message: "Menu item updated successfully", data: menu.menuItems });
+    return res
+      .status(200)
+      .json({
+        message: "Menu item updated successfully",
+        data: menu.menuItems,
+      });
   } catch (error) {
     console.log(error.message);
     next(error);
@@ -456,7 +471,9 @@ export const RestaurantDeleteMenuItem = async (req, res, next) => {
     const currentUser = req.user;
     const itemId = req.params.itemId;
 
-    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
+    });
     if (!existingRestaurant) {
       const error = new Error("Restaurant Not Found");
       error.statusCode = 404;
@@ -468,10 +485,17 @@ export const RestaurantDeleteMenuItem = async (req, res, next) => {
       return res.status(404).json({ message: "Menu not found" });
     }
 
-    menu.menuItems = menu.menuItems.filter(item => item._id.toString() !== itemId);
+    menu.menuItems = menu.menuItems.filter(
+      (item) => item._id.toString() !== itemId,
+    );
 
     await menu.save();
-    return res.status(200).json({ message: "Menu item deleted successfully", data: menu.menuItems });
+    return res
+      .status(200)
+      .json({
+        message: "Menu item deleted successfully",
+        data: menu.menuItems,
+      });
   } catch (error) {
     console.log(error.message);
     next(error);
@@ -484,7 +508,9 @@ export const RestaurantUpdateMenuItemFlags = async (req, res, next) => {
     const itemId = req.params.itemId;
     const { isTopRated, isRecommended, isNew, status } = req.body;
 
-    const existingRestaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    const existingRestaurant = await Restaurant.findOne({
+      managerId: currentUser._id,
+    });
     if (!existingRestaurant) {
       const error = new Error("Restaurant Not Found");
       error.statusCode = 404;
@@ -496,7 +522,9 @@ export const RestaurantUpdateMenuItemFlags = async (req, res, next) => {
       return res.status(404).json({ message: "Menu not found" });
     }
 
-    const menuItemIndex = menu.menuItems.findIndex(item => item._id.toString() === itemId);
+    const menuItemIndex = menu.menuItems.findIndex(
+      (item) => item._id.toString() === itemId,
+    );
     if (menuItemIndex === -1) {
       return res.status(404).json({ message: "Menu item not found" });
     }
@@ -507,11 +535,16 @@ export const RestaurantUpdateMenuItemFlags = async (req, res, next) => {
     if (isNew !== undefined) menuItem.isNew = isNew;
     if (status !== undefined) menuItem.status = status;
 
-    menu.markModified('menuItems');
+    menu.markModified("menuItems");
     await menu.save();
-    return res.status(200).json({ message: "Menu item flags updated successfully", data: menu.menuItems });
+    return res
+      .status(200)
+      .json({
+        message: "Menu item flags updated successfully",
+        data: menu.menuItems,
+      });
   } catch (error) {
     console.log(error.message);
     next(error);
   }
-};
+};

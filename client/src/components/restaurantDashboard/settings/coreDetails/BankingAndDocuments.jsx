@@ -5,9 +5,10 @@ import toast from "react-hot-toast";
 const BankingAndDocuments = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editingBanking, setEditingBanking] = useState(false);
-  
-  const initialData = JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
-  
+
+  const initialData =
+    JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
+
   const [bankingData, setBankingData] = useState({
     bankName: initialData?.bankName || "",
     accountNumber: initialData?.accountNumber || "",

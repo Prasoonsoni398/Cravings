@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
+import { FiUploadCloud } from "react-icons/fi";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
 
@@ -37,7 +38,13 @@ const foodTypes = [
   "Other",
 ];
 
-const EditOrViewItem = ({ isOpen, onClose, selectedItem, modalMode, onSuccess }) => {
+const EditOrViewItem = ({
+  isOpen,
+  onClose,
+  selectedItem,
+  modalMode,
+  onSuccess,
+}) => {
   const [formData, setFormData] = React.useState({
     itemName: "",
     description: "",
@@ -78,7 +85,7 @@ const EditOrViewItem = ({ isOpen, onClose, selectedItem, modalMode, onSuccess })
   const handleUpdateItem = async () => {
     try {
       setIsLoading(true);
-      
+
       const payload = new FormData();
       payload.append("itemName", formData.itemName);
       payload.append("description", formData.description);
@@ -86,18 +93,22 @@ const EditOrViewItem = ({ isOpen, onClose, selectedItem, modalMode, onSuccess })
       payload.append("category", formData.category);
       payload.append("foodType", formData.foodType);
       payload.append("status", formData.status);
-      
+
       if (itemImage) {
         payload.append("itemImage", itemImage);
       }
 
-      const res = await api.put(`/restaurant/edit-menu-item/${selectedItem._id}`, payload);
+      const res = await api.put(
+        `/restaurant/edit-menu-item/${selectedItem._id}`,
+        payload,
+      );
       toast.success(res.data.message);
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Error updating item. Please try again."
+        error.response?.data?.message ||
+          "Error updating item. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -149,21 +160,10 @@ const EditOrViewItem = ({ isOpen, onClose, selectedItem, modalMode, onSuccess })
                       </>
                     ) : (
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg
+                        <FiUploadCloud
                           className="w-8 h-8 mb-4 text-gray-500"
                           aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 20 16"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                          />
-                        </svg>
+                        />
                         {!isViewMode && (
                           <>
                             <p className="mb-2 text-sm text-gray-500">

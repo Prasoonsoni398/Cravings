@@ -79,9 +79,9 @@ const RestaurantMenu = () => {
           </>
         ) : (
           <>
-            <div className=" pe-4 ps-2">
-              <div className="bg-(--color-base-200) p-4 rounded-lg border border-primary/30">
-                <div className="text-(--color-primary) grid grid-cols-7 gap-4 font-bold border-b border-(--color-secondary) py-2">
+            <div className=" pe-4 relative ps-2">
+              <div className="bg-(--color-base-200)  h-[77vh] overflow-y-auto p-4 rounded-lg border border-primary/30">
+                <div className="text-(--color-primary) sticky top-0 grid grid-cols-7 gap-4 font-bold border-b border-(--color-secondary) py-2">
                   <div className="col-span-2">Item Name & Description</div>
                   <div className="text-center">Price</div>
                   <div>Category & Type</div>
@@ -89,7 +89,7 @@ const RestaurantMenu = () => {
                   <div>Controls</div>
                   <div>Actions</div>
                 </div>
-                <div className="overflow-y-auto max-h-[65vh] min-h-[65vh]">
+                <div className="overflow-y-auto  ">
                   {menuItems.map((item, index) => (
                     <div
                       key={index}
@@ -207,7 +207,7 @@ const RestaurantMenu = () => {
                       </div>
                       <div className="flex gap-2">
                         <button
-                          className="px-2 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
+                          className="px-1 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
                           title="Edit Item"
                           onClick={() => {
                             setSelectedItem(item);
@@ -218,7 +218,7 @@ const RestaurantMenu = () => {
                           <LuPencilLine />
                         </button>
                         <button
-                          className="px-2 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
+                          className="px-1 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
                           title="View Item Details"
                           onClick={() => {
                             setSelectedItem(item);
@@ -229,7 +229,7 @@ const RestaurantMenu = () => {
                           <LuEye />
                         </button>
                         <button
-                          className="px-2 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
+                          className="px-1 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded"
                           title="Delete Item"
                           onClick={() => {
                             setSelectedItem(item);

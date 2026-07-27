@@ -95,7 +95,7 @@ const Footer = () => {
           <div className="border-t border-(--color-neutral-content)/20 my-8"></div>
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-(--color-neutral-content) mb-4 md:mb-0">
-              &copy; 2026 Cravings. All rights reserved.
+              &copy; 2026 Cravings. All rights reserved.          
             </p>
             <div className="flex gap-6">
               <Link to="/privacy-policy" className={bottomLinkClass}>

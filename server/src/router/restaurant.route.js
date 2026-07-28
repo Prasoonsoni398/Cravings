@@ -31,7 +31,8 @@ router.post(
     { name: "restaurantImage", maxCount: 10 },
   ]),
   RestaurantUpdateProfile,
-);
+); 
+
 
 router.put(
   "/update-profile",
@@ -42,7 +43,7 @@ router.put(
   ]),
   RestaurantUpdateProfile,
 );
-
+ 
 router.get("/get-restaurant-data", RestaurantAuthProtect, RestaurantGetData);
 router.put(
   "/update-restaurant-info",

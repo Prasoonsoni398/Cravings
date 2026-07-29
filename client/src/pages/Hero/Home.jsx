@@ -1,8 +1,23 @@
 import { Link } from "react-router-dom";
 import { FaSearch, FaStar } from "react-icons/fa";
-import { restaurants, stats, testimonials } from "../../data/siteData";
+import { stats, testimonials } from "../../data/siteData";
+import { useState, useEffect } from "react";
+import api from "../../config/ApiConfig.jsx";
 
 const Home = () => {
+  const [restaurants, setRestaurants] = useState([]);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await api.get("/public/restaurants");
+        setRestaurants(response.data.data);
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
+    };
+    fetchRestaurants();
+  }, []);
   return (
     <main className="min-h-screen bg-base-100">
       <section className="relative overflow-hidden py-16 text-primary-content md:py-40">
@@ -64,29 +79,29 @@ const Home = () => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {restaurants.map((restaurant) => (
               <article
-                key={restaurant.id}
+                key={restaurant._id}
                 className="flex flex-col overflow-hidden rounded-xl bg-base-100 shadow-md transition hover:scale-[1.02] hover:shadow-xl"
               >
                 <div className="relative h-48 overflow-hidden bg-base-200">
                   <img
-                    src={restaurant.image}
-                    alt={restaurant.name}
+                    src={restaurant.coverImage?.url || restaurant.restaurantImage?.[0]?.url || "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80"}
+                    alt={restaurant.restaurantName}
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-sm font-semibold text-primary-content">
                     <FaStar />
-                    {restaurant.rating}
+                    {restaurant.averageRating || "0"}
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <h3 className="mb-1 text-lg font-bold text-base-content">
-                    {restaurant.name}
+                    {restaurant.restaurantName}
                   </h3>
-                  <p className="mb-3 text-sm text-base-content">
+                  <p className="mb-3 text-sm text-base-content line-clamp-2">
                     {restaurant.description}
                   </p>
                   <div className="mb-3 flex flex-wrap gap-2">
-                    {restaurant.cuisines.map((cuisine) => (
+                    {restaurant.cuisineTypes?.map((cuisine) => (
                       <span
                         key={cuisine}
                         className="rounded bg-primary px-2 py-1 text-xs capitalize text-primary-content"

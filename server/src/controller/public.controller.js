@@ -29,7 +29,7 @@ export const ContactUsForm = async (req, res, next) => {
 
 export const GetRestaurants = async (req, res, next) => {
   try {
-    const restaurants = await Restaurant.find({ status: "active" });
+    const restaurants = await Restaurant.find();
     res.status(200).json({
       message: "Restaurants fetched successfully",
       data: restaurants,

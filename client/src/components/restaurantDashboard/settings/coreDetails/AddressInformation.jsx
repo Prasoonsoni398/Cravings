@@ -27,6 +27,26 @@ const AddressInformation = () => {
     setAddressData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setAddressData((prev) => ({
+            ...prev,
+            geoLat: position.coords.latitude,
+            geoLon: position.coords.longitude,
+          }));
+          toast.success("Location fetched successfully");
+        },
+        (error) => {
+          toast.error("Failed to fetch location: " + error.message);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
+
   const handleSave = async () => {
     try {
       setIsLoading(true);
@@ -149,31 +169,44 @@ const AddressInformation = () => {
           />
         </div>
 
-        <div className="w-full grid grid-cols-2 gap-2">
-          <div className="w-full">
-            <label className="text-xs font-semibold">Latitude</label>
-            <input
-              type="text"
-              name="geoLat"
-              value={addressData.geoLat}
-              onChange={handleChange}
-              placeholder="e.g. 28.6139"
-              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
-              disabled={!editingAddress}
-            />
+        <div className="w-full flex flex-col gap-1">
+          <div className="flex justify-end h-4">
+            {editingAddress && (
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                className="text-xs text-(--color-primary) font-semibold hover:underline"
+              >
+                Get Current Location
+              </button>
+            )}
           </div>
+          <div className="w-full grid grid-cols-2 gap-2">
+            <div className="w-full">
+              <label className="text-xs font-semibold">Latitude</label>
+              <input
+                type="text"
+                name="geoLat"
+                value={addressData.geoLat}
+                onChange={handleChange}
+                placeholder="e.g. 28.6139"
+                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+                disabled={!editingAddress}
+              />
+            </div>
 
-          <div className="w-full">
-            <label className="text-xs font-semibold">Longitude</label>
-            <input
-              type="text"
-              name="geoLon"
-              value={addressData.geoLon}
-              onChange={handleChange}
-              placeholder="e.g. 77.2090"
-              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
-              disabled={!editingAddress}
-            />
+            <div className="w-full">
+              <label className="text-xs font-semibold">Longitude</label>
+              <input
+                type="text"
+                name="geoLon"
+                value={addressData.geoLon}
+                onChange={handleChange}
+                placeholder="e.g. 77.2090"
+                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+                disabled={!editingAddress}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -102,6 +102,13 @@ const AddressInformation = () => {
               {isLoading ? "Saving..." : "Save Changes"}
             </button>
             <button
+              type="button"
+              onClick={handleGetLocation}
+              className="flex items-center gap-2 bg-blue-500 text-white px-2 py-0.5 rounded text-xs"
+            >
+              Get Location
+            </button>
+            <button
               onClick={handleCancel}
               className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-2 py-0.5 rounded text-xs"
               disabled={isLoading}
@@ -169,44 +176,31 @@ const AddressInformation = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col gap-1">
-          <div className="flex justify-end h-4">
-            {editingAddress && (
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                className="text-xs text-(--color-primary) font-semibold hover:underline"
-              >
-                Get Current Location
-              </button>
-            )}
+        <div className="w-full grid grid-cols-2 gap-2">
+          <div className="w-full">
+            <label className="text-xs font-semibold">Latitude</label>
+            <input
+              type="text"
+              name="geoLat"
+              value={addressData.geoLat}
+              onChange={handleChange}
+              placeholder="e.g. 28.6139"
+              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+              disabled={!editingAddress}
+            />
           </div>
-          <div className="w-full grid grid-cols-2 gap-2">
-            <div className="w-full">
-              <label className="text-xs font-semibold">Latitude</label>
-              <input
-                type="text"
-                name="geoLat"
-                value={addressData.geoLat}
-                onChange={handleChange}
-                placeholder="e.g. 28.6139"
-                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
-                disabled={!editingAddress}
-              />
-            </div>
 
-            <div className="w-full">
-              <label className="text-xs font-semibold">Longitude</label>
-              <input
-                type="text"
-                name="geoLon"
-                value={addressData.geoLon}
-                onChange={handleChange}
-                placeholder="e.g. 77.2090"
-                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
-                disabled={!editingAddress}
-              />
-            </div>
+          <div className="w-full">
+            <label className="text-xs font-semibold">Longitude</label>
+            <input
+              type="text"
+              name="geoLon"
+              value={addressData.geoLon}
+              onChange={handleChange}
+              placeholder="e.g. 77.2090"
+              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+              disabled={!editingAddress}
+            />
           </div>
         </div>
       </div>

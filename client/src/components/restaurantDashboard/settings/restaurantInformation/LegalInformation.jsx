@@ -6,17 +6,25 @@ import toast from "react-hot-toast";
 const LegalInformation = () => {
   const [editingLegalInfo, setEditingLegalInfo] = useState(false);
 
-  const handleSaveLegalInfo = () => {
-    // Implement save logic here
-    setEditingLegalInfo(false);
+  const handleSaveLegalInfo = async () => {
+    try {
+      const response = await api.put("/restaurant/update-legal-info", legalInfoFormData);
+      sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
+      toast.success("Legal information updated successfully");
+      setEditingLegalInfo(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update legal information");
+    }
   };
 
   const handleCancelLegalInfo = () => {
     setEditingLegalInfo(false);
   };
+  
+  const initialData = JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
   const [legalInfoFormData, setLegalInfoFormData] = useState({
-    legalName: "",
-    companyType: "",
+    legalName: initialData?.documents?.legalName || "",
+    companyType: initialData?.documents?.companyType || "",
   });
 
   return (
@@ -58,7 +66,7 @@ const LegalInformation = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div className="w-full">
             <label className="text-xs font-semibold">Legal Name</label>
             <input

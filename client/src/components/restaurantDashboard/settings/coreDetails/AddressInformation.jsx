@@ -50,8 +50,8 @@ const AddressInformation = () => {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      // Mock save for now since original didn't implement it either
-      console.log("addressData", addressData);
+      const response = await api.put("/restaurant/update-address", addressData);
+      sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
       toast.success("Address updated successfully");
       setEditingAddress(false);
     } catch (error) {
@@ -176,7 +176,7 @@ const AddressInformation = () => {
           />
         </div>
 
-        <div className="w-full grid grid-cols-2 gap-2">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div className="w-full">
             <label className="text-xs font-semibold">Latitude</label>
             <input

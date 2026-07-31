@@ -32,12 +32,12 @@ const SocialMediaLinks = () => {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      // Mock save
-      console.log("socialMediaLinks", socialMediaLinks);
+      const response = await api.put("/restaurant/update-social-media", { socialMediaLinks });
+      sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
       toast.success("Social media links updated successfully");
       setEditingSocialMedia(false);
     } catch (error) {
-      toast.error("Failed to update social media links");
+      toast.error(error.response?.data?.message || "Failed to update social media links");
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +100,7 @@ const SocialMediaLinks = () => {
 
       <div className="flex flex-col gap-2 h-30 overflow-y-auto pr-1">
         {socialMediaLinks.map((link, index) => (
-          <div key={index} className="grid grid-cols-2 gap-2 items-center">
+          <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
             <input
               type="text"
               placeholder="Platform (e.g. Instagram)"

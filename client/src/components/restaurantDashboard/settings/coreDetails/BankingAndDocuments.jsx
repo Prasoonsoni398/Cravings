@@ -26,12 +26,12 @@ const BankingAndDocuments = () => {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      // Mock save
-      console.log("bankingData", bankingData);
+      const response = await api.put("/restaurant/update-banking-documents", bankingData);
+      sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
       toast.success("Banking details updated successfully");
       setEditingBanking(false);
     } catch (error) {
-      toast.error("Failed to update banking details");
+      toast.error(error.response?.data?.message || "Failed to update banking details");
     } finally {
       setIsLoading(false);
     }

@@ -205,7 +205,7 @@ const RestaurantInformation = () => {
               />
             </div>
 
-            <div className="w-full grid grid-cols-2 gap-2">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="w-full">
                 <label className="text-xs font-semibold">Opening Time</label>
                 <input

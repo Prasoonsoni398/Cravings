@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { MdOutlineAddAPhoto } from "react-icons/md";
+import api from "../../../../config/ApiConfig";
+import toast from "react-hot-toast";
 
 const CoverImage = () => {
   const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+  const initialData = JSON.parse(sessionStorage.getItem("cravingRestaurant")) || {};
+  const existingCoverUrl = initialData?.coverImage?.url || "";
+
   const [coverImage, setCoverImage] = useState(null);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const coverPreview = useMemo(() => {
-    return coverImage ? URL.createObjectURL(coverImage) : "";
-  }, [coverImage]);
+    return coverImage ? URL.createObjectURL(coverImage) : existingCoverUrl;
+  }, [coverImage, existingCoverUrl]);
 
   useEffect(() => {
     return () => {
@@ -38,9 +44,32 @@ const CoverImage = () => {
     setError("");
   };
 
+  const handleSave = async () => {
+    if (!coverImage) {
+      toast.error("Please select a new cover image to save.");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("coverImage", coverImage);
+
+      const response = await api.put("/restaurant/update-cover-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
+      toast.success("Cover image updated successfully");
+      setCoverImage(null); // Reset after save so it relies on existingCoverUrl
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update cover image");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="bg-(--color-base-100) rounded-xl border border-primary/40 shadow-sm p-4 h-full">
-      <div className="flex items-center justify-between border-b border-(--color-secondary) pb-2 mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-(--color-secondary) pb-2 mb-3 gap-2">
         <div>
           <h3 className="text-sm font-semibold text-(--color-primary)">
             Cover Image
@@ -76,9 +105,18 @@ const CoverImage = () => {
           {error && (
             <p className="text-xs text-(--color-error) mt-2">{error}</p>
           )}
+          {coverImage && (
+            <button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="mt-3 w-full bg-(--color-primary) text-(--color-primary-content) py-1.5 rounded-md text-xs font-semibold"
+            >
+              {isLoading ? "Saving..." : "Save Cover Image"}
+            </button>
+          )}
         </div>
 
-        {coverImage && coverPreview ? (
+        {coverPreview ? (
           <div className="overflow-hidden rounded-xl border border-(--color-secondary) bg-white shadow-sm">
             <div className="relative">
               <img
@@ -89,10 +127,12 @@ const CoverImage = () => {
               <div className="absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent" />
             </div>
             <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs">
-              <p className="truncate font-medium">{coverImage.name}</p>
-              <span className="shrink-0 rounded-full bg-(--color-secondary)/20 px-2 py-1 text-[11px]">
-                {(coverImage.size / 1024).toFixed(1)} KB
-              </span>
+              <p className="truncate font-medium">{coverImage ? coverImage.name : "Current Cover Image"}</p>
+              {coverImage && (
+                <span className="shrink-0 rounded-full bg-(--color-secondary)/20 px-2 py-1 text-[11px]">
+                  {(coverImage.size / 1024).toFixed(1)} KB
+                </span>
+              )}
             </div>
           </div>
         ) : (

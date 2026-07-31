@@ -10,6 +10,13 @@ import {
   RestaurantEditMenuItem,
   RestaurantDeleteMenuItem,
   RestaurantUpdateMenuItemFlags,
+  RestaurantUpdateAddress,
+  RestaurantUpdateBankingAndDocs,
+  RestaurantUpdateLegalInfo,
+  RestaurantUpdateSocialMedia,
+  RestaurantUpdateCoverImage,
+  RestaurantUpdateGalleryImages,
+  RestaurantDeleteGalleryImage,
 } from "../controller/restaurant.controller.js";
 import { RestaurantAuthProtect } from "../middleware/auth.middleware.js";
 
@@ -42,6 +49,15 @@ router.put(
   RestaurantAuthProtect,
   RestaurantUpdateInfo,
 );
+
+router.put("/update-address", RestaurantAuthProtect, RestaurantUpdateAddress);
+router.put("/update-banking-documents", RestaurantAuthProtect, RestaurantUpdateBankingAndDocs);
+router.put("/update-legal-info", RestaurantAuthProtect, RestaurantUpdateLegalInfo);
+router.put("/update-social-media", RestaurantAuthProtect, RestaurantUpdateSocialMedia);
+
+router.put("/update-cover-image", RestaurantAuthProtect, upload.single("coverImage"), RestaurantUpdateCoverImage);
+router.put("/update-gallery-images", RestaurantAuthProtect, upload.array("restaurantImages", 8), RestaurantUpdateGalleryImages);
+router.delete("/delete-gallery-image/:imageId", RestaurantAuthProtect, RestaurantDeleteGalleryImage);
 
 router.patch(
   "/change-open-status/:openStatus",

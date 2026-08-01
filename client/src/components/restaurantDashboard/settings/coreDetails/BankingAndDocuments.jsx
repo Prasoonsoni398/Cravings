@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MdEdit } from "react-icons/md";
 import toast from "react-hot-toast";
+import api from "../../../../config/ApiConfig";
 
 const BankingAndDocuments = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,11 +41,11 @@ const BankingAndDocuments = () => {
   const handleCancel = () => {
     setBankingData({
       bankName: initialData?.bankName || "",
-      accountNumber: initialData?.accountNumber || "",
-      ifscCode: initialData?.ifscCode || "",
-      panCard: initialData?.panCard || "",
-      gst: initialData?.gst || "",
-      fssai: initialData?.fssai || "",
+      accountNumber: initialData?.accountNumber.toString().toUpperCase() || "",
+      ifscCode: initialData?.ifscCode.toString().toUpperCase() || "",
+      panCard: initialData?.panCard.toString().toUpperCase() || "",
+      gst: initialData?.gst.toString().toUpperCase() || "",
+      fssai: initialData?.fssai.toString().toUpperCase() || "",
     });
     setEditingBanking(false);
   };
@@ -106,7 +107,7 @@ const BankingAndDocuments = () => {
             name="accountNumber"
             value={bankingData.accountNumber}
             onChange={handleChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+            className={`w-full px-1.5 py-1  border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
             disabled={!editingBanking}
           />
         </div>
@@ -117,7 +118,7 @@ const BankingAndDocuments = () => {
             name="ifscCode"
             value={bankingData.ifscCode}
             onChange={handleChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+            className={`w-full px-1.5 py-1 uppercase border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
             disabled={!editingBanking}
           />
         </div>
@@ -128,7 +129,7 @@ const BankingAndDocuments = () => {
             name="panCard"
             value={bankingData.panCard}
             onChange={handleChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+            className={`w-full px-1.5 py-1 uppercase border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
             disabled={!editingBanking}
           />
         </div>
@@ -139,7 +140,7 @@ const BankingAndDocuments = () => {
             name="gst"
             value={bankingData.gst}
             onChange={handleChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+            className={`w-full px-1.5 py-1 uppercase  border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
             disabled={!editingBanking}
           />
         </div>
@@ -151,7 +152,7 @@ const BankingAndDocuments = () => {
             name="fssai"
             value={bankingData.fssai}
             onChange={handleChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
+            className={`w-full px-1.5 py-1 uppercase border border-(--color-secondary) ${editingBanking ? "bg-white" : "bg-(--color-base-100)"} rounded`}
             disabled={!editingBanking}
           />
         </div>

@@ -607,9 +607,9 @@ export const RestaurantUpdateBankingAndDocs = async (req, res, next) => {
     existingRestaurant.financialDetails.ifscCode = ifscCode !== undefined ? ifscCode : existingRestaurant.financialDetails.ifscCode;
 
     if (!existingRestaurant.documents) existingRestaurant.documents = {};
-    existingRestaurant.documents.panCard = panCard !== undefined ? panCard : existingRestaurant.documents.panCard;
-    existingRestaurant.documents.gstCertificate = gst !== undefined ? gst : existingRestaurant.documents.gstCertificate;
-    existingRestaurant.documents.fssaiCertificate = fssai !== undefined ? fssai : existingRestaurant.documents.fssaiCertificate;
+    existingRestaurant.documents.panCard = panCard !== undefined ? panCard.toString().toUpperCase() : existingRestaurant.documents.panCard.toString().toUpperCase();
+    existingRestaurant.documents.gstCertificate = gst !== undefined ? gst.toString().toUpperCase() : existingRestaurant.documents.gstCertificate.toString().toUpperCase();
+    existingRestaurant.documents.fssaiCertificate = fssai !== undefined ? fssai.toString().toUpperCase() : existingRestaurant.documents.fssaiCertificate.toString().toUpperCase();
 
     await existingRestaurant.save();
     return res.status(200).json({

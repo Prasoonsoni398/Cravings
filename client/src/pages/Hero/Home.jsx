@@ -78,13 +78,19 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {restaurants.map((restaurant) => (
-              <article
+              <Link
                 key={restaurant._id}
+                to="/order-now"
+                state={{ restaurantId: restaurant._id }}
                 className="flex flex-col overflow-hidden rounded-xl bg-base-100 shadow-md transition hover:scale-[1.02] hover:shadow-xl"
               >
                 <div className="relative h-48 overflow-hidden bg-base-200">
                   <img
-                    src={restaurant.coverImage?.url || restaurant.restaurantImage?.[0]?.url || "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80"}
+                    src={
+                      restaurant.coverImage?.url ||
+                      restaurant.restaurantImage?.[0]?.url ||
+                      "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80"
+                    }
                     alt={restaurant.restaurantName}
                     className="h-full w-full object-cover"
                   />
@@ -111,15 +117,12 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="mt-auto border-t border-base-200 pt-3">
-                    <Link
-                      to="/order-now"
-                      className="block w-full rounded-lg bg-primary px-4 py-2 text-center font-semibold text-primary-content transition hover:opacity-90"
-                    >
+                    <div className="block w-full rounded-lg bg-primary px-4 py-2 text-center font-semibold text-primary-content transition hover:opacity-90">
                       Explore Menu
-                    </Link>
+                    </div>
                   </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

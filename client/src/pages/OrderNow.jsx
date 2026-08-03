@@ -25,7 +25,6 @@ const OrderNow = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoadingMenu, setIsLoadingMenu] = useState(false);
   const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(true);
-  const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(true);
 
   useEffect(() => {
     const fetchRestaurants = async () => {

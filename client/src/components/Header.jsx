@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaPalette } from "react-icons/fa";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaPalette, FaShoppingCart } from "react-icons/fa";
 import LogoHeader from "../assets/headerLogo.png";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useCart } from "../context/CartContext.jsx";
 import { LogOut } from "lucide-react";
-import Logo from "../assets/logo.jpeg";
 
 const themeOptions = [
   { value: "light", label: "Light" },
@@ -19,7 +19,9 @@ const themeOptions = [
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, setIsLogin, isLogin, setUser, role } = useAuth();
+  const { totalItems } = useCart();
 
   const dashboardRoute =
     role === "restaurant"
@@ -57,6 +59,17 @@ const Header = () => {
           <img src={LogoHeader} alt="header-images" className="h-14 " />
         </Link>
         <div className="flex items-center gap-3">
+          {!(location.pathname === "/ordernow" || location.pathname === "/order-now") && (
+            <Link to="/cart" className="relative p-2 text-white hover:text-gray-200 transition-colors">
+              <FaShoppingCart className="text-xl" />
+              {totalItems > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-[10px] font-bold">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+          )}
+
           <label className="flex items-center gap-2 rounded-md border border-white/20 bg-base-100/10 px-3 py-1 text-sm text-white">
             <FaPalette className="shrink-0" />
             <span className="hidden sm:inline">Theme</span>

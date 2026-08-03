@@ -24,12 +24,16 @@ import RestaurantDashboard from "./pages/dashboard/RestaurantDashboard";
 import RiderDashboard from "./pages/dashboard/RiderDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
+import { CartProvider } from "./context/CartContext";
+import Cart from "./pages/Cart";
+
 const App = () => {
   return (
     <BrowserRouter>
-      <Toaster />
-      <Header />
-      <Routes>
+      <CartProvider>
+        <Toaster />
+        <Header />
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -41,6 +45,7 @@ const App = () => {
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/ordernow" element={<OrderNow />} />
         <Route path="/order-now" element={<OrderNow />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/partner-with-us" element={<PartnerWithUs />} />
@@ -58,6 +63,7 @@ const App = () => {
         {/* Dashboard routes  */}
         <Route path="/user/dashboard/*" element={<UserDashboard />} />
       </Routes>
+      </CartProvider>
       {/* <Footer /> */}
     </BrowserRouter>
   );

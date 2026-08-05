@@ -79,19 +79,6 @@ const OrderNow = () => {
 
   return (
     <main className="min-h-screen bg-base-200 relative">
-      {/* Floating Cart Icon */}
-      {cartItems.length > 0 && (
-        <a 
-          href="#cart-section" 
-          className="fixed top-20 right-6 z-50 flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 font-bold text-primary-content shadow-lg transition hover:scale-105"
-        >
-          <FaShoppingCart className="text-xl" />
-          <span className="bg-base-100 text-primary rounded-full px-2 py-0.5 text-xs">
-            {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-          </span>
-        </a>
-      )}
-
       {/* Dynamic Hero Section */}
       <section className="relative flex h-[45vh] items-end justify-center bg-base-300">
         <div

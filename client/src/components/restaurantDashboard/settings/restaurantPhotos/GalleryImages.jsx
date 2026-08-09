@@ -70,7 +70,7 @@ const GalleryImages = () => {
   const handleDeleteExisting = async (publicId) => {
     try {
       setIsLoading(true);
-      const response = await api.delete(`/restaurant/delete-gallery-image/${publicId}`);
+      const response = await api.delete(`/restaurant/delete-gallery-image/${encodeURIComponent(publicId)}`);
       sessionStorage.setItem("cravingRestaurant", JSON.stringify(response.data.data));
       setExistingImages(response.data.data.restaurantImage || []);
       toast.success("Image deleted successfully");

@@ -26,25 +26,28 @@ const RestaurantSchema = mongoose.Schema(
 
     documents: {
       type: {
-        legalName: { type: String, required: true },
-        companyType: { type: String, required: true },
-        gstCertificate: { type: String, required: true },
-        fssaiCertificate: { type: String, required: true },
-        panCard: { type: String, required: true },
+        legalName: { type: String, default: "" },
+        companyType: { type: String, default: "" },
+        gstCertificate: { type: String, default: "" },
+        fssaiCertificate: { type: String, default: "" },
+        panCard: { type: String, default: "" },
       },
+      default: {},
     },
     financialDetails: {
       type: {
-        bankName: { type: String, required: true },
-        accountNumber: { type: String, required: true },
-        ifscCode: { type: String, required: true },
+        bankName: { type: String, default: "" },
+        accountNumber: { type: String, default: "" },
+        ifscCode: { type: String, default: "" },
       },
+      default: {},
     },
     contactDetails: {
       type: {
-        email: { type: String, required: true },
-        phone: { type: String, required: true },
+        email: { type: String, default: "" },
+        phone: { type: String, default: "" },
       },
+      default: {},
     },
     servingHours: {
       type: {

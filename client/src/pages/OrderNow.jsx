@@ -84,7 +84,7 @@ const OrderNow = () => {
         <div
           className="absolute inset-0 bg-cover bg-center transition-all duration-700"
           style={{
-            backgroundImage: `url('${selectedRestaurant?.coverImage?.url || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80"}')`,
+            backgroundImage: `url('${selectedRestaurant?.coverImage?.url || selectedRestaurant?.restaurantImage?.[0]?.url || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80"}')`,
           }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
@@ -120,9 +120,32 @@ const OrderNow = () => {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-1">
-          {/* Main Menu Area */}
-          <div className="space-y-10">
+        <div className="flex flex-col lg:flex-row gap-10">
+          
+          {/* Left Column: Restaurant Images (Album View) */}
+          {selectedRestaurant?.restaurantImage?.length > 0 && (
+            <div className="w-full lg:w-1/2 shrink-0">
+              <div className="sticky top-6">
+                <h2 className="text-xl font-bold text-base-content mb-4 flex items-center gap-2">
+                  Restaurant Album
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 overflow-y-auto lg:max-h-[80vh] hide-scrollbar pb-4">
+                  {selectedRestaurant.restaurantImage.map((img, idx) => (
+                    <div key={img.publicId || idx} className="relative group overflow-hidden rounded-xl bg-base-200 aspect-square shadow-sm border border-base-300">
+                      <img
+                        src={img.url}
+                        alt={`${selectedRestaurant.restaurantName} photo ${idx + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Right Column: Main Menu Area */}
+          <div className="w-full lg:w-1/2 space-y-10">
             {isLoadingMenu ? (
               <div className="py-20 text-center text-xl font-medium text-base-content/60">
                 <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -141,7 +164,7 @@ const OrderNow = () => {
                       {items.length} items
                     </span>
                   </h2>
-                  <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2">
                     {items.map((item) => (
                       <article
                         key={item._id}

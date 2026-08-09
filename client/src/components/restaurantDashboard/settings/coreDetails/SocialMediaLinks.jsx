@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import api from "../../../../config/ApiConfig";
 
 const SocialMediaLinks = () => {
   const [editingSocialMedia, setEditingSocialMedia] = useState(false);

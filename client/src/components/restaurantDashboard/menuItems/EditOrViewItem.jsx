@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FiUploadCloud } from "react-icons/fi";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { Modal, Button } from "../../ui";
 
 const itemCategories = [
   "Appetizer",
@@ -120,19 +120,13 @@ const EditOrViewItem = ({
   const isViewMode = modalMode === "view";
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-4xl">
-        <header className="flex justify-between items-center border-b border-(--color-secondary) pb-2 mb-4">
-          <h2 className="text-lg font-semibold">
-            {isViewMode ? "View Item" : "Edit Item"}
-          </h2>
-          <button className="text-red-300 hover:text-red-500" onClick={onClose}>
-            <IoMdCloseCircleOutline size={24} />
-          </button>
-        </header>
-
-        <main>
-          <form className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isViewMode ? "Dish Details" : "Edit Menu Item"}
+      maxWidth="max-w-4xl"
+    >
+      <form className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="col-span-1 space-x-0 space-y-2">
                 <label className="block mb-1 font-medium" htmlFor="itemImage">
@@ -304,29 +298,28 @@ const EditOrViewItem = ({
                   className="w-full border h-20 resize-none focus:outline focus:outline-primary border-gray-300 rounded px-3 py-2 disabled:bg-gray-100"
                 />
               </div>
-            </div>
-          </form>
-        </main>
+        </div>
 
-        <footer className="flex justify-between border-t border-(--color-secondary) pt-2 mt-4">
-          <button
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+        <div className="flex justify-end gap-3 border-t border-base-200 pt-3 mt-4">
+          <Button
+            variant="ghost"
             onClick={onClose}
+            disabled={isLoading}
           >
             {isViewMode ? "Close" : "Cancel"}
-          </button>
+          </Button>
           {!isViewMode && (
-            <button
-              className="bg-(--color-primary) text-(--color-primary-content) px-4 py-2 rounded"
+            <Button
+              variant="primary"
               onClick={handleUpdateItem}
-              disabled={isLoading}
+              loading={isLoading}
             >
-              {isLoading ? "Updating..." : "Update Item"}
-            </button>
+              Update Item
+            </Button>
           )}
-        </footer>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

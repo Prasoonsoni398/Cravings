@@ -1,8 +1,8 @@
 import React from "react";
-import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FiUploadCloud } from "react-icons/fi";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { Modal, Button } from "../../ui";
 
 const itemCategories = [
   "Appetizer",
@@ -98,27 +98,20 @@ const AddNewItemModal = ({ isOpen, onClose, onSuccess }) => {
       setIsLoading(false);
     }
   };
+
   const handleOnClose = () => {
     onClose();
   };
 
   if (!isOpen) return null;
   return (
-    <>
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg w-4xl">
-          <header className="flex justify-between items-center border-b border-(--color-secondary) pb-2 mb-4">
-            <h2 className="text-lg font-semibold">Add New Item</h2>
-            <button
-              className="text-red-300 hover:text-red-500"
-              onClick={handleOnClose}
-            >
-              <IoMdCloseCircleOutline size={24} />
-            </button>
-          </header>
-
-          <main>
-            <form className=" space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleOnClose}
+      title="Add New Dish to Menu"
+      maxWidth="max-w-4xl"
+    >
+      <form className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-1 space-x-0 space-y-2">
                   <label className="block mb-1 font-medium" htmlFor="itemImage">
@@ -284,28 +277,26 @@ const AddNewItemModal = ({ isOpen, onClose, onSuccess }) => {
                     className=" w-full border h-20 resize-none focus:outline focus:outline-primary border-gray-300 rounded px-3 py-2"
                   />
                 </div>
-              </div>
-            </form>
-          </main>
-
-          <footer className="flex justify-between border-t border-(--color-secondary) pt-2 mt-4">
-            <button
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
-              onClick={handleOnClose}
-            >
-              Cancel
-            </button>
-            <button
-              className="bg-(--color-primary) text-(--color-primary-content) px-4 py-2 rounded disabled:opacity-70 disabled:cursor-not-allowed"
-              onClick={handleAddNewItem}
-              disabled={isLoading}
-            >
-              {isLoading ? "Adding..." : "Add Item"}
-            </button>
-          </footer>
         </div>
-      </div>
-    </>
+
+        <div className="flex justify-end gap-3 border-t border-base-200 pt-3 mt-4">
+          <Button
+            variant="ghost"
+            onClick={handleOnClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleAddNewItem}
+            loading={isLoading}
+          >
+            Add Item
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

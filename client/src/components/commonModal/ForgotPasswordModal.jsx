@@ -1,9 +1,7 @@
-import React from "react";
-import { useState } from "react";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import { LuLoaderCircle } from "react-icons/lu";
+import React, { useState } from "react";
 import api from "../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { Modal, Button } from "../ui";
 
 const ForgotPasswordModal = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -25,36 +23,51 @@ const ForgotPasswordModal = ({ open, onClose }) => {
       newPassword: "",
       confirmNewPassword: "",
     });
+    setIsOtpSent(false);
+    setIsOtpVerified(false);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
+
   const handleResetPassword = async () => {
     try {
       setIsLoading(true);
       if (!isOtpSent) {
+        if (!formData.email) {
+          toast.error("Please enter your registered email");
+          return;
+        }
         const res = await api.post("/auth/send-otp", formData);
-        toast.success(res.data.message);
+        toast.success(res.data.message || "OTP sent to your email!");
         setIsOtpSent(true);
-      }
-
-      if (isOtpSent && !isOtpVerified) {
+      } else if (!isOtpVerified) {
+        if (!formData.otp) {
+          toast.error("Please enter the OTP");
+          return;
+        }
         const res = await api.post("/auth/verify-otp", formData);
-        toast.success(res.data.message);
+        toast.success(res.data.message || "OTP verified!");
         setIsOtpVerified(true);
-      }
-      if (isOtpSent && isOtpVerified) {
+      } else {
+        if (!formData.newPassword || !formData.confirmNewPassword) {
+          toast.error("Please enter and confirm your new password");
+          return;
+        }
+        if (formData.newPassword !== formData.confirmNewPassword) {
+          toast.error("Passwords do not match");
+          return;
+        }
         const res = await api.post("/auth/reset-password", formData);
-        toast.success(res.data.message);
-        setIsOtpVerified(true);
+        toast.success(res.data.message || "Password reset successful!");
         handleCloseModal();
       }
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unknown error occurred during registration. Please try again.",
+          "Failed to process password reset. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -62,120 +75,107 @@ const ForgotPasswordModal = ({ open, onClose }) => {
   };
 
   if (!open) return null;
+
   return (
-    <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-999">
-        <div className="bg-white w-xl rounded shadow max-h-[80vh] overflow-y-auto relative">
-          <header className="flex justify-between p-4 border-b border-(--color-secondary)">
-            <div className="font-bold text-xl text-(--color-primary)">
-              Forgot Password
-            </div>
-            <button onClick={handleCloseModal}>
-              <IoIosCloseCircleOutline className="text-red-400 hover:text-red-700 text-2xl" />
-            </button>
-          </header>
-          <main>
-            <div className="p-4">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="font-semibold">
-                  Your Registred Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                  disabled={isLoading || isOtpSent}
-                />
-              </div>
-
-              {isOtpSent && (
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="otp" className="font-semibold">
-                    Your OTP
-                  </label>
-                  <input
-                    type="text"
-                    id="otp"
-                    name="otp"
-                    value={formData.otp}
-                    onChange={handleChange}
-                    className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                    disabled={isLoading || isOtpVerified}
-                  />
-                </div>
-              )}
-
-              {isOtpSent && isOtpVerified && (
-                <>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="newPassword" className="font-semibold">
-                      Create Your New Password
-                    </label>
-                    <input
-                      type="password"
-                      id="newPassword"
-                      name="newPassword"
-                      value={formData.newPassword}
-                      onChange={handleChange}
-                      className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor="confirmNewPassword"
-                      className="font-semibold"
-                    >
-                      Confirm Your New Password
-                    </label>
-                    <input
-                      type="text"
-                      id="confirmNewPassword"
-                      name="confirmNewPassword"
-                      value={formData.confirmNewPassword}
-                      onChange={handleChange}
-                      className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                      disabled={isLoading}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          </main>
-          <footer className="w-full p-4 border-t border-(--color-secondary) flex justify-end gap-3">
-            <button
-              onClick={handleCloseModal}
-              className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-3 py-1 rounded text-sm"
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-              onClick={handleResetPassword}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <LuLoaderCircle className="animate-spin" /> Loading...
-                </>
-              ) : isOtpSent ? (
-                isOtpVerified ? (
-                  "Reset Password"
-                ) : (
-                  "Verify OTP"
-                )
-              ) : (
-                "Send OTP"
-              )}
-            </button>
-          </footer>
+    <Modal
+      isOpen={open}
+      onClose={handleCloseModal}
+      title="Reset Account Password"
+      maxWidth="max-w-md"
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleResetPassword();
+        }}
+        className="space-y-4"
+      >
+        <div>
+          <label className="block text-xs font-bold text-base-content/70 uppercase mb-1">
+            Registered Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="input input-bordered w-full rounded-xl text-sm"
+            required
+            disabled={isLoading || isOtpSent}
+            placeholder="you@example.com"
+          />
         </div>
-      </div>
-    </>
+
+        {isOtpSent && (
+          <div>
+            <label className="block text-xs font-bold text-base-content/70 uppercase mb-1">
+              6-Digit OTP
+            </label>
+            <input
+              type="text"
+              name="otp"
+              value={formData.otp}
+              onChange={handleChange}
+              className="input input-bordered w-full rounded-xl text-sm"
+              required
+              disabled={isLoading || isOtpVerified}
+              placeholder="Enter received OTP"
+            />
+          </div>
+        )}
+
+        {isOtpSent && isOtpVerified && (
+          <>
+            <div>
+              <label className="block text-xs font-bold text-base-content/70 uppercase mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                className="input input-bordered w-full rounded-xl text-sm"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-base-content/70 uppercase mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                name="confirmNewPassword"
+                value={formData.confirmNewPassword}
+                onChange={handleChange}
+                className="input input-bordered w-full rounded-xl text-sm"
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </>
+        )}
+
+        <div className="flex justify-end gap-3 pt-3 border-t border-base-200">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleCloseModal}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            loading={isLoading}
+          >
+            {!isOtpSent ? "Send OTP" : !isOtpVerified ? "Verify OTP" : "Reset Password"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

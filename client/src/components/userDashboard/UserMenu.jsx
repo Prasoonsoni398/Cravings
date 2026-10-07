@@ -90,9 +90,9 @@ const UserMenu = () => {
       {/* Header & Cart Badge */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <span className="badge badge-primary text-white font-black text-[10px] uppercase tracking-wider">
+          <Badge variant="primary" size="xs">
             Live Kitchen Explorer
-          </span>
+          </Badge>
           <h1 className="text-2xl font-black text-base-content mt-1">
             Browse Menu & Order Dishes
           </h1>
@@ -128,37 +128,27 @@ const UserMenu = () => {
         />
 
         <div className="flex items-center gap-1.5 self-start md:self-auto">
-          <button
-            type="button"
+          <Button
+            size="xs"
+            variant={vegFilter === "all" ? "primary" : "ghost"}
             onClick={() => setVegFilter("all")}
-            className={`btn btn-xs rounded-xl font-bold ${
-              vegFilter === "all" ? "btn-primary text-white" : "btn-ghost"
-            }`}
           >
             All
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            size="xs"
+            variant={vegFilter === "veg" ? "success" : "ghost"}
             onClick={() => setVegFilter("veg")}
-            className={`btn btn-xs rounded-xl font-bold ${
-              vegFilter === "veg"
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "btn-ghost text-emerald-600"
-            }`}
           >
             🟢 Veg Only
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            size="xs"
+            variant={vegFilter === "non-veg" ? "error" : "ghost"}
             onClick={() => setVegFilter("non-veg")}
-            className={`btn btn-xs rounded-xl font-bold ${
-              vegFilter === "non-veg"
-                ? "bg-rose-600 text-white hover:bg-rose-700"
-                : "btn-ghost text-rose-600"
-            }`}
           >
             🔴 Non-Veg
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -174,15 +164,22 @@ const UserMenu = () => {
         <LoadingSpinner fullHeight label="Fetching fresh kitchen dishes..." />
       ) : !dishes.length ? (
         <EmptyState
-          icon={<FiShoppingCart />}
+          icon={FiShoppingCart}
           title="No dishes found"
-          message="Try adjusting your search query, selecting another category, or resetting the veg filter."
-          actionLabel="Show All Items"
-          onAction={() => {
-            setSearch("");
-            setSelectedCategory("all");
-            setVegFilter("all");
-          }}
+          description="Try adjusting your search query, selecting another category, or resetting the veg filter."
+          action={
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                setSearch("");
+                setSelectedCategory("all");
+                setVegFilter("all");
+              }}
+            >
+              Show All Items
+            </Button>
+          }
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

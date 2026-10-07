@@ -12,6 +12,7 @@ import {
   FiArrowRight,
   FiCheckCircle,
 } from "react-icons/fi";
+import { Button, Badge, Card, EmptyState, LoadingSpinner } from "../ui";
 
 const PROGRESS_STEPS = [
   { key: "placed", label: "Placed" },
@@ -69,6 +70,14 @@ const UserOverView = ({ onNavigateTab }) => {
     }
   }, [socket, user]);
 
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <LoadingSpinner size="lg" label="Loading customer dashboard..." />
+      </div>
+    );
+  }
+
   const activeOrder = orders.find((o) =>
     ["placed", "pending", "restaurant_accepted", "preparing", "ready_for_pickup", "rider_assigned", "picked_up", "out_for_delivery"].includes(
       o.orderStatus
@@ -81,9 +90,9 @@ const UserOverView = ({ onNavigateTab }) => {
     <div className="space-y-6">
       {/* Welcome Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-primary to-orange-500 p-6 text-white shadow-lg">
-        <span className="badge badge-sm bg-white/20 text-white border-0 font-bold uppercase">
+        <Badge variant="outline" className="bg-white/20 text-white border-0 font-bold uppercase">
           Welcome back
-        </span>
+        </Badge>
         <h1 className="mt-2 text-2xl font-black md:text-3xl">
           Hi, {user?.fullName || "Foodie"}!
         </h1>
@@ -94,12 +103,12 @@ const UserOverView = ({ onNavigateTab }) => {
 
       {/* Active Order Live Tracker Card */}
       {activeOrder && (
-        <div className="rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-md">
+        <Card className="border-2 border-primary bg-primary/5 p-6 shadow-md">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-primary/20 pb-4">
             <div>
-              <span className="badge badge-primary text-white font-black text-xs uppercase animate-pulse">
+              <Badge variant="primary" pulse size="sm">
                 Live Order in Progress
-              </span>
+              </Badge>
               <h2 className="text-xl font-black text-base-content mt-1">
                 {activeOrder.restaurantId?.restaurantName || "Restaurant"}
               </h2>
@@ -107,12 +116,14 @@ const UserOverView = ({ onNavigateTab }) => {
                 Order #{activeOrder._id.slice(-6).toUpperCase()} • ₹{activeOrder.billDetails?.finalAmount}
               </p>
             </div>
-            <button
+            <Button
+              size="sm"
+              variant="primary"
               onClick={() => onNavigateTab && onNavigateTab("order")}
-              className="btn btn-sm btn-primary text-white rounded-xl gap-2 font-bold cursor-pointer"
+              className="gap-2 font-bold"
             >
               View Full Live Tracker <FiArrowRight />
-            </button>
+            </Button>
           </div>
 
           {/* Stepper Progress */}
@@ -150,12 +161,12 @@ const UserOverView = ({ onNavigateTab }) => {
               })}
             </div>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               Total Orders
@@ -168,9 +179,9 @@ const UserOverView = ({ onNavigateTab }) => {
             {orders.length}
           </h3>
           <p className="text-xs text-base-content/60 mt-1">Orders placed to date</p>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               Delivered Meals
@@ -183,9 +194,9 @@ const UserOverView = ({ onNavigateTab }) => {
             {orders.filter((o) => o.orderStatus === "delivered").length}
           </h3>
           <p className="text-xs text-base-content/60 mt-1">Successfully fulfilled</p>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               Quick Re-order
@@ -194,24 +205,29 @@ const UserOverView = ({ onNavigateTab }) => {
               <FiClock />
             </div>
           </div>
-          <Link
-            to="/"
-            className="btn btn-xs btn-primary text-white rounded-lg mt-4 font-bold inline-flex items-center gap-1"
-          >
-            Explore Restaurants <FiArrowRight />
+          <Link to="/" className="inline-block mt-4">
+            <Button size="xs" variant="primary" className="gap-1">
+              Explore Restaurants <FiArrowRight />
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
 
       {/* Recent Orders Stream */}
-      <div className="rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-base-content mb-4">
-          Recent Orders History
-        </h2>
+      <Card title="Recent Orders History" subtitle="Your latest culinary cravings and deliveries.">
         {!orders.length ? (
-          <p className="text-sm text-base-content/60 py-6 text-center">
-            You haven't placed any orders yet. Discover delicious foods!
-          </p>
+          <EmptyState
+            icon={FiShoppingBag}
+            title="No orders yet"
+            description="You haven't placed any orders yet. Discover delicious foods and order your first meal!"
+            action={
+              <Link to="/">
+                <Button variant="primary" size="sm">
+                  Start Ordering
+                </Button>
+              </Link>
+            }
+          />
         ) : (
           <div className="space-y-3">
             {orders.slice(0, 5).map((order) => (
@@ -232,23 +248,25 @@ const UserOverView = ({ onNavigateTab }) => {
                   <span className="font-black text-sm text-base-content block">
                     ₹{order.billDetails?.finalAmount}
                   </span>
-                  <span
-                    className={`badge badge-xs font-bold uppercase mt-1 ${
+                  <Badge
+                    variant={
                       order.orderStatus === "delivered"
-                        ? "badge-success text-white"
+                        ? "success"
                         : order.orderStatus === "cancelled"
-                        ? "badge-error text-white"
-                        : "badge-warning"
-                    }`}
+                        ? "error"
+                        : "warning"
+                    }
+                    size="xs"
+                    className="mt-1"
                   >
                     {order.orderStatus.replace(/_/g, " ")}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

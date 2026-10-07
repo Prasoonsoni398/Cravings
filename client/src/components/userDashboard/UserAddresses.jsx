@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
-import { FiMapPin, FiPlus, FiTrash2, FiCheck, FiHome, FiBriefcase } from "react-icons/fi";
+import { FiMapPin, FiPlus, FiTrash2, FiHome, FiBriefcase } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { Button, Badge, Card, Modal, EmptyState, LoadingSpinner } from "../ui";
 
 const UserAddresses = () => {
   const [addresses, setAddresses] = useState([]);
@@ -83,38 +84,53 @@ const UserAddresses = () => {
             Manage your delivery locations for faster checkout.
           </p>
         </div>
-        <button
+        <Button
+          size="sm"
+          variant="primary"
+          icon={<FiPlus />}
           onClick={() => setShowModal(true)}
-          className="btn btn-sm btn-primary text-white rounded-xl gap-2 font-bold"
+          className="font-bold self-start sm:self-auto"
         >
-          <FiPlus /> Add New Address
-        </button>
+          Add New Address
+        </Button>
       </div>
 
       {loading ? (
         <div className="flex h-48 items-center justify-center">
-          <span className="loading loading-spinner text-primary"></span>
+          <LoadingSpinner size="lg" label="Loading addresses..." />
         </div>
       ) : !addresses.length ? (
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-12 text-center text-sm text-base-content/60 shadow-sm">
-          No addresses saved yet. Add your home or office address!
-        </div>
+        <EmptyState
+          icon={FiMapPin}
+          title="No addresses saved yet"
+          description="Add your home, office, or other delivery addresses for faster checkout."
+          action={
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<FiPlus />}
+              onClick={() => setShowModal(true)}
+            >
+              Add First Address
+            </Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {addresses.map((addr) => (
-            <div
+            <Card
               key={addr._id}
-              className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm flex flex-col justify-between"
+              className="p-5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="badge badge-primary font-bold text-xs gap-1">
+                  <Badge variant="primary" size="xs" className="gap-1">
                     {addr.label === "Home" ? <FiHome /> : <FiBriefcase />} {addr.label}
-                  </span>
+                  </Badge>
                   {addr.isDefault && (
-                    <span className="badge badge-success text-white text-[10px] font-bold">
+                    <Badge variant="success" size="xs">
                       Default
-                    </span>
+                    </Badge>
                   )}
                 </div>
                 <h4 className="font-extrabold text-sm text-base-content mt-3">
@@ -127,110 +143,114 @@ const UserAddresses = () => {
               </div>
 
               <div className="mt-4 pt-3 border-t border-base-200 flex justify-end">
-                <button
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  className="text-error hover:bg-error/10 gap-1"
+                  icon={<FiTrash2 />}
                   onClick={() => handleDelete(addr._id)}
-                  className="btn btn-xs btn-ghost text-error gap-1"
                 >
-                  <FiTrash2 /> Delete
-                </button>
+                  Delete
+                </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
       {/* Add Address Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-3xl bg-base-100 p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-base-200 pb-3">
-              <h3 className="text-lg font-black text-base-content">Add Delivery Address</h3>
-              <button onClick={() => setShowModal(false)} className="btn btn-circle btn-sm btn-ghost">
-                ✕
-              </button>
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Add Delivery Address"
+          maxWidth="max-w-md"
+        >
+          <form onSubmit={handleSave} className="space-y-3">
+            <div className="flex gap-2">
+              {["Home", "Work", "Other"].map((lbl) => (
+                <Button
+                  key={lbl}
+                  type="button"
+                  size="xs"
+                  variant={formData.label === lbl ? "primary" : "outline"}
+                  onClick={() => setFormData({ ...formData, label: lbl })}
+                  className="flex-1 font-bold"
+                >
+                  {lbl}
+                </Button>
+              ))}
             </div>
 
-            <form onSubmit={handleSave} className="mt-4 space-y-3">
-              <div className="flex gap-2">
-                {["Home", "Work", "Other"].map((lbl) => (
-                  <button
-                    key={lbl}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, label: lbl })}
-                    className={`btn btn-xs flex-1 rounded-xl font-bold ${
-                      formData.label === lbl ? "btn-primary text-white" : "btn-outline"
-                    }`}
-                  >
-                    {lbl}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Contact Name *"
-                  className="input input-sm input-bordered w-full rounded-xl text-xs"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number *"
-                  className="input input-sm input-bordered w-full rounded-xl text-xs"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                />
-              </div>
-
+            <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
-                placeholder="House / Flat / Street Address *"
+                placeholder="Contact Name *"
                 className="input input-sm input-bordered w-full rounded-xl text-xs"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
+              <input
+                type="tel"
+                placeholder="Phone Number *"
+                className="input input-sm input-bordered w-full rounded-xl text-xs"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                required
+              />
+            </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Landmark (Optional)"
-                  className="input input-sm input-bordered w-full rounded-xl text-xs"
-                  value={formData.landmark}
-                  onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Pin Code *"
-                  className="input input-sm input-bordered w-full rounded-xl text-xs"
-                  value={formData.pinCode}
-                  onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
-                  required
-                />
-              </div>
+            <input
+              type="text"
+              placeholder="House / Flat / Street Address *"
+              className="input input-sm input-bordered w-full rounded-xl text-xs"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              required
+            />
 
-              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  checked={formData.isDefault}
-                  onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                  className="checkbox checkbox-xs checkbox-primary"
-                />
-                Set as default delivery address
-              </label>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                placeholder="Landmark (Optional)"
+                className="input input-sm input-bordered w-full rounded-xl text-xs"
+                value={formData.landmark}
+                onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Pin Code *"
+                className="input input-sm input-bordered w-full rounded-xl text-xs"
+                value={formData.pinCode}
+                onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
+                required
+              />
+            </div>
 
-              <button
+            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer pt-1">
+              <input
+                type="checkbox"
+                checked={formData.isDefault}
+                onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                className="checkbox checkbox-xs checkbox-primary"
+              />
+              Set as default delivery address
+            </label>
+
+            <div className="pt-2">
+              <Button
                 type="submit"
-                className="btn btn-sm btn-primary w-full text-white font-bold rounded-xl mt-2"
+                variant="primary"
+                fullWidth
+                size="sm"
+                className="font-bold"
               >
                 Save Address
-              </button>
-            </form>
-          </div>
-        </div>
+              </Button>
+            </div>
+          </form>
+        </Modal>
       )}
     </div>
   );

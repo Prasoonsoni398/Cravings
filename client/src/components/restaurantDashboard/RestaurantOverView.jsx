@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { FaStore } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { Button, Badge, Card, LoadingSpinner } from "../ui";
 
 const RestaurantOverView = ({ onNavigateTab }) => {
   const { user } = useAuth();
@@ -91,7 +92,7 @@ const RestaurantOverView = ({ onNavigateTab }) => {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <LoadingSpinner size="lg" label="Loading kitchen metrics..." />
       </div>
     );
   }
@@ -133,9 +134,9 @@ const RestaurantOverView = ({ onNavigateTab }) => {
       <div className="rounded-2xl bg-gradient-to-r from-primary to-orange-600 p-6 text-white shadow-lg">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <span className="badge badge-sm bg-white/20 text-white border-0 font-semibold uppercase">
+            <Badge variant="outline" className="bg-white/20 text-white border-0 font-bold uppercase">
               Restaurant Manager Panel
-            </span>
+            </Badge>
             <h1 className="mt-2 text-2xl font-black md:text-3xl">
               {restaurant?.restaurantName || "My Restaurant"}
             </h1>
@@ -145,22 +146,16 @@ const RestaurantOverView = ({ onNavigateTab }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              size="sm"
+              variant={restaurant?.isOpen ? "success" : "error"}
               onClick={handleToggleOpenStatus}
-              disabled={togglingOpen}
-              className={`btn btn-sm rounded-xl font-bold border-0 shadow-md flex items-center gap-2 cursor-pointer ${
-                restaurant?.isOpen
-                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                  : "bg-rose-600 hover:bg-rose-700 text-white"
-              }`}
+              loading={togglingOpen}
+              icon={<FiPower />}
+              className="font-bold shadow-md text-white"
             >
-              <FiPower />
-              {togglingOpen
-                ? "Updating..."
-                : restaurant?.isOpen
-                ? "Store is ONLINE"
-                : "Store is OFFLINE"}
-            </button>
+              {restaurant?.isOpen ? "Store is ONLINE" : "Store is OFFLINE"}
+            </Button>
           </div>
         </div>
       </div>
@@ -168,9 +163,9 @@ const RestaurantOverView = ({ onNavigateTab }) => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k, idx) => (
-          <div
+          <Card
             key={idx}
-            className={`rounded-2xl border p-5 shadow-sm transition hover:shadow-md ${k.bg}`}
+            className={`p-5 transition hover:shadow-md ${k.bg}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-base-content/70 uppercase">
@@ -186,15 +181,16 @@ const RestaurantOverView = ({ onNavigateTab }) => {
               </h3>
               <p className="mt-1 text-xs text-base-content/60">{k.sub}</p>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Quick Kitchen Action Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div
+        <Card
           onClick={() => onNavigateTab && onNavigateTab("orders")}
-          className="rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm hover:border-primary transition cursor-pointer flex items-center gap-4"
+          hover
+          className="p-6 transition cursor-pointer flex flex-row items-center gap-4 hover:border-primary"
         >
           <div className="p-4 bg-primary/10 rounded-2xl text-primary text-2xl">
             <FiShoppingBag />
@@ -207,11 +203,12 @@ const RestaurantOverView = ({ onNavigateTab }) => {
               Accept orders, update food prep status & assign riders.
             </p>
           </div>
-        </div>
+        </Card>
 
-        <div
+        <Card
           onClick={() => onNavigateTab && onNavigateTab("menu")}
-          className="rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm hover:border-primary transition cursor-pointer flex items-center gap-4"
+          hover
+          className="p-6 transition cursor-pointer flex flex-row items-center gap-4 hover:border-primary"
         >
           <div className="p-4 bg-orange-500/10 rounded-2xl text-orange-500 text-2xl">
             <FiBookOpen />
@@ -224,11 +221,12 @@ const RestaurantOverView = ({ onNavigateTab }) => {
               Add dishes, update pricing, veg/non-veg flags & stock.
             </p>
           </div>
-        </div>
+        </Card>
 
-        <div
+        <Card
           onClick={() => onNavigateTab && onNavigateTab("setting")}
-          className="rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm hover:border-primary transition cursor-pointer flex items-center gap-4"
+          hover
+          className="p-6 transition cursor-pointer flex flex-row items-center gap-4 hover:border-primary"
         >
           <div className="p-4 bg-indigo-500/10 rounded-2xl text-indigo-500 text-2xl">
             <FiSettings />
@@ -241,7 +239,7 @@ const RestaurantOverView = ({ onNavigateTab }) => {
               Update cover photos, gallery, bank account & hours.
             </p>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

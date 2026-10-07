@@ -11,6 +11,7 @@ import {
   FiDollarSign,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { Button, Badge, Card, EmptyState, LoadingSpinner } from "../ui";
 
 const RiderOrder = () => {
   const { socket, joinRoom } = useSocket();
@@ -77,27 +78,34 @@ const RiderOrder = () => {
             Fulfill pickups and customer door-step drops in real-time.
           </p>
         </div>
-        <button onClick={fetchDeliveries} className="btn btn-sm btn-outline rounded-xl gap-2 self-start sm:self-auto cursor-pointer">
-          <FiRefreshCw /> Refresh
-        </button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={fetchDeliveries}
+          icon={<FiRefreshCw />}
+          className="self-start sm:self-auto"
+        >
+          Refresh
+        </Button>
       </div>
 
       {loading ? (
         <div className="flex h-48 items-center justify-center">
-          <span className="loading loading-spinner text-primary"></span>
+          <LoadingSpinner size="lg" label="Syncing delivery route..." />
         </div>
       ) : (
         <div className="space-y-6">
           {/* Active Deliveries */}
-          <div>
-            <h2 className="text-lg font-bold text-base-content mb-3">
-              Active Deliveries ({activeDeliveries.length})
-            </h2>
-
+          <Card
+            title={`Active Deliveries (${activeDeliveries.length})`}
+            subtitle="Live pickup and delivery steps requiring attention."
+          >
             {!activeDeliveries.length ? (
-              <div className="rounded-2xl border border-base-200 bg-base-100 p-8 text-center text-sm text-base-content/60 shadow-sm">
-                No active delivery assignments. Accept orders from Overview to start!
-              </div>
+              <EmptyState
+                icon={FiCheckCircle}
+                title="No active deliveries"
+                description="No active delivery assignments. Accept orders from Overview to start!"
+              />
             ) : (
               <div className="space-y-4">
                 {activeDeliveries.map((order) => {
@@ -111,16 +119,16 @@ const RiderOrder = () => {
                   return (
                     <div
                       key={order._id}
-                      className="rounded-2xl border-2 border-primary/50 bg-base-100 p-5 shadow-sm space-y-4"
+                      className="rounded-2xl border-2 border-primary/40 bg-base-100 p-5 shadow-sm space-y-4"
                     >
                       <div className="flex items-center justify-between border-b border-base-200 pb-3">
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-sm font-black text-primary">
                             #{order._id.slice(-6).toUpperCase()}
                           </span>
-                          <span className="badge badge-warning badge-sm font-bold uppercase">
+                          <Badge variant="warning" size="sm">
                             {status.replace(/_/g, " ")}
-                          </span>
+                          </Badge>
                         </div>
                         <span className="font-extrabold text-emerald-600 text-sm">
                           +₹40 Delivery Payout
@@ -175,39 +183,43 @@ const RiderOrder = () => {
                       {/* Delivery Step Buttons */}
                       <div className="pt-2 flex flex-wrap items-center gap-2 border-t border-base-200">
                         {isAssigned && (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="secondary"
                             onClick={() => handleUpdateStatus(order._id, "rider_arrived")}
-                            className="btn btn-sm btn-info text-white rounded-xl font-bold"
                           >
                             I Have Arrived at Restaurant
-                          </button>
+                          </Button>
                         )}
 
                         {isArrived && (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="warning"
                             onClick={() => handleUpdateStatus(order._id, "picked_up")}
-                            className="btn btn-sm btn-warning text-white rounded-xl font-bold"
                           >
                             Picked Up Food Package
-                          </button>
+                          </Button>
                         )}
 
                         {isPickedUp && (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="primary"
                             onClick={() => handleUpdateStatus(order._id, "out_for_delivery")}
-                            className="btn btn-sm btn-primary text-white rounded-xl font-bold"
                           >
                             Start Journey (Out for Delivery)
-                          </button>
+                          </Button>
                         )}
 
                         {isOut && (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="success"
                             onClick={() => handleUpdateStatus(order._id, "delivered")}
-                            className="btn btn-sm btn-success text-white rounded-xl font-bold"
                           >
                             Mark Delivered & Complete Order 🎉
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -215,14 +227,14 @@ const RiderOrder = () => {
                 })}
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Past Deliveries */}
           {pastDeliveries.length > 0 && (
-            <div>
-              <h2 className="text-lg font-bold text-base-content mb-3">
-                Completed Trips History ({pastDeliveries.length})
-              </h2>
+            <Card
+              title={`Completed Trips History (${pastDeliveries.length})`}
+              subtitle="Deliveries you have successfully completed."
+            >
               <div className="space-y-2">
                 {pastDeliveries.map((order) => (
                   <div
@@ -241,14 +253,14 @@ const RiderOrder = () => {
                       <span className="font-black text-emerald-600 block">
                         +₹40 Payout
                       </span>
-                      <span className="badge badge-success badge-xs text-white uppercase font-bold">
+                      <Badge variant="success" size="xs">
                         Delivered
-                      </span>
+                      </Badge>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
           )}
         </div>
       )}

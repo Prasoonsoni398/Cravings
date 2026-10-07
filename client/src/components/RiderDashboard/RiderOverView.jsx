@@ -13,6 +13,7 @@ import {
   FiNavigation,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { Button, Badge, Card, EmptyState, LoadingSpinner } from "../ui";
 
 const RiderOverView = ({ onNavigateTab }) => {
   const { user } = useAuth();
@@ -115,7 +116,7 @@ const RiderOverView = ({ onNavigateTab }) => {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <span className="loading loading-spinner text-primary"></span>
+        <LoadingSpinner size="lg" label="Connecting rider cockpit..." />
       </div>
     );
   }
@@ -126,9 +127,9 @@ const RiderOverView = ({ onNavigateTab }) => {
       <div className="rounded-2xl bg-gradient-to-r from-primary to-orange-500 p-6 text-white shadow-lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="badge badge-sm bg-white/20 text-white border-0 font-bold uppercase">
+            <Badge variant="outline" className="bg-white/20 text-white border-0 font-bold uppercase">
               Rider Cockpit
-            </span>
+            </Badge>
             <h1 className="mt-2 text-2xl font-black sm:text-3xl">
               Hello, {user?.fullName || "Delivery Partner"}!
             </h1>
@@ -137,24 +138,22 @@ const RiderOverView = ({ onNavigateTab }) => {
             </p>
           </div>
 
-          <button
+          <Button
+            size="sm"
+            variant={profile?.isAvailable ? "success" : "error"}
             onClick={handleToggleOnline}
-            disabled={toggling}
-            className={`btn btn-sm rounded-xl font-bold border-0 shadow-md gap-2 cursor-pointer ${
-              profile?.isAvailable
-                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                : "bg-rose-600 hover:bg-rose-700 text-white"
-            }`}
+            loading={toggling}
+            icon={<FiPower />}
+            className="font-bold shadow-md text-white"
           >
-            <FiPower />
             {profile?.isAvailable ? "Duty: ONLINE" : "Duty: OFFLINE"}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               Total Earnings
@@ -169,9 +168,9 @@ const RiderOverView = ({ onNavigateTab }) => {
           <p className="text-xs text-base-content/60 mt-1">
             ₹{earnings?.perDeliveryPayout || 40} payout per order
           </p>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               Completed Trips
@@ -184,9 +183,9 @@ const RiderOverView = ({ onNavigateTab }) => {
             {earnings?.completedOrdersCount || 0}
           </h3>
           <p className="text-xs text-base-content/60 mt-1">Fulfilled deliveries</p>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+        <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-base-content/70 uppercase">
               GPS Tracking
@@ -195,34 +194,40 @@ const RiderOverView = ({ onNavigateTab }) => {
               <FiNavigation />
             </div>
           </div>
-          <h3 className="text-xl font-bold text-emerald-600 mt-3 flex items-center gap-1">
+          <h3 className="text-xl font-bold text-emerald-600 mt-3 flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping"></span> Live Active
           </h3>
           <p className="text-xs text-base-content/60 mt-1">Broadcasting location</p>
-        </div>
+        </Card>
       </div>
 
       {/* Available Orders Ready for Pickup */}
-      <div className="rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-base-content">
-              Available Delivery Requests ({availableOrders.length})
-            </h2>
-            <p className="text-xs text-base-content/60">
-              Orders ready or preparing at nearby restaurants looking for riders.
-            </p>
-          </div>
-        </div>
-
+      <Card
+        title={`Available Delivery Requests (${availableOrders.length})`}
+        subtitle="Orders ready or preparing at nearby restaurants looking for riders."
+      >
         {!profile?.isAvailable ? (
-          <div className="py-8 text-center text-sm text-base-content/60">
-            You are currently OFFLINE. Switch Duty to ONLINE to receive order alerts!
-          </div>
+          <EmptyState
+            icon={FiTruck}
+            title="You are currently OFFLINE"
+            description="Switch Duty to ONLINE above to start receiving live delivery dispatch alerts!"
+            action={
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleToggleOnline}
+                icon={<FiPower />}
+              >
+                Go Online Now
+              </Button>
+            }
+          />
         ) : !availableOrders.length ? (
-          <div className="py-8 text-center text-sm text-base-content/60">
-            No orders awaiting riders right now. New pickups will appear here!
-          </div>
+          <EmptyState
+            icon={FiClock}
+            title="No orders awaiting pickup right now"
+            description="As soon as restaurants finish preparing meals, requests will pop up right here."
+          />
         ) : (
           <div className="space-y-3">
             {availableOrders.map((order) => (
@@ -235,9 +240,9 @@ const RiderOverView = ({ onNavigateTab }) => {
                     <span className="font-mono font-bold text-primary">
                       #{order._id.slice(-6).toUpperCase()}
                     </span>
-                    <span className="badge badge-warning badge-xs font-bold uppercase">
+                    <Badge variant="warning" size="xs">
                       {order.orderStatus.replace(/_/g, " ")}
-                    </span>
+                    </Badge>
                   </div>
                   <h4 className="font-extrabold text-sm text-base-content mt-1">
                     Pickup: {order.restaurantId?.restaurantName}
@@ -252,18 +257,19 @@ const RiderOverView = ({ onNavigateTab }) => {
                   <span className="font-extrabold text-emerald-600 text-sm">
                     +₹40 Payout
                   </span>
-                  <button
+                  <Button
+                    size="sm"
+                    variant="primary"
                     onClick={() => handleAcceptOrder(order._id)}
-                    className="btn btn-sm btn-primary text-white rounded-xl font-bold"
                   >
                     Accept Delivery
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

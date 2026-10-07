@@ -16,7 +16,7 @@ import { useCart } from "../context/CartContext";
 
 const OrderNow = () => {
   const location = useLocation();
-  const { cartItems, addToCart, decreaseQty } = useCart();
+  const { cartItems, addToCart, decreaseQty, openCart, totalItems } = useCart();
 
   const passedRestaurantId = location.state?.restaurantId;
 
@@ -244,6 +244,33 @@ const OrderNow = () => {
           </div>
         </div>
       </section>
+      {/* Floating Bottom Cart Bar */}
+      {totalItems > 0 && (
+        <div className="fixed bottom-6 inset-x-0 z-40 flex justify-center px-4 animate-in slide-in-from-bottom duration-300">
+          <div className="bg-primary text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center justify-between gap-6 w-full max-w-md border border-white/20 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl">
+                <FaShoppingCart className="text-lg" />
+              </div>
+              <div>
+                <p className="font-extrabold text-sm leading-tight">
+                  {totalItems} {totalItems === 1 ? "item" : "items"} added
+                </p>
+                <p className="text-xs text-white/80 font-medium">
+                  {selectedRestaurant?.restaurantName || "Ready to order"}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={openCart}
+              className="bg-white text-primary font-black px-4 py-2 rounded-xl text-xs shadow-md hover:bg-white/90 transition-transform active:scale-95 cursor-pointer flex items-center gap-1.5"
+            >
+              <span>View Cart</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

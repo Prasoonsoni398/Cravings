@@ -9,6 +9,11 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
+  const toggleCart = () => setIsCartOpen((prev) => !prev);
 
   const addToCart = (item, restaurant) => {
     // If adding item from a different restaurant, we might want to clear cart or warn.
@@ -60,6 +65,11 @@ export const CartProvider = ({ children }) => {
     removeItem,
     clearCart,
     totalItems,
+    isCartOpen,
+    setIsCartOpen,
+    openCart,
+    closeCart,
+    toggleCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

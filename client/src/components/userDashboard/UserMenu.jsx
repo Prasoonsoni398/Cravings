@@ -26,7 +26,7 @@ const CATEGORIES = [
 ];
 
 const UserMenu = () => {
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, openCart, totalItems } = useCart();
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -101,16 +101,15 @@ const UserMenu = () => {
           </p>
         </div>
 
-        <Link to="/cart">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<FiShoppingCart />}
-            className="self-start sm:self-auto shadow-md"
-          >
-            View Cart ({cartItems.reduce((acc, it) => acc + (it.qty || 1), 0)})
-          </Button>
-        </Link>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={<FiShoppingCart />}
+          onClick={openCart}
+          className="self-start sm:self-auto shadow-md cursor-pointer"
+        >
+          View Cart ({totalItems})
+        </Button>
       </div>
 
       {/* Search & Veg/Non-Veg Filter Bar */}

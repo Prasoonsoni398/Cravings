@@ -26,6 +26,7 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
 import { CartProvider } from "./context/CartContext";
 import Cart from "./pages/Cart";
+import CartDrawer from "./components/cart/CartDrawer";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
       <CartProvider>
         <Toaster />
         <Header />
+        <CartDrawer />
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />

@@ -5,7 +5,8 @@ import LogoHeader from "../assets/headerLogo.png";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { LogOut } from "lucide-react";
-import { Dropdown, Button, Badge } from "./ui";
+import toast from "react-hot-toast";
+import { Dropdown, Button, Badge, Modal } from "./ui";
 
 const themeOptions = [
   { value: "light", label: "Light", icon: "☀️" },
@@ -22,7 +23,9 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, setIsLogin, isLogin, setUser, role } = useAuth();
-  const { totalItems } = useCart();
+  const { totalItems, openCart } = useCart();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const dashboardRoute =
     role === "restaurant"
@@ -42,12 +45,23 @@ const Header = () => {
 
   const currentTheme = themeOptions.find((t) => t.value === theme) || themeOptions[0];
 
-  const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    setIsLogin(false);
-    sessionStorage.removeItem("UserData");
-    setUser(null);
-    navigate("/login");
+  const handleConfirmLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await fetch("/api/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout request error:", err);
+    } finally {
+      setIsLogin(false);
+      sessionStorage.removeItem("UserData");
+      sessionStorage.removeItem("cravingUser");
+      localStorage.removeItem("token");
+      setUser(null);
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+      toast.success("Logged out successfully");
+      navigate("/login");
+    }
   };
 
   useEffect(() => {
@@ -56,97 +70,147 @@ const Header = () => {
   }, [theme]);
 
   return (
-    <nav className="flex sticky top-0 z-50 justify-between px-6 md:px-12 h-16 items-center bg-primary gap-4 shadow-md transition-colors">
-      <Link to={"./"} className="transition-transform hover:scale-105">
-        <img src={LogoHeader} alt="header-images" className="h-14" />
-      </Link>
-      <div className="flex items-center gap-3">
-        {/* Cart Button */}
-        <Link
-          to="/cart"
-          className="relative p-2.5 text-white hover:text-white/80 transition-colors rounded-xl hover:bg-white/10"
-        >
-          <FaShoppingCart className="text-xl" />
-          {totalItems > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 bg-rose-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-[10px] font-black shadow-md animate-bounce">
-              {totalItems}
-            </span>
-          )}
+    <>
+      <nav className="flex sticky top-0 z-50 justify-between px-6 md:px-12 h-16 items-center bg-primary gap-4 shadow-md transition-colors">
+        <Link to={"./"} className="transition-transform hover:scale-105">
+          <img src={LogoHeader} alt="header-images" className="h-14" />
         </Link>
+        <div className="flex items-center gap-3">
+          {/* Cart Trigger Button */}
+          <button
+            type="button"
+            onClick={openCart}
+            aria-label="Open Cart"
+            className="relative p-2.5 text-white hover:text-white/80 transition-colors rounded-xl hover:bg-white/10 cursor-pointer"
+          >
+            <FaShoppingCart className="text-xl" />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-rose-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-[10px] font-black shadow-md animate-bounce">
+                {totalItems}
+              </span>
+            )}
+          </button>
 
-        {/* Beautiful Floating Theme Dropdown */}
-        <Dropdown
-          label={currentTheme.label}
-          icon={<FaPalette className="text-white text-xs" />}
-          align="right"
-          size="sm"
-          triggerClassName="bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-md rounded-xl font-bold shadow-xs px-3 py-1.5"
-          menuClassName="w-44 shadow-2xl border border-base-200"
-          items={themeOptions.map((opt) => ({
-            label: opt.label,
-            icon: opt.icon,
-            active: theme === opt.value,
-            onClick: () => setTheme(opt.value),
-          }))}
-        />
+          {/* Beautiful Floating Theme Dropdown */}
+          <Dropdown
+            label={currentTheme.label}
+            icon={<FaPalette className="text-white text-xs" />}
+            align="right"
+            size="sm"
+            triggerClassName="bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-md rounded-xl font-bold shadow-xs px-3 py-1.5"
+            menuClassName="w-44 shadow-2xl border border-base-200"
+            items={themeOptions.map((opt) => ({
+              label: opt.label,
+              icon: opt.icon,
+              active: theme === opt.value,
+              onClick: () => setTheme(opt.value),
+            }))}
+          />
 
-        {isLogin ? (
-          <div className="flex items-center gap-3">
-            <span className="text-white font-bold text-sm hidden lg:inline">
-              {user.fullName}
-            </span>
-            <Link to={dashboardRoute}>
+          {isLogin ? (
+            <div className="flex items-center gap-3">
+              <span className="text-white font-bold text-sm hidden lg:inline">
+                {user.fullName}
+              </span>
+              <Link to={dashboardRoute}>
+                <Button
+                  size="sm"
+                  variant="soft"
+                  className="bg-white text-primary hover:bg-white/90 font-bold shadow-sm"
+                >
+                  Dashboard
+                </Button>
+              </Link>
+              <img
+                src={
+                  user.photo?.url ||
+                  user?.photo ||
+                  "https://placehold.co/600x400?text=U"
+                }
+                alt={user.fullName}
+                className="w-10 h-10 rounded-xl object-cover border-2 border-white/30 shadow-xs hidden sm:block"
+              />
               <Button
                 size="sm"
-                variant="soft"
-                className="bg-white text-primary hover:bg-white/90 font-bold shadow-sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2 cursor-pointer"
+                onClick={() => setShowLogoutModal(true)}
+                title="Sign Out"
               >
-                Dashboard
+                <LogOut className="w-4 h-4" />
               </Button>
-            </Link>
-            <img
-              src={
-                user.photo?.url ||
-                user?.photo ||
-                "https://placehold.co/600x400?text=U"
-              }
-              alt={user.fullName}
-              className="w-10 h-10 rounded-xl object-cover border-2 border-white/30 shadow-xs hidden sm:block"
-            />
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-white hover:bg-white/20 p-2"
-              onClick={handleLogout}
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Link to="/login">
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/20 font-bold"
+                >
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button
+                  variant="soft"
+                  size="sm"
+                  className="bg-white text-primary hover:bg-white/90 font-bold shadow-sm"
+                >
+                  Register
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <Modal
+          isOpen={showLogoutModal}
+          onClose={() => !isLoggingOut && setShowLogoutModal(false)}
+          title="Confirm Sign Out"
+          maxWidth="max-w-sm"
+        >
+          <div className="space-y-4">
+            <div className="flex items-start gap-3.5">
+              <div className="p-3 bg-error/10 text-error rounded-2xl text-xl shrink-0 mt-0.5">
+                <LogOut className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-base text-base-content">
+                  Are you sure you want to log out?
+                </h4>
+                <p className="text-xs text-base-content/60 mt-1 leading-relaxed">
+                  You will need to sign in again to view your dashboard, manage cart items, or track orders.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-base-200">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/20 font-bold"
+                onClick={() => setShowLogoutModal(false)}
+                disabled={isLoggingOut}
               >
-                Login
+                Cancel
               </Button>
-            </Link>
-            <Link to="/register">
               <Button
-                variant="soft"
+                variant="error"
                 size="sm"
-                className="bg-white text-primary hover:bg-white/90 font-bold shadow-sm"
+                icon={<LogOut className="w-3.5 h-3.5" />}
+                onClick={handleConfirmLogout}
+                loading={isLoggingOut}
               >
-                Register
+                Yes, Sign Out
               </Button>
-            </Link>
+            </div>
           </div>
-        )}
-      </div>
-    </nav>
+        </Modal>
+      )}
+    </>
   );
 };
 

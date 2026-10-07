@@ -55,3 +55,69 @@ export const GetRestaurantMenu = async (req, res, next) => {
     next(error);
   }
 };
+
+export const GetAllDishes = async (req, res, next) => {
+  try {
+    const { search, category, isVeg } = req.query;
+    const menus = await Menu.find().populate("restaurantId", "restaurantName address city isOpen status");
+    
+    let allDishes = [];
+    menus.forEach((m) => {
+      const rest = m.restaurantId;
+      if (rest) {
+        (m.menuItems || []).forEach((item) => {
+          if (!item.isDeleted) {
+            allDishes.push({
+              _id: item._id,
+              name: item.name,
+              description: item.description,
+              price: item.price,
+              category: item.category,
+              isVeg: item.isVeg,
+              image: item.image,
+              isTopRated: item.isTopRated,
+              isRecommended: item.isRecommended,
+              restaurant: {
+                _id: rest._id,
+                restaurantName: rest.restaurantName,
+                address: rest.address,
+                city: rest.city,
+                isOpen: rest.isOpen,
+              },
+            });
+          }
+        });
+      }
+    });
+
+    if (search) {
+      const q = search.toLowerCase();
+      allDishes = allDishes.filter(
+        (d) =>
+          d.name?.toLowerCase().includes(q) ||
+          d.description?.toLowerCase().includes(q) ||
+          d.category?.toLowerCase().includes(q)
+      );
+    }
+
+    if (category && category !== "all") {
+      allDishes = allDishes.filter(
+        (d) => d.category?.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (typeof isVeg !== "undefined" && isVeg !== "all") {
+      const vegBool = isVeg === "true";
+      allDishes = allDishes.filter((d) => Boolean(d.isVeg) === vegBool);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Dishes fetched successfully",
+      data: allDishes,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};

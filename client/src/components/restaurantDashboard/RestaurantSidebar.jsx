@@ -12,10 +12,9 @@ import {
 
 const MenuItems = [
   { name: "Overview", path: "overview", icon: <MdOutlineDashboard /> },
-  { name: "Order", path: "orders", icon: <FaBorderAll /> },
-  { name: "Wishlist", path: "wishlist", icon: <MdOutlineFavorite /> },
-  { name: "Menu", path: "menu", icon: <MdOutlineMenu /> },
-  { name: "Setting", path: "setting", icon: <MdSettingsSuggest /> },
+  { name: "Kitchen Orders", path: "orders", icon: <FaBorderAll /> },
+  { name: "Menu Items", path: "menu", icon: <MdOutlineMenu /> },
+  { name: "Settings", path: "setting", icon: <MdSettingsSuggest /> },
 ];
 
 const RestaurantSidebar = ({

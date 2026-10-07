@@ -4,7 +4,7 @@ const RestaurantSchema = mongoose.Schema(
   {
     managerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     restaurantName: { type: String, required: true },

@@ -1,103 +1,446 @@
 import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
+import { useSocket } from "../../context/SocketContext.jsx";
+import {
+  FiClock,
+  FiMapPin,
+  FiCheckCircle,
+  FiXCircle,
+  FiStar,
+  FiRefreshCw,
+  FiTruck,
+  FiPhone,
+} from "react-icons/fi";
 import toast from "react-hot-toast";
 
-const Order = () => {
+const PROGRESS_STEPS = [
+  { key: "placed", label: "Order Placed" },
+  { key: "restaurant_accepted", label: "Restaurant Accepted" },
+  { key: "preparing", label: "Preparing Food" },
+  { key: "ready_for_pickup", label: "Food Ready" },
+  { key: "out_for_delivery", label: "Out for Delivery" },
+  { key: "delivered", label: "Delivered" },
+];
+
+const getStepIndex = (status) => {
+  if (status === "placed" || status === "pending") return 0;
+  if (status === "restaurant_accepted" || status === "accepted") return 1;
+  if (status === "preparing") return 2;
+  if (status === "ready_for_pickup" || status === "ready" || status === "rider_assigned" || status === "rider_arrived") return 3;
+  if (status === "picked_up" || status === "pickedUp" || status === "out_for_delivery" || status === "outForDelivery" || status === "onTheWay") return 4;
+  if (status === "delivered") return 5;
+  return -1;
+};
+
+const UserOrder = () => {
+  const { socket, joinRoom } = useSocket();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Review modal state
+  const [reviewOrder, setReviewOrder] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [riderRating, setRiderRating] = useState(5);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/orders/my");
+      if (res.data?.data) {
+        setOrders(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to load user orders:", error);
+      toast.error("Unable to load orders.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await api.get("/orders/my");
-        setOrders(res.data.data || []);
-      } catch (error) {
-        toast.error("Unable to load orders.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
-  }, []);
 
-  if (loading) {
-    return (
-      <div className="text-center text-lg text-secondary">
-        Loading your orders...
-      </div>
-    );
-  }
+    if (socket) {
+      socket.on("order:status_updated", (updatedOrder) => {
+        setOrders((prev) =>
+          prev.map((o) => (o._id === updatedOrder._id ? { ...o, ...updatedOrder } : o))
+        );
+        if (selectedOrder?._id === updatedOrder._id) {
+          setSelectedOrder(updatedOrder);
+        }
+        toast(`Order #${updatedOrder._id.slice(-6).toUpperCase()} updated: ${updatedOrder.orderStatus.replace(/_/g, " ")}`, {
+          icon: "🛵",
+        });
+      });
 
-  if (!orders.length) {
-    return (
-      <div className="text-center text-lg text-secondary">
-        No orders found. Place a new order from the Order Now page.
-      </div>
-    );
-  }
+      return () => {
+        socket.off("order:status_updated");
+      };
+    }
+  }, [socket]);
+
+  const handleCancelOrder = async (orderId) => {
+    const reason = window.prompt("Please enter a reason for cancellation:");
+    if (!reason) return;
+
+    try {
+      const res = await api.patch(`/orders/${orderId}/cancel`, { reason });
+      if (res.data?.data) {
+        toast.success("Order cancelled");
+        setOrders((prev) =>
+          prev.map((o) => (o._id === orderId ? res.data.data : o))
+        );
+        if (selectedOrder?._id === orderId) {
+          setSelectedOrder(res.data.data);
+        }
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Cannot cancel order at this stage");
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    try {
+      setIsSubmittingReview(true);
+      await api.post("/customer/reviews", {
+        orderId: reviewOrder._id,
+        rating,
+        comment,
+        riderRating,
+      });
+      toast.success("Thank you for your review!");
+      setReviewOrder(null);
+      setComment("");
+      fetchOrders();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   return (
-    <>
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-base-content">My Orders</h2>
-        {orders.map((order) => (
-          <div
-            key={order._id}
-            className="rounded-md border border-base-200  bg-primary-content p-6 shadow-sm"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-base-content">
+            My Food Orders
+          </h1>
+          <p className="text-sm text-base-content/60">
+            Track real-time meal preparation, delivery journey, and order receipts.
+          </p>
+        </div>
+        <button onClick={fetchOrders} className="btn btn-sm btn-outline rounded-xl gap-2 self-start md:self-auto cursor-pointer">
+          <FiRefreshCw /> Refresh
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex h-64 items-center justify-center">
+          <span className="loading loading-spinner text-primary"></span>
+        </div>
+      ) : !orders.length ? (
+        <div className="rounded-2xl border border-base-200 bg-base-100 p-12 text-center text-sm text-base-content/60 shadow-sm">
+          No orders found. Place a new order to satisfy your cravings!
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {orders.map((order) => {
+            const stepIdx = getStepIndex(order.orderStatus);
+            const isLive = stepIdx >= 0 && stepIdx < 5;
+            const canCancel = ["placed", "pending", "restaurant_accepted"].includes(
+              order.orderStatus
+            );
+
+            return (
+              <div
+                key={order._id}
+                className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm transition hover:shadow-md"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-base font-extrabold text-base-content">
+                        {order.restaurantId?.restaurantName || "Restaurant"}
+                      </h3>
+                      <span
+                        className={`badge badge-sm font-bold uppercase ${
+                          order.orderStatus === "delivered"
+                            ? "badge-success text-white"
+                            : order.orderStatus === "cancelled" || order.orderStatus === "rejected"
+                            ? "badge-error text-white"
+                            : "badge-warning"
+                        }`}
+                      >
+                        {order.orderStatus.replace(/_/g, " ")}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-base-content/60 mt-1">
+                      Order #{order._id.slice(-6).toUpperCase()} •{" "}
+                      {new Date(order.createdAt).toLocaleDateString()} at{" "}
+                      {new Date(order.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {canCancel && (
+                      <button
+                        onClick={() => handleCancelOrder(order._id)}
+                        className="btn btn-xs btn-outline btn-error rounded-lg"
+                      >
+                        Cancel Order
+                      </button>
+                    )}
+                    {order.orderStatus === "delivered" && (
+                      <button
+                        onClick={() => setReviewOrder(order)}
+                        className="btn btn-xs btn-outline btn-warning rounded-lg gap-1"
+                      >
+                        <FiStar /> Rate Food
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        joinRoom(`order:${order._id}`);
+                      }}
+                      className="btn btn-xs btn-primary text-white rounded-lg"
+                    >
+                      Live Tracking
+                    </button>
+                  </div>
+                </div>
+
+                {/* Items snapshot */}
+                <div className="mt-4 pt-3 border-t border-base-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {order.orderItems?.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-base-200/40 p-2 rounded-lg">
+                      <span className="font-semibold text-base-content">
+                        {item.quantity}x {item.name || "Item"}
+                      </span>
+                      <span className="text-base-content/70">
+                        ₹{(item.price || 0) * item.quantity}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-3 flex justify-between items-center text-xs font-semibold text-base-content/80">
+                  <span>
+                    Delivering to: {order.deliveryAddress?.address},{" "}
+                    {order.deliveryAddress?.city}
+                  </span>
+                  <span className="text-sm font-black text-primary">
+                    Paid ₹{order.billDetails?.finalAmount} (
+                    {order.paymentDetails?.paymentMethod?.toUpperCase()})
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Live Order Tracking Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-base-100 p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-base-200 pb-3">
               <div>
-                <h3 className="text-xl font-semibold text-natural">
-                  {order.restaurantName}
+                <span className="badge badge-primary text-white font-bold text-xs uppercase">
+                  Live Order Telemetry
+                </span>
+                <h3 className="text-xl font-black text-base-content mt-1">
+                  #{selectedOrder._id.slice(-6).toUpperCase()} •{" "}
+                  {selectedOrder.restaurantId?.restaurantName}
                 </h3>
-                <p className="text-sm text-secondary">
-                  Ordered on {new Date(order.createdAt).toLocaleDateString()}
-                </p>
               </div>
-              <span className="rounded-sm bg-primary px-4 py-2 text-sm border font-semibold text-primary-content">
-                {order.status}
-              </span>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="btn btn-circle btn-sm btn-ghost"
+              >
+                ✕
+              </button>
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div>
-                <p className="text-sm font-semibold text-primary-contemnt">
-                  Delivery Address
-                </p>
-                <p className="text-sm text-secondary">
-                  {order.deliveryAddress}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-(--color-neutral)">
-                  Total Price
-                </p>
-                <p className="text-sm text-secondary">₹{order.totalPrice}</p>
+
+            {/* Stepper Progress */}
+            <div className="my-6">
+              <div className="grid grid-cols-6 gap-2 text-center">
+                {PROGRESS_STEPS.map((step, idx) => {
+                  const currIdx = getStepIndex(selectedOrder.orderStatus);
+                  const isPassed = idx <= currIdx;
+                  const isCurrent = idx === currIdx;
+
+                  return (
+                    <div key={step.key} className="flex flex-col items-center">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                          isCurrent
+                            ? "bg-primary text-white ring-4 ring-primary/20 animate-pulse"
+                            : isPassed
+                            ? "bg-emerald-500 text-white"
+                            : "bg-base-300 text-base-content/40"
+                        }`}
+                      >
+                        {isPassed ? <FiCheckCircle /> : idx + 1}
+                      </div>
+                      <span className="mt-2 text-[10px] font-bold text-base-content/80 hidden sm:block">
+                        {step.label}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            <div className="mt-5 rounded-3xl bg-primary-content p-4">
-              <h4 className="mb-3 text-sm font-semibold text-(--color-neutral)">
-                Items
+
+            {/* Rider Info Card (if assigned) */}
+            {selectedOrder.riderId && (
+              <div className="rounded-2xl bg-indigo-500/10 border border-indigo-500/20 p-4 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-indigo-500 text-white rounded-xl">
+                    <FiTruck className="text-xl" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-base-content">
+                      Delivery Rider Assigned
+                    </h4>
+                    <p className="text-xs text-base-content/70">
+                      Partner is on the route to pickup / deliver
+                    </p>
+                  </div>
+                </div>
+                <span className="badge badge-info text-white font-bold">
+                  Active
+                </span>
+              </div>
+            )}
+
+            {/* Timeline Log */}
+            <div className="rounded-2xl bg-base-200/50 p-4">
+              <h4 className="text-xs font-bold uppercase text-base-content/60 mb-3">
+                Order Activity Log
               </h4>
-              <div className="space-y-2">
-                {order.items.map((item) => (
+              <div className="space-y-3">
+                {selectedOrder.timeline?.map((entry, idx) => (
                   <div
-                    key={item.name}
-                    className="flex items-center justify-between rounded-2xl bg-base-100 px-4 py-3 text-sm shadow-sm"
+                    key={idx}
+                    className="flex items-start gap-3 border-l-2 border-primary pl-3 text-xs"
                   >
-                    <span>{item.name}</span>
-                    <span>
-                      {item.qty} × ₹{item.price}
-                    </span>
+                    <div>
+                      <p className="font-bold capitalize text-base-content">
+                        {entry.status.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-base-content/70 text-[11px]">
+                        {entry.note}
+                      </p>
+                      <p className="text-[10px] text-base-content/40 mt-0.5">
+                        {new Date(entry.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      )}
+
+      {/* Rating & Review Modal */}
+      {reviewOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-3xl bg-base-100 p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-base-200 pb-3">
+              <h3 className="text-lg font-black text-base-content">
+                Rate & Review Meal
+              </h3>
+              <button
+                onClick={() => setReviewOrder(null)}
+                className="btn btn-circle btn-sm btn-ghost"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitReview} className="mt-4 space-y-4">
+              <div>
+                <label className="text-xs font-bold block mb-1">
+                  Food Quality Rating (1 - 5 Stars)
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setRating(num)}
+                      className={`btn btn-sm btn-circle ${
+                        rating >= num ? "btn-warning text-white" : "btn-outline"
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold block mb-1">
+                  Comments / Dish Feedback
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="How was the taste, packaging, and temperature?"
+                  className="textarea textarea-bordered w-full rounded-xl text-xs"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold block mb-1">
+                  Delivery Service Rating
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setRiderRating(num)}
+                      className={`btn btn-sm btn-circle ${
+                        riderRating >= num
+                          ? "btn-info text-white"
+                          : "btn-outline"
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmittingReview}
+                className="btn btn-sm btn-primary w-full text-white font-bold rounded-xl"
+              >
+                {isSubmittingReview ? "Submitting..." : "Submit Review"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Order;
+export default UserOrder;

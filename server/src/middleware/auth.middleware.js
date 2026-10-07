@@ -3,7 +3,9 @@ import User from "../models/user.model.js";
 
 export const AuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies.Cravings;
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+    const token = req.cookies?.Cravings || bearerToken;
     if (!token) {
       const error = new Error("Session Expired");
       error.statusCode = 401;
@@ -76,7 +78,9 @@ export const OTPAuthProtect = async (req, res, next) => {
 
 export const RestaurantAuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies.Oreo || req.cookies.Cravings;
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+    const token = req.cookies?.Oreo || req.cookies?.Cravings || bearerToken;
     if (!token) {
       const error = new Error("Session Expired");
       error.statusCode = 401;

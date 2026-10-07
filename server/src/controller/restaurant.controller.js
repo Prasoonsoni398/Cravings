@@ -1,4 +1,12 @@
 import Restaurant from "../models/restaurant.model.js";
+import Order from "../models/order.model.js";
+import { validateOrderTransition } from "../middleware/orderState.middleware.js";
+import {
+  emitToOrder,
+  emitToUser,
+  emitToRider,
+  emitToAdmin,
+} from "../config/socket.config.js";
 import {
   uploadMultipleImages,
   deleteMultipleImages,
@@ -797,6 +805,131 @@ export const RestaurantDeleteGalleryImage = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error.message);
+    next(error);
+  }
+};
+
+export const RestaurantGetOrders = async (req, res, next) => {
+  try {
+    const restaurant = await Restaurant.findOne({ managerId: req.user._id });
+    if (!restaurant) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    const { status } = req.query;
+    const query = { restaurantId: restaurant._id };
+    if (status && status !== "all") {
+      query.orderStatus = status;
+    }
+
+    const orders = await Order.find(query)
+      .populate("customerId", "fullName email phone photo")
+      .populate({ path: "riderId", populate: { path: "riderId", select: "fullName phone" } })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("RestaurantGetOrders error:", error);
+    next(error);
+  }
+};
+
+export const RestaurantUpdateOrderStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status, note, preparationTime } = req.body;
+
+    const restaurant = await Restaurant.findOne({ managerId: req.user._id });
+    if (!restaurant) {
+      const error = new Error("Restaurant not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const order = await Order.findOne({ _id: orderId, restaurantId: restaurant._id });
+    if (!order) {
+      const error = new Error("Order not found for this restaurant");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    validateOrderTransition(order.orderStatus, status);
+
+    order.orderStatus = status;
+    order.timeline.push({
+      status,
+      note: note || `Restaurant updated status to ${status}`,
+      timestamp: new Date(),
+    });
+
+    if (preparationTime) {
+      const est = new Date();
+      est.setMinutes(est.getMinutes() + Number(preparationTime));
+      order.estimatedDeliveryTime = est;
+    }
+
+    await order.save();
+
+    const populatedOrder = await Order.findById(orderId)
+      .populate("restaurantId", "restaurantName phone address")
+      .populate("customerId", "fullName email phone photo")
+      .populate("riderId");
+
+    emitToOrder(orderId, "order:status_updated", populatedOrder);
+    emitToUser(order.customerId.toString(), "order:status_updated", populatedOrder);
+    if (order.riderId) {
+      emitToRider(order.riderId.toString(), "order:status_updated", populatedOrder);
+    }
+    emitToAdmin("order:status_updated", populatedOrder);
+
+    res.status(200).json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      data: populatedOrder,
+    });
+  } catch (error) {
+    console.error("RestaurantUpdateOrderStatus error:", error);
+    next(error);
+  }
+};
+
+export const RestaurantGetAnalytics = async (req, res, next) => {
+  try {
+    const restaurant = await Restaurant.findOne({ managerId: req.user._id });
+    if (!restaurant) {
+      return res.status(200).json({
+        success: true,
+        data: { totalRevenue: 0, totalOrders: 0, completedOrders: 0, liveOrders: 0 },
+      });
+    }
+
+    const orders = await Order.find({ restaurantId: restaurant._id });
+
+    const totalOrders = orders.length;
+    const completedOrders = orders.filter((o) => o.orderStatus === "delivered").length;
+    const liveOrders = orders.filter((o) =>
+      ["placed", "pending", "restaurant_accepted", "preparing", "ready_for_pickup"].includes(o.orderStatus)
+    ).length;
+
+    const totalRevenue = orders
+      .filter((o) => o.orderStatus === "delivered" || o.paymentDetails?.paymentStatus === "completed")
+      .reduce((sum, o) => sum + (o.billDetails?.finalAmount || 0), 0);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalRevenue,
+        totalOrders,
+        completedOrders,
+        liveOrders,
+        rating: restaurant.averageRating || 4.5,
+      },
+    });
+  } catch (error) {
+    console.error("RestaurantGetAnalytics error:", error);
     next(error);
   }
 };

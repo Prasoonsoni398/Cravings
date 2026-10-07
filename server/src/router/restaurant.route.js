@@ -17,6 +17,9 @@ import {
   RestaurantUpdateCoverImage,
   RestaurantUpdateGalleryImages,
   RestaurantDeleteGalleryImage,
+  RestaurantGetOrders,
+  RestaurantUpdateOrderStatus,
+  RestaurantGetAnalytics,
 } from "../controller/restaurant.controller.js";
 import { RestaurantAuthProtect } from "../middleware/auth.middleware.js";
 
@@ -95,5 +98,10 @@ router.patch(
   RestaurantAuthProtect,
   RestaurantUpdateMenuItemFlags,
 );
+
+// Order Management & Analytics
+router.get("/orders", RestaurantAuthProtect, RestaurantGetOrders);
+router.patch("/orders/:orderId/status", RestaurantAuthProtect, RestaurantUpdateOrderStatus);
+router.get("/analytics", RestaurantAuthProtect, RestaurantGetAnalytics);
 
 export default router;

@@ -2,22 +2,32 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import { useSocket } from "../../context/SocketContext.jsx";
 import {
+  Button,
+  Badge,
+  FilterTabs,
+  Card,
+  EmptyState,
+  LoadingSpinner,
+} from "../ui";
+import {
   FiClock,
-  FiCheckCircle,
-  FiXCircle,
   FiRefreshCw,
   FiUser,
   FiPhone,
-  FiMapPin,
   FiAlertCircle,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 
+const TAB_OPTIONS = [
+  { id: "active", label: "Active Kitchen Orders" },
+  { id: "history", label: "Past Orders History" },
+];
+
 const RestaurantOrder = () => {
-  const { socket, joinRoom } = useSocket();
+  const { socket } = useSocket();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterTab, setFilterTab] = useState("active"); // "active" or "history"
+  const [filterTab, setFilterTab] = useState("active");
   const [prepTimes, setPrepTimes] = useState({});
 
   const fetchOrders = async () => {
@@ -93,61 +103,61 @@ const RestaurantOrder = () => {
 
   const displayedOrders = filterTab === "active" ? activeOrders : historyOrders;
 
+  const getBadgeVariant = (st) => {
+    if (st === "delivered") return "success";
+    if (st === "cancelled" || st === "rejected") return "error";
+    if (st === "placed" || st === "pending") return "primary";
+    return "warning";
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-base-content">
             Kitchen Orders & Dispatch
           </h1>
-          <p className="text-sm text-base-content/60">
+          <p className="text-xs text-base-content/60">
             Accept incoming orders, update kitchen preparation, and notify riders when food is ready.
           </p>
         </div>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
+          icon={<FiRefreshCw />}
           onClick={fetchOrders}
-          className="btn btn-sm btn-outline rounded-xl gap-2 self-start md:self-auto cursor-pointer"
         >
-          <FiRefreshCw /> Refresh Orders
-        </button>
+          Refresh Orders
+        </Button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-3 border-b border-base-200 pb-2">
-        <button
-          onClick={() => setFilterTab("active")}
-          className={`btn btn-sm rounded-xl font-bold ${
-            filterTab === "active"
-              ? "btn-primary text-white"
-              : "btn-ghost text-base-content/70"
-          }`}
-        >
-          Active Kitchen Orders ({activeOrders.length})
-        </button>
-        <button
-          onClick={() => setFilterTab("history")}
-          className={`btn btn-sm rounded-xl font-bold ${
-            filterTab === "history"
-              ? "btn-primary text-white"
-              : "btn-ghost text-base-content/70"
-          }`}
-        >
-          Past Orders History ({historyOrders.length})
-        </button>
+      <div className="flex border-b border-base-200 pb-2">
+        <FilterTabs
+          tabs={[
+            { id: "active", label: "Active Kitchen", count: activeOrders.length },
+            { id: "history", label: "Order History", count: historyOrders.length },
+          ]}
+          activeTab={filterTab}
+          onSelectTab={setFilterTab}
+        />
       </div>
 
-      {/* Orders List */}
       {loading ? (
-        <div className="flex h-64 items-center justify-center">
-          <span className="loading loading-spinner loading-md text-primary"></span>
-        </div>
+        <LoadingSpinner fullHeight label="Syncing kitchen stream..." />
       ) : !displayedOrders.length ? (
-        <div className="rounded-2xl border border-base-200 bg-base-100 p-12 text-center text-sm text-base-content/60 shadow-sm">
-          {filterTab === "active"
-            ? "No active orders in kitchen right now. Ready for new orders!"
-            : "No past order history found."}
-        </div>
+        <EmptyState
+          icon={<FiClock />}
+          title={
+            filterTab === "active"
+              ? "Kitchen is all caught up!"
+              : "No historical orders"
+          }
+          message={
+            filterTab === "active"
+              ? "No pending dishes need preparation right now. Ready for fresh tickets!"
+              : "No past fulfilled orders in record."
+          }
+        />
       ) : (
         <div className="space-y-4">
           {displayedOrders.map((order) => {
@@ -157,34 +167,29 @@ const RestaurantOrder = () => {
             const isReady = order.orderStatus === "ready_for_pickup";
 
             return (
-              <div
+              <Card
                 key={order._id}
-                className={`rounded-2xl border p-5 shadow-sm transition ${
+                hoverEffect
+                bodyClassName="p-5 space-y-4"
+                className={
                   isNew
-                    ? "border-primary/60 bg-primary/5 ring-1 ring-primary/30"
-                    : "border-base-200 bg-base-100"
-                }`}
+                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
+                    : ""
+                }
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  {/* Left: Order meta & Customer info */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-black text-primary">
                         #{order._id.slice(-6).toUpperCase()}
                       </span>
-                      <span
-                        className={`badge badge-sm font-bold uppercase ${
-                          order.orderStatus === "delivered"
-                            ? "badge-success text-white"
-                            : order.orderStatus === "cancelled" || order.orderStatus === "rejected"
-                            ? "badge-error text-white"
-                            : isNew
-                            ? "badge-primary text-white animate-pulse"
-                            : "badge-warning"
-                        }`}
+                      <Badge
+                        variant={getBadgeVariant(order.orderStatus)}
+                        size="xs"
+                        pulse={isNew}
                       >
                         {order.orderStatus.replace(/_/g, " ")}
-                      </span>
+                      </Badge>
                       <span className="text-xs text-base-content/50">
                         {new Date(order.createdAt).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -207,17 +212,17 @@ const RestaurantOrder = () => {
                     {order.specialInstructions && (
                       <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-2.5 text-xs text-amber-800 dark:text-amber-300 font-medium flex items-start gap-2">
                         <FiAlertCircle className="shrink-0 mt-0.5" />
-                        <span>Kitchen Note: "{order.specialInstructions}"</span>
+                        <span>Chef Note: "{order.specialInstructions}"</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Right: Action Buttons based on status */}
-                  <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+                  {/* Kitchen Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                     {isNew && (
                       <div className="flex items-center gap-2">
                         <select
-                          className="select select-xs select-bordered rounded-lg"
+                          className="select select-xs select-bordered rounded-lg text-xs"
                           value={prepTimes[order._id] || 25}
                           onChange={(e) =>
                             setPrepTimes({
@@ -231,58 +236,63 @@ const RestaurantOrder = () => {
                           <option value={35}>35 mins</option>
                           <option value={45}>45 mins</option>
                         </select>
-                        <button
+                        <Button
+                          variant="primary"
+                          size="xs"
                           onClick={() =>
                             handleUpdateStatus(order._id, "restaurant_accepted")
                           }
-                          className="btn btn-sm btn-primary text-white rounded-xl font-bold"
                         >
                           Accept Order
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
                           onClick={() => handleUpdateStatus(order._id, "rejected")}
-                          className="btn btn-sm btn-ghost text-error rounded-xl font-bold"
+                          className="text-error"
                         >
                           Reject
-                        </button>
+                        </Button>
                       </div>
                     )}
 
                     {isAccepted && (
-                      <button
+                      <Button
+                        variant="warning"
+                        size="xs"
                         onClick={() => handleUpdateStatus(order._id, "preparing")}
-                        className="btn btn-sm btn-warning text-white rounded-xl font-bold"
                       >
-                        Start Preparing 👨‍🍳
-                      </button>
+                        Start Cooking 👨‍🍳
+                      </Button>
                     )}
 
                     {isPreparing && (
-                      <button
+                      <Button
+                        variant="success"
+                        size="xs"
                         onClick={() =>
                           handleUpdateStatus(order._id, "ready_for_pickup")
                         }
-                        className="btn btn-sm btn-success text-white rounded-xl font-bold"
                       >
                         Food Ready for Pickup 🚀
-                      </button>
+                      </Button>
                     )}
 
                     {isReady && (
-                      <span className="badge badge-success text-white font-bold p-3">
-                        Ready • Waiting for Rider Pickup
-                      </span>
+                      <Badge variant="success" size="sm" pulse>
+                        Ready • Awaiting Rider Pickup
+                      </Badge>
                     )}
                   </div>
                 </div>
 
                 {/* Items Breakdown */}
-                <div className="mt-4 pt-4 border-t border-base-200">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="pt-3 border-t border-base-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {order.orderItems?.map((item, idx) => (
                       <div
                         key={idx}
-                        className="rounded-xl bg-base-200/40 p-3 text-xs flex justify-between items-center"
+                        className="rounded-xl bg-base-200/40 p-2.5 text-xs flex justify-between items-center"
                       >
                         <span className="font-bold text-base-content">
                           {item.quantity}x {item.name || "Item"}
@@ -296,7 +306,7 @@ const RestaurantOrder = () => {
 
                   <div className="mt-3 flex justify-between items-center text-xs font-semibold text-base-content/80">
                     <span>
-                      Delivery to: {order.deliveryAddress?.address},{" "}
+                      Delivery: {order.deliveryAddress?.address},{" "}
                       {order.deliveryAddress?.city}
                     </span>
                     <span className="font-black text-sm text-primary">
@@ -305,7 +315,7 @@ const RestaurantOrder = () => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>

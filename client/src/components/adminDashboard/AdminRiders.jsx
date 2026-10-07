@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import {
-  FiTruck,
-  FiCheckCircle,
-  FiSlash,
-  FiPhone,
-  FiMapPin,
-  FiUser,
-  FiEye,
-} from "react-icons/fi";
+  Button,
+  Badge,
+  Card,
+  Modal,
+  EmptyState,
+  LoadingSpinner,
+} from "../ui";
+import { FiTruck, FiPhone, FiEye, FiRefreshCw } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 const AdminRiders = () => {
@@ -50,36 +50,48 @@ const AdminRiders = () => {
     }
   };
 
+  const getBadgeVariant = (st) => {
+    if (st === "active") return "success";
+    if (st === "blocked") return "error";
+    return "ghost";
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-base-content">
             Delivery Fleet Management
           </h1>
-          <p className="text-sm text-base-content/60">
+          <p className="text-xs text-base-content/60">
             Monitor registered delivery partners, license compliance, and duty availability.
           </p>
         </div>
-        <button onClick={fetchRiders} className="btn btn-sm btn-outline rounded-xl">
+        <Button
+          variant="outline"
+          size="sm"
+          icon={<FiRefreshCw />}
+          onClick={fetchRiders}
+        >
           Refresh Fleet
-        </button>
+        </Button>
       </div>
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center">
-          <span className="loading loading-spinner loading-md text-primary"></span>
-        </div>
+        <LoadingSpinner fullHeight label="Loading delivery fleet..." />
       ) : !riders.length ? (
-        <div className="py-16 text-center text-sm text-base-content/60">
-          No delivery riders registered on platform yet.
-        </div>
+        <EmptyState
+          icon={<FiTruck />}
+          title="No riders registered"
+          message="No delivery partners registered on platform yet."
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {riders.map((r) => (
-            <div
+            <Card
               key={r._id}
-              className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm transition hover:shadow-md flex flex-col justify-between"
+              hoverEffect
+              bodyClassName="p-5 flex flex-col justify-between h-full space-y-4"
             >
               <div>
                 <div className="flex items-start justify-between">
@@ -87,24 +99,16 @@ const AdminRiders = () => {
                     <h3 className="font-extrabold text-base text-base-content">
                       {r.riderId?.fullName || "Delivery Partner"}
                     </h3>
-                    <p className="text-xs text-base-content/60 flex items-center gap-1 mt-1">
+                    <p className="text-xs text-base-content/60 flex items-center gap-1 mt-0.5">
                       <FiPhone className="text-primary" /> {r.riderId?.phone || "No phone"}
                     </p>
                   </div>
-                  <span
-                    className={`badge badge-sm font-bold capitalize ${
-                      r.status === "active"
-                        ? "badge-success text-white"
-                        : r.status === "blocked"
-                        ? "badge-error text-white"
-                        : "badge-ghost"
-                    }`}
-                  >
+                  <Badge variant={getBadgeVariant(r.status)} size="xs">
                     {r.status}
-                  </span>
+                  </Badge>
                 </div>
 
-                <div className="mt-4 space-y-1 text-xs text-base-content/70">
+                <div className="mt-3 space-y-1 text-xs text-base-content/70">
                   <p>
                     <span className="font-semibold">Vehicle:</span>{" "}
                     {r.vehicleDetails?.vehicleType} ({r.vehicleDetails?.vehicleNumber})
@@ -114,87 +118,90 @@ const AdminRiders = () => {
                     {r.vehicleDetails?.vehicleModel} - {r.vehicleDetails?.vehicleColor}
                   </p>
                   <p>
-                    <span className="font-semibold">Live Duty Status:</span>{" "}
+                    <span className="font-semibold">Duty:</span>{" "}
                     {r.isAvailable ? (
-                      <span className="text-success font-bold">Online</span>
+                      <Badge variant="success" size="xs" dot>
+                        Online
+                      </Badge>
                     ) : (
-                      <span className="text-base-content/50 font-bold">Offline</span>
+                      <Badge variant="ghost" size="xs">
+                        Offline
+                      </Badge>
                     )}
                   </p>
                   <p>
-                    <span className="font-semibold">City Base:</span>{" "}
+                    <span className="font-semibold">City:</span>{" "}
                     {r.currentAddress?.city || "Bhopal"}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-5 border-t border-base-200 pt-3 flex items-center justify-between">
-                <button
+              <div className="pt-3 border-t border-base-200 flex items-center justify-between">
+                <Button
+                  variant="outline"
+                  size="xs"
+                  icon={<FiEye />}
                   onClick={() => setSelectedRider(r)}
-                  className="btn btn-xs btn-outline rounded-lg"
                 >
-                  <FiEye /> Documents
-                </button>
+                  KYC Docs
+                </Button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {r.status !== "active" && (
-                    <button
+                    <Button
+                      variant="success"
+                      size="xs"
                       onClick={() => handleUpdateStatus(r._id, "active")}
-                      className="btn btn-xs btn-success text-white rounded-lg"
                     >
                       Approve
-                    </button>
+                    </Button>
                   )}
                   {r.status === "active" && (
-                    <button
+                    <Button
+                      variant="warning"
+                      size="xs"
                       onClick={() => handleUpdateStatus(r._id, "inactive")}
-                      className="btn btn-xs btn-warning text-white rounded-lg"
                     >
                       Suspend
-                    </button>
+                    </Button>
                   )}
                   {r.status !== "blocked" && (
-                    <button
+                    <Button
+                      variant="error"
+                      size="xs"
                       onClick={() => handleUpdateStatus(r._id, "blocked")}
-                      className="btn btn-xs btn-error text-white rounded-lg"
                     >
                       Block
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
       {/* Documents Modal */}
       {selectedRider && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-base-100 p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-base-200 pb-3">
-              <h3 className="text-lg font-bold text-base-content">
-                {selectedRider.riderId?.fullName} - KYC Documents
-              </h3>
-              <button
-                onClick={() => setSelectedRider(null)}
-                className="btn btn-circle btn-sm btn-ghost"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-2 text-xs">
-              <div className="rounded-xl bg-base-200/50 p-3">
-                <p>Driving License: {selectedRider.documents?.drivingLicense || "Verified"}</p>
-                <p>Vehicle RC: {selectedRider.documents?.vehicleRegistrationCertificate || "Verified"}</p>
-                <p>Insurance: {selectedRider.documents?.insuranceCertificate || "Verified"}</p>
-                <p>Aadhar Card: {selectedRider.documents?.aadharCard || "Verified"}</p>
-                <p>PAN Card: {selectedRider.documents?.panCard || "Verified"}</p>
-              </div>
-            </div>
+        <Modal
+          isOpen={Boolean(selectedRider)}
+          onClose={() => setSelectedRider(null)}
+          title={selectedRider.riderId?.fullName}
+          subtitle="KYC Documents Verification"
+          badge={
+            <Badge variant={getBadgeVariant(selectedRider.status)} size="sm">
+              {selectedRider.status}
+            </Badge>
+          }
+        >
+          <div className="rounded-2xl bg-base-200/50 p-4 space-y-2 text-xs">
+            <p>Driving License: <span className="font-bold">{selectedRider.documents?.drivingLicense || "Verified"}</span></p>
+            <p>Vehicle RC: <span className="font-bold">{selectedRider.documents?.vehicleRegistrationCertificate || "Verified"}</span></p>
+            <p>Insurance: <span className="font-bold">{selectedRider.documents?.insuranceCertificate || "Verified"}</span></p>
+            <p>Aadhar Card: <span className="font-bold">{selectedRider.documents?.aadharCard || "Verified"}</span></p>
+            <p>PAN Card: <span className="font-bold">{selectedRider.documents?.panCard || "Verified"}</span></p>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

@@ -6,9 +6,10 @@ import Overview from "../../components/userDashboard/UserOverView.jsx";
 import Orders from "../../components/userDashboard/UserOrder.jsx";
 import UserAddresses from "../../components/userDashboard/UserAddresses.jsx";
 import UserComplaints from "../../components/userDashboard/UserComplaints.jsx";
+import UserMenu from "../../components/userDashboard/UserMenu.jsx";
 import Setting from "../../components/userDashboard/UserSetting.jsx";
 
-const VALID_TABS = ["overview", "order", "addresses", "complaints", "setting"];
+const VALID_TABS = ["overview", "menu", "order", "addresses", "complaints", "setting"];
 
 const UserDashboard = () => {
   const { isLogin } = useAuth();
@@ -112,6 +113,7 @@ const UserDashboard = () => {
         {activeTab === "overview" && (
           <Overview onNavigateTab={(tab) => setActiveTab(tab)} />
         )}
+        {activeTab === "menu" && <UserMenu />}
         {activeTab === "order" && <Orders />}
         {activeTab === "addresses" && <UserAddresses />}
         {activeTab === "complaints" && <UserComplaints />}

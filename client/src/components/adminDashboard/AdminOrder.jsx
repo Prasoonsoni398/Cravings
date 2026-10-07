@@ -2,30 +2,34 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import { useSocket } from "../../context/SocketContext.jsx";
 import {
-  FiSearch,
-  FiFilter,
+  Button,
+  Badge,
+  SearchInput,
+  FilterTabs,
+  Modal,
+  EmptyState,
+  LoadingSpinner,
+} from "../ui";
+import {
   FiEye,
-  FiCheckCircle,
-  FiXCircle,
   FiRefreshCw,
-  FiClock,
   FiMapPin,
   FiPhone,
+  FiClock,
+  FiCheckCircle,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 
-const STATUS_OPTIONS = [
-  "all",
-  "placed",
-  "restaurant_accepted",
-  "preparing",
-  "ready_for_pickup",
-  "rider_assigned",
-  "picked_up",
-  "out_for_delivery",
-  "delivered",
-  "cancelled",
-  "rejected",
+const STATUS_TABS = [
+  { id: "all", label: "All Orders" },
+  { id: "placed", label: "Placed" },
+  { id: "restaurant_accepted", label: "Accepted" },
+  { id: "preparing", label: "Preparing" },
+  { id: "ready_for_pickup", label: "Ready" },
+  { id: "rider_assigned", label: "Rider Assigned" },
+  { id: "out_for_delivery", label: "On Route" },
+  { id: "delivered", label: "Delivered" },
+  { id: "cancelled", label: "Cancelled" },
 ];
 
 const AdminOrder = () => {
@@ -123,68 +127,65 @@ const AdminOrder = () => {
     return orderId.includes(q) || customer.includes(q) || restaurant.includes(q);
   });
 
+  const getBadgeVariant = (st) => {
+    if (st === "delivered") return "success";
+    if (st === "cancelled" || st === "rejected") return "error";
+    if (st === "placed" || st === "pending") return "primary";
+    return "warning";
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header & Controls */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-base-content">
             Platform Orders Management
           </h1>
-          <p className="text-sm text-base-content/60">
+          <p className="text-xs text-base-content/60">
             Real-time feed across all active restaurants and delivery routes.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={fetchOrders}
-            className="btn btn-sm btn-outline gap-2 rounded-xl"
-          >
-            <FiRefreshCw /> Refresh
-          </button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          icon={<FiRefreshCw />}
+          onClick={fetchOrders}
+        >
+          Refresh Orders
+        </Button>
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-base-200 bg-base-100 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap gap-2">
-          {STATUS_OPTIONS.map((status) => (
-            <button
-              key={status}
-              onClick={() => setActiveStatus(status)}
-              className={`btn btn-xs rounded-lg capitalize ${
-                activeStatus === status
-                  ? "btn-primary text-white"
-                  : "btn-ghost text-base-content/70 hover:bg-base-200"
-              }`}
-            >
-              {status.replace(/_/g, " ")}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-col gap-4 rounded-2xl border border-base-200 bg-base-100 p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+        <FilterTabs
+          tabs={STATUS_TABS}
+          activeTab={activeStatus}
+          onSelectTab={setActiveStatus}
+        />
 
-        <div className="relative min-w-[260px]">
-          <FiSearch className="absolute left-3 top-3 text-base-content/40" />
-          <input
-            type="text"
-            placeholder="Search order ID, user, restaurant..."
-            className="input input-sm input-bordered w-full pl-9 rounded-xl text-xs"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search order ID, user, restaurant..."
+          className="lg:max-w-xs"
+        />
       </div>
 
       {/* Orders Table */}
       <div className="rounded-2xl border border-base-200 bg-base-100 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="flex h-64 items-center justify-center">
-            <span className="loading loading-spinner loading-md text-primary"></span>
-          </div>
+          <LoadingSpinner fullHeight label="Loading platform orders..." />
         ) : !filteredOrders.length ? (
-          <div className="py-16 text-center text-sm text-base-content/60">
-            No matching orders found.
-          </div>
+          <EmptyState
+            title="No orders found"
+            message="No orders match your filter criteria or search query."
+            actionLabel="Reset Filter"
+            onAction={() => {
+              setActiveStatus("all");
+              setSearchQuery("");
+            }}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="table table-sm w-full">
@@ -202,7 +203,7 @@ const AdminOrder = () => {
               </thead>
               <tbody>
                 {filteredOrders.map((order) => (
-                  <tr key={order._id} className="hover:bg-base-200/40">
+                  <tr key={order._id} className="hover:bg-base-200/40 transition">
                     <td className="font-mono text-xs font-bold text-primary">
                       #{order._id.slice(-6).toUpperCase()}
                     </td>
@@ -226,42 +227,34 @@ const AdminOrder = () => {
                       ₹{order.billDetails?.finalAmount || 0}
                     </td>
                     <td>
-                      <span className="badge badge-xs uppercase font-bold bg-base-200 text-[10px]">
-                        {order.paymentDetails?.paymentMethod || "card"}
-                      </span>
+                      <Badge variant="ghost" size="xs">
+                        {order.paymentDetails?.paymentMethod || "CARD"}
+                      </Badge>
                     </td>
                     <td>
-                      <span
-                        className={`badge badge-sm text-[10px] font-bold capitalize ${
-                          order.orderStatus === "delivered"
-                            ? "badge-success text-white"
-                            : order.orderStatus === "cancelled" || order.orderStatus === "rejected"
-                            ? "badge-error text-white"
-                            : "badge-warning"
-                        }`}
+                      <Badge
+                        variant={getBadgeVariant(order.orderStatus)}
+                        size="xs"
+                        pulse={order.orderStatus === "placed"}
                       >
                         {order.orderStatus.replace(/_/g, " ")}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="text-xs text-base-content/60">
-                      {new Date(order.createdAt).toLocaleDateString()}{" "}
-                      <span className="text-[10px]">
-                        {new Date(order.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                      {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="text-right">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        icon={<FiEye />}
                         onClick={() => {
                           setSelectedOrder(order);
                           setOverrideStatus(order.orderStatus);
                         }}
-                        className="btn btn-xs btn-outline btn-primary rounded-lg gap-1"
                       >
-                        <FiEye /> View
-                      </button>
+                        Inspect
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -273,150 +266,129 @@ const AdminOrder = () => {
 
       {/* Order Details & Override Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-base-100 p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-base-200 pb-4">
-              <div>
-                <span className="text-xs font-semibold text-primary uppercase">
-                  Order Details
-                </span>
-                <h3 className="text-xl font-black text-base-content">
-                  #{selectedOrder._id.slice(-6).toUpperCase()}
-                </h3>
+        <Modal
+          isOpen={Boolean(selectedOrder)}
+          onClose={() => setSelectedOrder(null)}
+          title={`Order #${selectedOrder._id.slice(-6).toUpperCase()}`}
+          subtitle={selectedOrder.restaurantId?.restaurantName}
+          badge={
+            <Badge variant={getBadgeVariant(selectedOrder.orderStatus)} size="sm">
+              {selectedOrder.orderStatus.replace(/_/g, " ")}
+            </Badge>
+          }
+          maxWidth="2xl"
+        >
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 text-xs">
+            {/* Order Items & Customer */}
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-base-200/50 p-4">
+                <h4 className="font-bold uppercase text-base-content/60 mb-2">
+                  Customer & Delivery
+                </h4>
+                <p className="font-extrabold text-sm text-base-content">
+                  {selectedOrder.customerId?.fullName}
+                </p>
+                <p className="text-base-content/70">
+                  {selectedOrder.deliveryAddress?.address},{" "}
+                  {selectedOrder.deliveryAddress?.city}
+                </p>
+                <p className="text-base-content/60 mt-1">
+                  Phone: {selectedOrder.deliveryAddress?.phone || selectedOrder.customerId?.phone}
+                </p>
               </div>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="btn btn-circle btn-sm btn-ghost"
-              >
-                ✕
-              </button>
-            </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* Order Info & Items */}
-              <div className="space-y-4">
-                <div className="rounded-2xl bg-base-200/50 p-4">
-                  <h4 className="text-xs font-bold uppercase text-base-content/60 mb-2">
-                    Restaurant & Customer
-                  </h4>
-                  <p className="text-sm font-bold text-base-content">
-                    {selectedOrder.restaurantId?.restaurantName}
-                  </p>
-                  <p className="text-xs text-base-content/70">
-                    Customer: {selectedOrder.customerId?.fullName} (
-                    {selectedOrder.customerId?.phone})
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-base-200/50 p-4">
-                  <h4 className="text-xs font-bold uppercase text-base-content/60 mb-2">
-                    Items Ordered ({selectedOrder.orderItems?.length || 0})
-                  </h4>
-                  <div className="space-y-2">
-                    {selectedOrder.orderItems?.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between text-xs border-b border-base-200/80 pb-2"
-                      >
-                        <span>
-                          {item.quantity}x {item.name || "Item"}
-                        </span>
-                        <span className="font-bold">
-                          ₹{(item.price || 0) * item.quantity}
-                        </span>
-                      </div>
-                    ))}
-                    <div className="flex justify-between text-sm font-extrabold pt-1">
-                      <span>Total Paid</span>
-                      <span className="text-primary">
-                        ₹{selectedOrder.billDetails?.finalAmount}
+              <div className="rounded-2xl bg-base-200/50 p-4">
+                <h4 className="font-bold uppercase text-base-content/60 mb-2">
+                  Order Items ({selectedOrder.orderItems?.length || 0})
+                </h4>
+                <div className="space-y-2">
+                  {selectedOrder.orderItems?.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between border-b border-base-200 pb-2"
+                    >
+                      <span className="font-medium text-base-content">
+                        {item.quantity}x {item.name || "Item"}
+                      </span>
+                      <span className="font-bold">
+                        ₹{(item.price || 0) * item.quantity}
                       </span>
                     </div>
+                  ))}
+                  <div className="flex justify-between text-sm font-black pt-1">
+                    <span>Total Amount</span>
+                    <span className="text-primary">
+                      ₹{selectedOrder.billDetails?.finalAmount}
+                    </span>
                   </div>
-                </div>
-
-                <div className="rounded-2xl bg-base-200/50 p-4">
-                  <h4 className="text-xs font-bold uppercase text-base-content/60 mb-1">
-                    Delivery Address
-                  </h4>
-                  <p className="text-xs font-medium text-base-content">
-                    {selectedOrder.deliveryAddress?.name} • {selectedOrder.deliveryAddress?.phone}
-                  </p>
-                  <p className="text-xs text-base-content/70">
-                    {selectedOrder.deliveryAddress?.address},{" "}
-                    {selectedOrder.deliveryAddress?.city} -{" "}
-                    {selectedOrder.deliveryAddress?.pinCode}
-                  </p>
                 </div>
               </div>
+            </div>
 
-              {/* Status Timeline & Admin Override Form */}
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                  <h4 className="text-xs font-bold uppercase text-primary mb-3">
-                    Admin Status Override
-                  </h4>
-                  <form onSubmit={handleStatusOverride} className="space-y-3">
-                    <select
-                      className="select select-sm select-bordered w-full rounded-xl text-xs font-semibold"
-                      value={overrideStatus}
-                      onChange={(e) => setOverrideStatus(e.target.value)}
-                    >
-                      {STATUS_OPTIONS.filter((s) => s !== "all").map((st) => (
-                        <option key={st} value={st}>
-                          {st.replace(/_/g, " ")}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="Audit note for status override..."
-                      className="input input-sm input-bordered w-full rounded-xl text-xs"
-                      value={overrideNote}
-                      onChange={(e) => setOverrideNote(e.target.value)}
-                    />
-                    <button
-                      type="submit"
-                      disabled={isUpdating}
-                      className="btn btn-sm btn-primary w-full rounded-xl text-white font-bold"
-                    >
-                      {isUpdating ? "Updating..." : "Apply Status Override"}
-                    </button>
-                  </form>
-                </div>
-
-                <div className="rounded-2xl bg-base-200/50 p-4">
-                  <h4 className="text-xs font-bold uppercase text-base-content/60 mb-3">
-                    Order Timeline
-                  </h4>
-                  <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
-                    {selectedOrder.timeline?.map((step, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 text-xs border-l-2 border-primary pl-3 py-1"
-                      >
-                        <div>
-                          <p className="font-bold capitalize text-base-content">
-                            {step.status.replace(/_/g, " ")}
-                          </p>
-                          <p className="text-[11px] text-base-content/60">
-                            {step.note}
-                          </p>
-                          <p className="text-[10px] text-base-content/40">
-                            {new Date(step.timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
-                        </div>
-                      </div>
+            {/* Status Override & Timeline */}
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                <h4 className="font-bold uppercase text-primary mb-3">
+                  Admin Status Override
+                </h4>
+                <form onSubmit={handleStatusOverride} className="space-y-3">
+                  <select
+                    className="select select-sm select-bordered w-full rounded-xl text-xs font-semibold"
+                    value={overrideStatus}
+                    onChange={(e) => setOverrideStatus(e.target.value)}
+                  >
+                    {STATUS_TABS.filter((s) => s.id !== "all").map((st) => (
+                      <option key={st.id} value={st.id}>
+                        {st.label}
+                      </option>
                     ))}
-                  </div>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Audit reason note..."
+                    className="input input-sm input-bordered w-full rounded-xl text-xs"
+                    value={overrideNote}
+                    onChange={(e) => setOverrideNote(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    fullWidth
+                    loading={isUpdating}
+                  >
+                    Apply Status Override
+                  </Button>
+                </form>
+              </div>
+
+              <div className="rounded-2xl bg-base-200/50 p-4">
+                <h4 className="font-bold uppercase text-base-content/60 mb-3">
+                  Activity Timeline
+                </h4>
+                <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                  {selectedOrder.timeline?.map((step, idx) => (
+                    <div
+                      key={idx}
+                      className="border-l-2 border-primary pl-3 py-1 space-y-0.5"
+                    >
+                      <p className="font-bold capitalize text-base-content">
+                        {step.status.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-[11px] text-base-content/70">{step.note}</p>
+                      <p className="text-[10px] text-base-content/40">
+                        {new Date(step.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

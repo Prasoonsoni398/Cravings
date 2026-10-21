@@ -12,7 +12,7 @@ import {
 import { LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
-import { Modal, Button } from "../ui";
+import { Modal, ActionButton } from "../ui";
 
 const MenuItems = [
   { name: "Overview", path: "overview", icon: <MdOutlineDashboard /> },
@@ -83,36 +83,48 @@ const RestaurantSidebar = ({
               )}
             </button>
           </div>
-          <div className="p-2 flex flex-col gap-1.5 overflow-y-auto max-h-[75vh]">
-            {MenuItems.map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleNavigation(item.path)}
-                className={`flex items-center w-full gap-3 text-sm font-semibold p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  currentPath === item.path
-                    ? "bg-primary text-white border-primary shadow-sm"
-                    : "border-transparent hover:bg-base-300 text-base-content/80"
-                } ${isCollapsed ? "justify-center" : "justify-start"}`}
-                title={item.name}
-              >
-                <span className="text-xl">{item.icon}</span>
-                {!isCollapsed && <span>{item.name}</span>}
-              </button>
-            ))}
+          <div className="p-2.5 flex flex-col gap-1.5 overflow-y-auto max-h-[75vh]">
+            {MenuItems.map((item, idx) => {
+              const isActive = currentPath === item.path;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`group relative flex items-center w-full gap-3 text-xs md:text-sm font-bold p-3 rounded-2xl transition-all duration-200 cursor-pointer active:scale-95 ${
+                    isActive
+                      ? "bg-primary text-white shadow-md shadow-primary/25 translate-x-1"
+                      : "text-base-content/70 hover:bg-primary/10 hover:text-primary hover:translate-x-1"
+                  } ${isCollapsed ? "justify-center" : "justify-start"}`}
+                  title={item.name}
+                >
+                  <span
+                    className={`text-xl transition-transform duration-200 ${
+                      isActive ? "scale-110" : "group-hover:scale-115"
+                    }`}
+                  >
+                    {item.icon}
+                  </span>
+                  {!isCollapsed && <span className="truncate">{item.name}</span>}
+                  {isActive && !isCollapsed && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white shadow-xs" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Sidebar Footer Logout Button */}
-        <div className="p-2 border-t border-base-300">
+        <div className="p-2.5 border-t border-base-300">
           <button
             onClick={() => setShowLogoutModal(true)}
-            className={`flex items-center w-full gap-3 text-sm font-semibold p-2.5 rounded-xl text-error hover:bg-error/10 transition-all cursor-pointer ${
+            className={`group flex items-center w-full gap-3 text-xs md:text-sm font-bold p-3 rounded-2xl text-rose-600 hover:bg-rose-50 hover:text-rose-700 active:scale-95 transition-all duration-200 cursor-pointer ${
               isCollapsed ? "justify-center" : "justify-start"
             }`}
             title="Log Out"
           >
-            <LogOut className="w-5 h-5 shrink-0" />
-            {!isCollapsed && <span>Log Out</span>}
+            <LogOut className="w-5 h-5 shrink-0 transition-transform group-hover:scale-115 group-hover:-translate-x-0.5" />
+            {!isCollapsed && <span>Sign Out</span>}
           </button>
         </div>
       </div>
@@ -127,7 +139,7 @@ const RestaurantSidebar = ({
         >
           <div className="space-y-4">
             <div className="flex items-start gap-3.5">
-              <div className="p-3 bg-error/10 text-error rounded-2xl text-xl shrink-0 mt-0.5">
+              <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl text-xl shrink-0 mt-0.5 shadow-xs">
                 <LogOut className="w-5 h-5" />
               </div>
               <div>
@@ -141,23 +153,19 @@ const RestaurantSidebar = ({
             </div>
 
             <div className="flex justify-end gap-2.5 pt-3 border-t border-base-200">
-              <Button
-                variant="ghost"
+              <ActionButton.Cancel
                 size="sm"
                 onClick={() => setShowLogoutModal(false)}
                 disabled={isLoggingOut}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="error"
+              />
+              <ActionButton.Delete
                 size="sm"
                 icon={<LogOut className="w-3.5 h-3.5" />}
                 onClick={handleConfirmLogout}
                 loading={isLoggingOut}
               >
                 Yes, Sign Out
-              </Button>
+              </ActionButton.Delete>
             </div>
           </div>
         </Modal>

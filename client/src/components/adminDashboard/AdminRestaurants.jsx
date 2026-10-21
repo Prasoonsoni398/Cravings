@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import {
   Button,
+  ActionButton,
   Badge,
   SearchInput,
   FilterTabs,
@@ -179,14 +180,13 @@ const AdminRestaurants = () => {
               </div>
 
               <div className="pt-3 border-t border-base-200 flex items-center justify-between">
-                <Button
+                <ActionButton.View
                   variant="outline"
                   size="xs"
-                  icon={<FiEye />}
                   onClick={() => setSelectedRest(r)}
                 >
                   Docs
-                </Button>
+                </ActionButton.View>
 
                 <div className="flex items-center gap-1.5">
                   {r.status !== "active" && (

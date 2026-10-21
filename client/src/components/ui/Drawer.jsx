@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { FiX } from "react-icons/fi";
+import ActionButton from "./ActionButton";
 
 const MAX_WIDTHS = {
   xs: "max-w-xs",
@@ -100,14 +100,12 @@ export const Drawer = ({
             )}
           </div>
 
-          <button
-            type="button"
+          <ActionButton.Close
+            size="sm"
             onClick={onClose}
-            className="btn btn-circle btn-sm btn-ghost text-base-content/60 hover:text-base-content hover:bg-base-200 transition-all cursor-pointer shrink-0"
-            aria-label="Close drawer"
-          >
-            <FiX className="w-5 h-5" />
-          </button>
+            title="Close drawer"
+            className="shrink-0"
+          />
         </div>
 
         {/* Scrollable Content Body */}

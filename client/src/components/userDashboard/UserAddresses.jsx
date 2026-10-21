@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import { FiMapPin, FiPlus, FiTrash2, FiHome, FiBriefcase } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { Button, Badge, Card, Modal, EmptyState, LoadingSpinner } from "../ui";
+import { Button, ActionButton, Badge, Card, Modal, EmptyState, LoadingSpinner } from "../ui";
 
 const UserAddresses = () => {
   const [addresses, setAddresses] = useState([]);
@@ -84,15 +84,13 @@ const UserAddresses = () => {
             Manage your delivery locations for faster checkout.
           </p>
         </div>
-        <Button
+        <ActionButton.Add
           size="sm"
-          variant="primary"
-          icon={<FiPlus />}
           onClick={() => setShowModal(true)}
-          className="font-bold self-start sm:self-auto"
+          className="self-start sm:self-auto"
         >
           Add New Address
-        </Button>
+        </ActionButton.Add>
       </div>
 
       {loading ? (
@@ -105,14 +103,12 @@ const UserAddresses = () => {
           title="No addresses saved yet"
           description="Add your home, office, or other delivery addresses for faster checkout."
           action={
-            <Button
-              variant="primary"
+            <ActionButton.Add
               size="sm"
-              icon={<FiPlus />}
               onClick={() => setShowModal(true)}
             >
               Add First Address
-            </Button>
+            </ActionButton.Add>
           }
         />
       ) : (
@@ -120,20 +116,20 @@ const UserAddresses = () => {
           {addresses.map((addr) => (
             <Card
               key={addr._id}
-              className="p-5 flex flex-col justify-between"
+              className="p-5 flex flex-col justify-between rounded-3xl border border-base-200 bg-base-100 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <Badge variant="primary" size="xs" className="gap-1">
+                  <Badge variant="primary" size="xs" className="gap-1 font-bold">
                     {addr.label === "Home" ? <FiHome /> : <FiBriefcase />} {addr.label}
                   </Badge>
                   {addr.isDefault && (
-                    <Badge variant="success" size="xs">
+                    <Badge variant="success" size="xs" className="font-bold">
                       Default
                     </Badge>
                   )}
                 </div>
-                <h4 className="font-extrabold text-sm text-base-content mt-3">
+                <h4 className="font-black text-sm text-base-content mt-3 group-hover:text-primary transition-colors">
                   {addr.name} ({addr.phone})
                 </h4>
                 <p className="text-xs text-base-content/70 mt-1 leading-relaxed">
@@ -143,15 +139,11 @@ const UserAddresses = () => {
               </div>
 
               <div className="mt-4 pt-3 border-t border-base-200 flex justify-end">
-                <Button
+                <ActionButton.Delete
                   size="xs"
-                  variant="ghost"
-                  className="text-error hover:bg-error/10 gap-1"
-                  icon={<FiTrash2 />}
+                  variant="delete-soft"
                   onClick={() => handleDelete(addr._id)}
-                >
-                  Delete
-                </Button>
+                />
               </div>
             </Card>
           ))}
@@ -238,16 +230,17 @@ const UserAddresses = () => {
               Set as default delivery address
             </label>
 
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-base-200">
+              <ActionButton.Cancel
                 size="sm"
-                className="font-bold"
+                onClick={() => setShowModal(false)}
+              />
+              <ActionButton.Save
+                type="submit"
+                size="sm"
               >
                 Save Address
-              </Button>
+              </ActionButton.Save>
             </div>
           </form>
         </Modal>

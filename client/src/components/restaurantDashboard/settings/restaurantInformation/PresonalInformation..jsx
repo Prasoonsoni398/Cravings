@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import PasswordChangeModal from "../../../commonModal/PasswordChangeModal";
-import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import api from "../../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { ActionButton, Button } from "../../../ui";
 
 const PresonalInformation = () => {
   const { user, setUser } = useAuth();
@@ -109,35 +110,36 @@ const PresonalInformation = () => {
             </h3>
             {!editingProfile ? (
               <div className="flex gap-3">
-                <button
+                <ActionButton.Edit
+                  size="xs"
+                  variant="primary"
                   onClick={() => setEditingProfile(true)}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
                 >
-                  <MdEdit /> Edit
-                </button>
-                <button
+                  Edit
+                </ActionButton.Edit>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  icon={<MdOutlineLockReset />}
                   onClick={() => setIsPasswordChangeModalOpen(true)}
-                  className="flex items-center gap-2 border border-(--color-primary) text-(--color-primary) px-2 py-0.5 rounded text-xs hover:bg-(--color-primary) hover:text-(--color-primary-content)"
                 >
-                  <MdOutlineLockReset /> Change Password
-                </button>
+                  Change Password
+                </Button>
               </div>
             ) : (
               <div className="flex gap-2 justify-end">
-                <button
-                  onClick={handleSaveProfile}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </button>
-                <button
+                <ActionButton.Cancel
+                  size="xs"
                   onClick={handleCancelProfile}
-                  className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-2 py-0.5 rounded text-xs"
                   disabled={isLoading}
+                />
+                <ActionButton.Save
+                  size="xs"
+                  onClick={handleSaveProfile}
+                  loading={isLoading}
                 >
-                  Cancel
-                </button>
+                  Save Changes
+                </ActionButton.Save>
               </div>
             )}
           </div>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { MdOutlineAddAPhoto } from "react-icons/md";
-import { IoMdClose } from "react-icons/io";
 import api from "../../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { ActionButton } from "../../../ui";
 
 const GalleryImages = () => {
   const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -169,15 +169,13 @@ const GalleryImages = () => {
                   alt={`Restaurant Existing ${index + 1}`}
                   className="h-36 w-full object-cover"
                 />
-                <button
-                  type="button"
+                <ActionButton.Close
+                  size="sm"
                   onClick={() => handleDeleteExisting(image.publicId)}
                   disabled={isLoading}
-                  className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-(--color-error) shadow-sm ring-1 ring-(--color-error)/20 transition hover:bg-(--color-error) hover:text-(--color-error-content)"
-                  aria-label={`Remove existing image`}
-                >
-                  <IoMdClose className="text-lg" />
-                </button>
+                  className="absolute right-2 top-2 z-10"
+                  title="Remove existing image"
+                />
               </div>
             </div>
           ))}
@@ -192,15 +190,13 @@ const GalleryImages = () => {
                   alt={`Restaurant New ${index + 1}`}
                   className="h-36 w-full object-cover"
                 />
-                <button
-                  type="button"
+                <ActionButton.Close
+                  size="sm"
                   onClick={() => removeGalleryImage(index)}
                   disabled={isLoading}
-                  className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-(--color-error) shadow-sm ring-1 ring-(--color-error)/20 transition hover:bg-(--color-error) hover:text-(--color-error-content)"
-                  aria-label={`Remove ${imagePreview.file.name}`}
-                >
-                  <IoMdClose className="text-lg" />
-                </button>
+                  className="absolute right-2 top-2 z-10"
+                  title={`Remove ${imagePreview.file.name}`}
+                />
               </div>
 
               <div className="px-3 py-2">

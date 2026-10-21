@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "../../config/ApiConfig";
 import toast from "react-hot-toast";
-import { Modal, Button } from "../ui";
+import { Modal, ActionButton } from "../ui";
 
 const PasswordChangeModal = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -113,21 +113,18 @@ const PasswordChangeModal = ({ open, onClose }) => {
         </div>
 
         <div className="flex justify-end gap-3 pt-3 border-t border-base-200">
-          <Button
-            type="button"
-            variant="ghost"
+          <ActionButton.Cancel
+            size="sm"
             onClick={handleCloseModal}
             disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button
+          />
+          <ActionButton.Save
             type="submit"
-            variant="primary"
+            size="sm"
             loading={isLoading}
           >
             Change Password
-          </Button>
+          </ActionButton.Save>
         </div>
       </form>
     </Modal>

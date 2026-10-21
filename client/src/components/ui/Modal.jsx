@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { FiX } from "react-icons/fi";
+import ActionButton from "./ActionButton";
 
 const MAX_WIDTHS = {
   sm: "max-w-sm",
@@ -64,14 +64,11 @@ export const Modal = ({
                 <p className="text-xs text-base-content/60 mt-0.5">{subtitle}</p>
               )}
             </div>
-            <button
-              type="button"
+            <ActionButton.Close
+              size="sm"
               onClick={onClose}
-              className="btn btn-circle btn-sm btn-ghost text-base-content/60 hover:text-base-content"
-              aria-label="Close modal"
-            >
-              <FiX className="text-lg" />
-            </button>
+              title="Close modal"
+            />
           </div>
         )}
 

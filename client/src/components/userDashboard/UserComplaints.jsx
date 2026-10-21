@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import { FiMessageSquare, FiPlus, FiCheckCircle, FiClock, FiAlertCircle } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { Button, Badge, Card, Modal, EmptyState, LoadingSpinner } from "../ui";
+import { Button, ActionButton, Badge, Card, Modal, EmptyState, LoadingSpinner } from "../ui";
 
 const CATEGORIES = [
   { value: "order_delay", label: "Delivery Delay" },
@@ -65,15 +65,13 @@ const UserComplaints = () => {
             Need help with an order or payment? Reach our customer resolution team.
           </p>
         </div>
-        <Button
+        <ActionButton.Add
           size="sm"
-          variant="primary"
-          icon={<FiPlus />}
           onClick={() => setShowModal(true)}
-          className="font-bold self-start sm:self-auto"
+          className="self-start sm:self-auto"
         >
           New Ticket
-        </Button>
+        </ActionButton.Add>
       </div>
 
       {loading ? (
@@ -86,14 +84,12 @@ const UserComplaints = () => {
           title="No active support tickets"
           description="Have an issue with an order, payment, or delivery? Create a ticket and our support team will resolve it quickly."
           action={
-            <Button
-              variant="primary"
+            <ActionButton.Add
               size="sm"
-              icon={<FiPlus />}
               onClick={() => setShowModal(true)}
             >
               Create Ticket
-            </Button>
+            </ActionButton.Add>
           }
         />
       ) : (
@@ -194,16 +190,17 @@ const UserComplaints = () => {
               />
             </div>
 
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-base-200">
+              <ActionButton.Cancel
                 size="sm"
-                className="font-bold"
+                onClick={() => setShowModal(false)}
+              />
+              <ActionButton.Save
+                type="submit"
+                size="sm"
               >
                 Submit Ticket
-              </Button>
+              </ActionButton.Save>
             </div>
           </form>
         </Modal>

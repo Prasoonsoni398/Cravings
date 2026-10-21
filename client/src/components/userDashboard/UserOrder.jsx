@@ -3,6 +3,7 @@ import api from "../../config/ApiConfig";
 import { useSocket } from "../../context/SocketContext.jsx";
 import {
   Button,
+  ActionButton,
   Badge,
   Card,
   Modal,
@@ -148,14 +149,13 @@ const UserOrder = () => {
             Track real-time meal preparation, delivery journey, and order receipts.
           </p>
         </div>
-        <Button
+        <ActionButton.Refresh
           variant="outline"
           size="sm"
-          icon={<FiRefreshCw />}
           onClick={fetchOrders}
         >
           Refresh Orders
-        </Button>
+        </ActionButton.Refresh>
       </div>
 
       {loading ? (
@@ -207,14 +207,12 @@ const UserOrder = () => {
 
                   <div className="flex items-center gap-2">
                     {canCancel && (
-                      <Button
-                        variant="ghost"
+                      <ActionButton.Cancel
                         size="xs"
                         onClick={() => handleCancelOrder(order._id)}
-                        className="text-error border border-error/30"
                       >
-                        Cancel
-                      </Button>
+                        Cancel Order
+                      </ActionButton.Cancel>
                     )}
                     {order.orderStatus === "delivered" && (
                       <Button
@@ -222,11 +220,12 @@ const UserOrder = () => {
                         size="xs"
                         icon={<FiStar />}
                         onClick={() => setReviewOrder(order)}
+                        className="font-bold shadow-xs hover:shadow-md"
                       >
                         Rate Meal
                       </Button>
                     )}
-                    <Button
+                    <ActionButton.View
                       variant="primary"
                       size="xs"
                       onClick={() => {
@@ -235,7 +234,7 @@ const UserOrder = () => {
                       }}
                     >
                       Track Order
-                    </Button>
+                    </ActionButton.View>
                   </div>
                 </div>
 
@@ -434,15 +433,20 @@ const UserOrder = () => {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              fullWidth
-              loading={isSubmittingReview}
-            >
-              Submit Review
-            </Button>
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-base-200">
+              <ActionButton.Cancel
+                size="sm"
+                onClick={() => setReviewOrder(null)}
+                disabled={isSubmittingReview}
+              />
+              <ActionButton.Save
+                type="submit"
+                size="sm"
+                loading={isSubmittingReview}
+              >
+                Submit Review
+              </ActionButton.Save>
+            </div>
           </form>
         </Modal>
       )}

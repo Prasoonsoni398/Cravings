@@ -9,7 +9,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import ConfirmModal from "./menuItems/ConfirmModal";
 import AddNewItemModal from "./menuItems/AddNewItemModal";
 import EditOrViewItem from "./menuItems/EditOrViewItem";
-import { Button, Badge, Card, EmptyState, SearchInput, LoadingSpinner } from "../ui";
+import { Button, ActionButton, Badge, Card, EmptyState, SearchInput, LoadingSpinner } from "../ui";
 
 const statusChipStyles = {
   available: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
@@ -78,14 +78,13 @@ const RestaurantMenu = () => {
             onClear={() => setSearchQuery("")}
             className="w-full sm:w-64"
           />
-          <Button
-            variant="primary"
-            icon={<IoMdAddCircleOutline />}
+          <ActionButton.Add
+            size="md"
             onClick={() => setIsAddNewItemModalOpen(true)}
-            className="font-bold whitespace-nowrap"
+            className="whitespace-nowrap"
           >
             Add New Dish
-          </Button>
+          </ActionButton.Add>
         </div>
       </div>
 
@@ -103,16 +102,15 @@ const RestaurantMenu = () => {
               : "Start by adding your first delicious dish to the restaurant catalog!"
           }
           action={
-            <Button
-              variant="primary"
-              icon={<IoMdAddCircleOutline />}
+            <ActionButton.Add
+              size="sm"
               onClick={() => {
                 if (searchQuery) setSearchQuery("");
                 else setIsAddNewItemModalOpen(true);
               }}
             >
               {searchQuery ? "Clear Search" : "Add Dish Now"}
-            </Button>
+            </ActionButton.Add>
           }
         />
       ) : (
@@ -237,43 +235,36 @@ const RestaurantMenu = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="inline-flex items-center gap-1.5">
-                        <Button
+                        <ActionButton.Edit
                           size="xs"
-                          variant="ghost"
+                          iconOnly
                           title="Edit Item"
                           onClick={() => {
                             setSelectedItem(item);
                             setModalMode("edit");
                             setIsEditViewItemModalOpen(true);
                           }}
-                        >
-                          <LuPencilLine />
-                        </Button>
-                        <Button
+                        />
+                        <ActionButton.View
                           size="xs"
-                          variant="ghost"
+                          iconOnly
                           title="View Item"
                           onClick={() => {
                             setSelectedItem(item);
                             setModalMode("view");
                             setIsEditViewItemModalOpen(true);
                           }}
-                        >
-                          <LuEye />
-                        </Button>
-                        <Button
+                        />
+                        <ActionButton.Delete
                           size="xs"
-                          variant="ghost"
-                          className="text-error hover:bg-error/10"
+                          iconOnly
                           title="Delete Item"
                           onClick={() => {
                             setSelectedItem(item);
                             setModalMode("delete");
                             setIsControlsModalOpen(true);
                           }}
-                        >
-                          <LuTrash2 />
-                        </Button>
+                        />
                       </div>
                     </td>
                   </tr>

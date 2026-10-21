@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { MdOutlineAddAPhoto } from "react-icons/md";
 import api from "../../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { ActionButton } from "../../../ui";
 
 const CoverImage = () => {
   const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -106,13 +107,16 @@ const CoverImage = () => {
             <p className="text-xs text-(--color-error) mt-2">{error}</p>
           )}
           {coverImage && (
-            <button
-              onClick={handleSave}
-              disabled={isLoading}
-              className="mt-3 w-full bg-(--color-primary) text-(--color-primary-content) py-1.5 rounded-md text-xs font-semibold"
-            >
-              {isLoading ? "Saving..." : "Save Cover Image"}
-            </button>
+            <div className="mt-3">
+              <ActionButton.Save
+                onClick={handleSave}
+                loading={isLoading}
+                fullWidth
+                size="sm"
+              >
+                Save Cover Image
+              </ActionButton.Save>
+            </div>
           )}
         </div>
 

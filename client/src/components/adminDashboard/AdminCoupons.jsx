@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../config/ApiConfig";
 import {
   Button,
+  ActionButton,
   Badge,
   Card,
   Modal,
@@ -92,22 +93,19 @@ const AdminCoupons = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <ActionButton.Refresh
             variant="outline"
             size="sm"
-            icon={<FiRefreshCw />}
             onClick={fetchCoupons}
           >
             Refresh
-          </Button>
-          <Button
-            variant="primary"
+          </ActionButton.Refresh>
+          <ActionButton.Add
             size="sm"
-            icon={<FiPlus />}
             onClick={() => setShowModal(true)}
           >
             Create Coupon
-          </Button>
+          </ActionButton.Add>
         </div>
       </div>
 

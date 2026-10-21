@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
-import { Modal, Button } from "../../ui";
+import { Modal, ActionButton } from "../../ui";
 
 const itemCategories = [
   "Appetizer",
@@ -301,21 +301,21 @@ const EditOrViewItem = ({
         </div>
 
         <div className="flex justify-end gap-3 border-t border-base-200 pt-3 mt-4">
-          <Button
-            variant="ghost"
+          <ActionButton.Cancel
+            size="sm"
             onClick={onClose}
             disabled={isLoading}
           >
             {isViewMode ? "Close" : "Cancel"}
-          </Button>
+          </ActionButton.Cancel>
           {!isViewMode && (
-            <Button
-              variant="primary"
+            <ActionButton.Save
+              size="sm"
               onClick={handleUpdateItem}
               loading={isLoading}
             >
               Update Item
-            </Button>
+            </ActionButton.Save>
           )}
         </div>
       </form>

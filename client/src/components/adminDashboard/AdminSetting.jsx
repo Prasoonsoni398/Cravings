@@ -4,7 +4,7 @@ import api from "../../config/ApiConfig";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import PasswordChangeModal from "../commonModal/PasswordChangeModal";
-import { Button, Card } from "../ui";
+import { Button, ActionButton, Card } from "../ui";
 
 const AdminSetting = () => {
   const { user, setUser } = useAuth();
@@ -127,14 +127,13 @@ const AdminSetting = () => {
             <h3 className="text-lg font-bold text-base-content">Profile Information</h3>
             {!isEditing ? (
               <div className="flex gap-2">
-                <Button
+                <ActionButton.Edit
                   size="sm"
                   variant="primary"
-                  icon={<MdEdit />}
                   onClick={() => setIsEditing(true)}
                 >
                   Edit Profile
-                </Button>
+                </ActionButton.Edit>
                 <Button
                   size="sm"
                   variant="outline"
@@ -146,22 +145,18 @@ const AdminSetting = () => {
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button
+                <ActionButton.Cancel
                   size="sm"
-                  variant="ghost"
                   onClick={handleCancel}
                   disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
+                />
+                <ActionButton.Save
                   size="sm"
-                  variant="primary"
                   onClick={handleSubmit}
                   loading={isLoading}
                 >
                   Save Changes
-                </Button>
+                </ActionButton.Save>
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
-import { Modal, Button } from "../../ui";
+import { Modal, ActionButton } from "../../ui";
 
 const ConfirmModal = ({
   selectedItem,
@@ -74,20 +74,28 @@ const ConfirmModal = ({
         </p>
 
         <div className="flex justify-end gap-3 pt-3 border-t border-base-200">
-          <Button
-            variant="ghost"
+          <ActionButton.Cancel
+            size="sm"
             onClick={onClose}
             disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant={modalMode === "delete" ? "error" : "primary"}
-            onClick={handleConfirm}
-            loading={isLoading}
-          >
-            Confirm
-          </Button>
+          />
+          {modalMode === "delete" ? (
+            <ActionButton.Delete
+              size="sm"
+              onClick={handleConfirm}
+              loading={isLoading}
+            >
+              Delete Item
+            </ActionButton.Delete>
+          ) : (
+            <ActionButton.Confirm
+              size="sm"
+              onClick={handleConfirm}
+              loading={isLoading}
+            >
+              Confirm
+            </ActionButton.Confirm>
+          )}
         </div>
       </div>
     </Modal>

@@ -2,7 +2,7 @@ import React from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import api from "../../../config/ApiConfig";
 import toast from "react-hot-toast";
-import { Modal, Button } from "../../ui";
+import { Modal, ActionButton } from "../../ui";
 
 const itemCategories = [
   "Appetizer",
@@ -280,20 +280,18 @@ const AddNewItemModal = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         <div className="flex justify-end gap-3 border-t border-base-200 pt-3 mt-4">
-          <Button
-            variant="ghost"
+          <ActionButton.Cancel
+            size="sm"
             onClick={handleOnClose}
             disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
+          />
+          <ActionButton.Add
+            size="sm"
             onClick={handleAddNewItem}
             loading={isLoading}
           >
             Add Item
-          </Button>
+          </ActionButton.Add>
         </div>
       </form>
     </Modal>

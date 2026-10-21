@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { FiX } from "react-icons/fi";
 
 const MAX_WIDTHS = {
+  xs: "max-w-xs",
+  compact: "max-w-[380px]",
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
@@ -80,13 +82,13 @@ export const Drawer = ({
         aria-labelledby="drawer-title"
       >
         {/* Sticky Header */}
-        <div className="shrink-0 flex items-center justify-between border-b border-base-200 px-5 py-4 bg-base-100/95 backdrop-blur-md z-10">
-          <div className="flex-1 min-w-0 pr-3">
+        <div className="shrink-0 flex items-center justify-between border-b border-base-200 px-4 sm:px-5 py-3.5 bg-base-100/95 backdrop-blur-md z-10">
+          <div className="flex-1 min-w-0 pr-2">
             {badge && <div className="mb-1">{badge}</div>}
             {title && (
               <h2
                 id="drawer-title"
-                className="text-lg sm:text-xl font-black text-base-content tracking-tight truncate"
+                className="text-base sm:text-lg font-black text-base-content tracking-tight truncate"
               >
                 {title}
               </h2>
@@ -109,13 +111,13 @@ export const Drawer = ({
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-3.5 space-y-4">
           {children}
         </div>
 
         {/* Sticky Footer */}
         {footer && (
-          <div className="shrink-0 border-t border-base-200 px-5 py-4 bg-base-100/95 backdrop-blur-md z-10">
+          <div className="shrink-0 border-t border-base-200 px-4 sm:px-5 py-3.5 bg-base-100/95 backdrop-blur-md z-10">
             {footer}
           </div>
         )}

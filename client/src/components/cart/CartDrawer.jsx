@@ -249,7 +249,7 @@ const CartDrawer = () => {
     <Drawer
       isOpen={isCartOpen}
       onClose={closeCart}
-      maxWidth="md"
+      maxWidth="sm"
       position="right"
       title={
         <div className="flex items-center gap-2">
